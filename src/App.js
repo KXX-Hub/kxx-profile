@@ -1,11 +1,9 @@
 import React from 'react';
-import PersonalPage from './PersonalPage';
+import MainPage from './MainPage';
 
 function App() {
   return (
-    <div className="App">
-      <PersonalPage />
-    </div>
+    <MainPage />
   );
 }
 

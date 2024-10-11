@@ -1,0 +1,53 @@
+.main-page {
+  background-color: #808080;
+  color: white;
+  min-height: 100vh;
+  padding: 2rem;
+  font-family: monospace;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.github-icon {
+  margin-left: 0.5rem;
+}
+
+.box-container {
+  display: flex;
+  justify-content: center;
+}
+
+.box {
+  background-color: white;
+  color: black;
+  width: 150px;
+  height: 150px;
+  border-radius: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin: 10px;
+}
+
+.back-button {
+  margin-bottom: 10px;
+}
+
+.project-list {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 25px;
+  padding: 1rem;
+  margin-left: 1rem;
+  min-width: 300px;
+  min-height: 150px;
+}
+
+.project-text {
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin: 0;
+}
