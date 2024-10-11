@@ -143,10 +143,10 @@ const MainPage = () => {
 
   const meContent = `About Me:
 - Software Developer
-- Open Source Contributor
-- Tech Enthusiast`;
+- Cybersecurity Engineer Intern
+- IEEE author`;
 
-  const producingContent = `My Productions:
+  const producingContent = ` My Productions:
 - Music Album: KXX | XXXXXX
 - Total Song : 3
 Experience : 5 years:
