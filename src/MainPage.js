@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import './MainPage.css';
 
 const styles = {
   mainPage: {
@@ -133,29 +134,32 @@ const MainPage = () => {
   const [currentPage, setCurrentPage] = useState(null);
 
   const codingContent = `
-Projects:
+ Projects:
 - Telemedic consult system
 - Ethereum wallet tracker
 - Zimbra auto mail bot
 - Auto API check bot
 - Gas line notify
 - NFT
-- Solidity & smartcontract`;
+- Solidity & smartcontract
+- ...`;
 
   const meContent = `
-About Me:
+ About Me:
 - Software Developer
 - Cybersecurity Engineer Intern
-- IEEE author`;
+- IEEE author
+- ...`;
 
   const producingContent = `
-Production:
+ Production:
 - Music Album: KXX | XXXXXX
 - Total Song : 3
 Experience : 5 years:
 - Music Producer
 - piano teachers
-- Composer`;
+- Composer
+- ...`;
 
   const renderPage = () => {
     switch (currentPage) {
