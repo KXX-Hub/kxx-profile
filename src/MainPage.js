@@ -132,7 +132,7 @@ const Box = ({ title, content }) => {
 const MainPage = () => {
   const [currentPage, setCurrentPage] = useState(null);
 
-  const codingContent = ` Projects:
+  const codingContent = `  Projects:
 - Telemedic consult system
 - Ethereum wallet tracker
 - Zimbra auto mail bot
@@ -141,12 +141,12 @@ const MainPage = () => {
 - NFT
 - Solidity & smartcontract`;
 
-  const meContent = ` About Me:
+  const meContent = `  About Me:
 - Software Developer
 - Cybersecurity Engineer Intern
 - IEEE author`;
 
-  const producingContent = ` Production:
+  const producingContent = `  Production:
 - Music Album: KXX | XXXXXX
 - Total Song : 3
 Experience : 5 years:
