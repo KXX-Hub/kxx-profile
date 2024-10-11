@@ -132,7 +132,8 @@ const Box = ({ title, content }) => {
 const MainPage = () => {
   const [currentPage, setCurrentPage] = useState(null);
 
-  const codingContent = `- Telemedic consult system
+  const codingContent = ` My Projects: 
+- Telemedic consult system
 - Ethereum wallet tracker
 - Zimbra auto mail bot
 - Auto API check bot
@@ -146,9 +147,12 @@ const MainPage = () => {
 - Tech Enthusiast`;
 
   const producingContent = `My Productions:
-- Music Tracks: 5
-- Short Films: 2
-- Podcasts: 10 episodes`;
+- Music Album: KXX | XXXXXX
+- Total Song : 3
+Experience : 5 years:
+- Music Producer
+- piano teachers
+- Composer`;
 
   const renderPage = () => {
     switch (currentPage) {
