@@ -3,7 +3,9 @@ import MainPage from './MainPage';
 
 function App() {
   return (
-    <MainPage />
+    <div className="App">
+      <MainPage />
+    </div>
   );
 }
 
