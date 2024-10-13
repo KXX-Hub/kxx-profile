@@ -1,83 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './MainPage.css';
 
-const styles = {
-  mainPage: {
-    backgroundColor: '#808080',
-    color: 'white',
-    minHeight: '100vh',
-    padding: '2rem',
-    fontFamily: 'monospace',
-    fontSize: '16px',
-  },
-  header: {
-    textAlign: 'center',
-    marginBottom: '2rem',
-  },
-  title: {
-    fontSize: '2.5rem',
-    marginBottom: '0.5rem',
-  },
-  subtitle: {
-    fontSize: '1.5rem',
-  },
-  boxContainer: {
-    display: 'flex',
-    justifyContent: 'space-around',
-    alignItems: 'flex-start',
-    flexWrap: 'wrap',
-  },
-  boxWrapper: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    margin: '0 20px',
-    height: '450px',
-  },
-  box: {
-    backgroundColor: 'white',
-    color: 'black',
-    width: '200px',
-    height: '200px',
-    borderRadius: '20px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    cursor: 'pointer',
-    marginBottom: '20px',
-  },
-  boxTitle: {
-    fontSize: '1.3rem',
-  },
-  contentBox: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    borderRadius: '20px',
-    padding: '1rem',
-    width: '350px', // Increased width to accommodate longer lines
-    height: '220px',
-    overflow: 'auto',
-    transition: 'opacity 0.3s ease',
-    opacity: 0,
-    visibility: 'hidden',
-  },
-  contentBoxVisible: {
-    opacity: 1,
-    visibility: 'visible',
-  },
-  projectText: {
-    whiteSpace: 'pre-wrap',
-    wordBreak: 'break-word',
-    margin: 0,
-    fontSize: '0.9rem',
-    lineHeight: '1.6',
-  },
-  backButton: {
-    marginBottom: '20px',
-    fontSize: '1rem',
-    padding: '10px 20px',
-  },
-};
-
 const TypewriterEffect = ({ content }) => {
   const [displayedContent, setDisplayedContent] = useState('');
   const contentRef = useRef(content);
@@ -86,7 +9,7 @@ const TypewriterEffect = ({ content }) => {
     contentRef.current = content;
     setDisplayedContent('');
     let index = 0;
-    
+
     const typeNextChar = () => {
       if (index < contentRef.current.length) {
         setDisplayedContent(prev => prev + contentRef.current[index]);
@@ -102,28 +25,22 @@ const TypewriterEffect = ({ content }) => {
     };
   }, [content]);
 
-  console.log('Displayed content:', displayedContent);
-  console.log('Original content:', content);
-
-  return <pre style={styles.projectText}>{displayedContent}</pre>;
+  return <pre className="project-text">{displayedContent}</pre>;
 };
 
 const Box = ({ title, content }) => {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
-    <div style={styles.boxWrapper}>
-      <div 
-        style={styles.box} 
+    <div className="box-wrapper">
+      <div
+        className="box"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <h3 style={styles.boxTitle}>{title}</h3>
+        <h3 className="box-title">{title}</h3>
       </div>
-      <div style={{
-        ...styles.contentBox,
-        ...(isHovered ? styles.contentBoxVisible : {})
-      }}>
+      <div className={`content-box ${isHovered ? 'visible' : ''}`}>
         {isHovered && <TypewriterEffect key={title} content={content} />}
       </div>
     </div>
@@ -135,21 +52,19 @@ const MainPage = () => {
 
   const codingContent = `
  Projects:
-- Telemedic consult system
+- Remote Telemedicine consult system
 - Ethereum wallet tracker
 - Zimbra auto mail bot
 - Auto API check bot
 - Gas line notify
 - NFT
-- Solidity & smartcontract
-- ...`;
+- Solidity & smart contract`;
 
   const meContent = `
  About Me:
 - Software Developer
 - Cybersecurity Engineer Intern
-- IEEE author
-- ...`;
+- IEEE author`;
 
   const producingContent = `
  Production:
@@ -158,8 +73,7 @@ const MainPage = () => {
 Experience : 5 years:
 - Music Producer
 - piano teachers
-- Composer
-- ...`;
+- Composer`;
 
   const renderPage = () => {
     switch (currentPage) {
@@ -168,22 +82,22 @@ Experience : 5 years:
       case 'Producing':
         return (
           <div>
-            <button style={styles.backButton} onClick={() => setCurrentPage(null)}>Back</button>
-            <div style={styles.boxContainer}>
-              <Box 
-                title={currentPage} 
+            <button className="back-button" onClick={() => setCurrentPage(null)}>Back</button>
+            <div className="box-container">
+              <Box
+                title={currentPage}
                 content={
                   currentPage === 'Coding' ? codingContent :
-                  currentPage === 'Me' ? meContent :
-                  producingContent
-                } 
+                    currentPage === 'Me' ? meContent :
+                      producingContent
+                }
               />
             </div>
           </div>
         );
       default:
         return (
-          <div style={styles.boxContainer}>
+          <div className="box-container">
             <Box title="Coding" content={codingContent} />
             <Box title="Me" content={meContent} />
             <Box title="Producing" content={producingContent} />
@@ -193,10 +107,10 @@ Experience : 5 years:
   };
 
   return (
-    <div style={styles.mainPage}>
-      <header style={styles.header}>
-        <h1 style={styles.title}>GM! I'm Kai.</h1>
-        <h2 style={styles.subtitle}>Welcome to my digital gallery.</h2>
+    <div className="main-page">
+      <header className="header">
+        <h1 className="title">GM! I'm Kai.</h1>
+        <h2 className="subtitle">Welcome to my digital gallery.</h2>
       </header>
       <main>
         {renderPage()}
