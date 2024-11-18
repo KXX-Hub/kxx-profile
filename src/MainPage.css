@@ -1,85 +1,86 @@
 .main-page {
-  background-color: #808080;
-  color: white;
-  min-height: 100vh;
-  padding: 2rem;
-  font-family: monospace;
-  font-size: 16px;
+    background-color: #808080;
+    color: white;
+    min-height: 100vh;
+    padding: 2rem;
+    font-family: monospace;
+    font-size: 16px;
 }
 
 .header {
-  text-align: center;
-  margin-bottom: 2rem;
+    text-align: center;
+    margin-bottom: 2rem;
 }
 
 .title {
-  font-size: 2.5rem;
-  margin-bottom: 0.5rem;
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
 }
 
 .subtitle {
-  font-size: 1.5rem;
+    font-size: 1.5rem;
 }
 
 .box-container {
-  display: flex;
-  justify-content: space-around;
-  align-items: flex-start;
-  flex-wrap: wrap;
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+    flex-wrap: wrap;
 }
 
 .box-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 0 20px;
-  height: 450px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 20px;
+    height: 450px;
 }
 
 .box {
-  background-color: white;
-  color: black;
-  width: 200px;
-  height: 200px;
-  border-radius: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  margin-bottom: 20px;
+    background-color: white;
+    color: black;
+    width: 200px;
+    height: 200px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    margin-bottom: 20px;
 }
 
 .box-title {
-  font-size: 1.3rem;
+    font-size: 1.3rem;
 }
 
 .content-box {
-  background-color: rgba(255, 255, 255, 0.2);
-  border-radius: 20px;
-  padding: 1rem;
-  width: 350px;
-  height: 220px;
-  overflow: auto;
-  transition: opacity 0.3s ease;
-  opacity: 0;
-  visibility: hidden;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 1rem;
+    width: 350px;
+    height: 220px;
+    overflow: auto;
+    transition: opacity 0.3s ease;
+    opacity: 0;
+    visibility: hidden;
 }
 
 .content-box.visible {
-  opacity: 1;
-  visibility: visible;
+    opacity: 1;
+    visibility: visible;
 }
 
 .project-text {
-  white-space: pre-wrap;
-  word-break: break-word;
-  margin: 0;
-  font-size: 0.9rem;
-  line-height: 1.6;
+    white-space: pre-wrap;
+    word-break: break-word;
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.6;
 }
 
 .back-button {
-  margin-bottom: 20px;
-  font-size: 1rem;
-  padding: 10px 20px;
+    margin-bottom: 20px;
+    font-size: 1rem;
+    padding: 10px 20px;
+    cursor: pointer;
 }

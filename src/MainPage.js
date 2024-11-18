@@ -1,33 +1,45 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './MainPage.css';
 
+// TypewriterEffect Component
 const TypewriterEffect = ({ content }) => {
   const [displayedContent, setDisplayedContent] = useState('');
-  const contentRef = useRef(content);
+  const contentRef = useRef(content || ''); // 預設為空字串
 
   useEffect(() => {
+    // 如果 content 無效或不是字串，直接返回空
+    if (!content || typeof content !== 'string') {
+      setDisplayedContent('');
+      return;
+    }
+
     contentRef.current = content;
-    setDisplayedContent('');
+    setDisplayedContent(''); // 每次重新開始打字效果
     let index = 0;
+    let timeoutId;
 
     const typeNextChar = () => {
-      if (index < contentRef.current.length) {
-        setDisplayedContent(prev => prev + contentRef.current[index]);
+      // 確保每個字元有效，避免拼接 undefined 或其他異常值
+      const nextChar = contentRef.current[index];
+      if (index < contentRef.current.length && typeof nextChar === 'string') {
+        setDisplayedContent((prev) => prev + nextChar);
         index++;
-        setTimeout(typeNextChar, 20);
+        timeoutId = setTimeout(typeNextChar, 20); // 控制打字速度
       }
     };
 
     typeNextChar();
 
     return () => {
-      index = contentRef.current.length; // Stops the typing effect immediately
+      clearTimeout(timeoutId); // 清除計時器
     };
   }, [content]);
 
   return <pre className="project-text">{displayedContent}</pre>;
 };
 
+
+// Box Component
 const Box = ({ title, content }) => {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -41,39 +53,41 @@ const Box = ({ title, content }) => {
         <h3 className="box-title">{title}</h3>
       </div>
       <div className={`content-box ${isHovered ? 'visible' : ''}`}>
-        {isHovered && <TypewriterEffect key={title} content={content} />}
+        {isHovered && content && <TypewriterEffect key={title} content={content} />}
       </div>
     </div>
   );
 };
 
+// MainPage Component
 const MainPage = () => {
   const [currentPage, setCurrentPage] = useState(null);
 
+  // Content for each box
   const codingContent = `
- Projects:
-- Remote Telemedicine consult system
-- Ethereum wallet tracker
-- Zimbra auto mail bot
-- Auto API check bot
-- Gas line notify
-- NFT
-- Solidity & smart contract`;
+     Projects:
+    - Remote Telemedicine consult system
+    - Ethereum wallet tracker
+    - Zimbra auto mail bot
+    - Auto API check bot
+    - Gas line notify
+    - NFT
+    - Solidity & smart contract`;
 
   const meContent = `
- About Me:
-- Software Developer
-- Cybersecurity Engineer Intern
-- IEEE author`;
+     About Me:
+    - Software Developer
+    - Cybersecurity Engineer Intern
+    - IEEE author`;
 
   const producingContent = `
- Production:
-- Music Album: KXX | XXXXXX
-- Total Song : 3
-Experience : 5 years:
-- Music Producer
-- piano teachers
-- Composer`;
+     Production:
+    - Music Album: KXX | XXXXXX
+    - Total Song : 3
+     Experience : 5 years:
+    - Music Producer
+    - Piano Teachers
+    - Composer`;
 
   const renderPage = () => {
     switch (currentPage) {
