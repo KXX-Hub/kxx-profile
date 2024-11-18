@@ -56,29 +56,29 @@ const Box = ({ title, content, path }) => {
 // MainPage Component
 const MainPage = () => {
   const codingContent = `
-    Projects:
-    - Remote Telemedicine consult system
-    - Ethereum wallet tracker
-    - Zimbra auto mail bot
-    - Auto API check bot
-    - Gas line notify
-    - NFT
-    - Solidity & smart contract`;
+Projects:
+  - Remote Telemedicine consult system
+  - Ethereum wallet tracker
+  - Zimbra auto mail bot
+  - Auto API check bot
+  - Gas line notify
+  - NFT
+  - Solidity & smart contract`;
 
   const meContent = `
-    About Me:
-    - Software Developer
-    - Cybersecurity Engineer Intern
-    - IEEE author`;
+About Me:
+  - Software Developer
+  - Cybersecurity Engineer Intern
+  - IEEE author`;
 
   const producingContent = `
-    Production:
-    - Music Album: KXX | XXXXXX
-    - Total Song : 3
-    Experience : 5 years:
-    - Music Producer
-    - Piano Teachers
-    - Composer`;
+Production:
+  - Music Album: KXX | XXXXXX
+  - Total Song : 3
+Experience : 5 years:
+  - Music Producer
+  - Piano Teachers
+  - Composer`;
 
   return (
     <div className="main-page">
