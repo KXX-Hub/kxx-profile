@@ -58,7 +58,7 @@
 }
 
 .box:hover {
-    color: #0056b3; /* Change color on hover */
+    color: #3baac6; /* Change color on hover */
 }
 
 /* Box Title Styling */
@@ -99,4 +99,13 @@
     font-size: 1rem;
     padding: 10px 20px;
     cursor: pointer;
+}
+/* MainPage Title */
+.title {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.subtitle {
+    font-size: 1.5rem;
 }

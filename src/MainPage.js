@@ -53,7 +53,7 @@ const Box = ({ title, content, path }) => {
   );
 };
 
-// MainPage Component
+
 const MainPage = () => {
   const codingContent = `
 Projects:
