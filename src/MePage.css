@@ -1,107 +1,61 @@
-/* MePage.css */
-
-/* General Page Styling */
 .me-page {
-    background-color: #808080;
-    color: white;
+    background-color: #282c34;
+    color: #ffffff;
+    font-family: 'Courier New', Courier, monospace;
     min-height: 100vh;
-    padding: 2rem;
-    font-family: monospace;
-    font-size: 16px;
-}
-
-/* Header Styling */
-.me-page h1 {
-    font-size: 2.5rem;
-    margin-bottom: 0.5rem;
-}
-
-.me-page pre {
-    font-size: 1rem;
-    line-height: 1.6;
-}
-
-/* Box Container Styling */
-.box-container {
-    display: flex;
-    justify-content: space-around;
-    align-items: flex-start;
-    flex-wrap: wrap;
-}
-
-/* Box Wrapper Styling */
-.box-wrapper {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 0 20px;
-    height: 450px;
-}
-
-/* Box Styling (Remove Underline from Link) */
-.box {
-    background-color: white;
-    color: black;
-    width: 200px;
-    height: 200px;
-    border-radius: 20px;
-    display: flex;
-    align-items: center;
     justify-content: center;
-    cursor: pointer;
-    margin-bottom: 20px;
-    text-decoration: none; /* Remove underline from links */
+    padding: 20px;
 }
 
-.box:hover {
-    color: #0056b3; /* Change color on hover */
+.me-page h1 {
+    font-size: 36px;
+    margin-bottom: 100px;
+    margin-top: 60px;
 }
 
-/* Box Title Styling */
-.box-title {
-    font-size: 1.3rem;
+/* Profile Links Section */
+.profile-links {
+    display: flex;
+    gap: 60px; /* Space between icons */
+    margin-bottom: 50px; /* Space below icons */
 }
 
-/* Content Box Styling */
-.content-box {
-    background-color: rgba(255, 255, 255, 0.2);
-    border-radius: 20px;
-    padding: 1rem;
-    width: 350px;
-    height: 220px;
-    overflow: auto;
-    transition: opacity 0.3s ease;
-    opacity: 0;
-    visibility: hidden;
+.icon {
+    width: 50px; /* Adjust size as needed */
+    height: 50px;
+    transition: transform 0.3s ease;
 }
 
-.content-box.visible {
-    opacity: 1;
-    visibility: visible;
+.icon:hover {
+    transform: scale(1.1); /* Slight zoom effect on hover */
 }
 
-/* Project Text Styling */
-.project-text {
-    white-space: pre-wrap;
-    word-break: break-word;
-    margin: 0;
-    font-size: 0.9rem;
-    line-height: 1.6;
-}
-
-/* Back Button Styling */
+/* Back to Home Button */
 .back-home-btn {
-    background-color: #555; /* Gray color to match the page color scheme */
-    color: white;
+    text-decoration: none;
+    background-color: #61dafb;
+    color: #000000;
     padding: 10px 20px;
-    border-radius: 5px;
-    font-size: 16px;
-    text-decoration: none; /* Remove underline */
-    cursor: pointer;
-    display: inline-block;
-    text-align: center;
+    border-radius: 10px;
+    font-weight: bold;
+    margin-top: 20px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 .back-home-btn:hover {
-    background-color: #333; /* Darker gray on hover */
+    background-color: #21a1f1;
+    color: #ffffff;
+    transform: scale(1.05);
+}
+.icon {
+    width: 160px; /* Increase the width */
+    height: 160px; /* Increase the height */
+    transition: transform 0.3s ease;
+}
+
+.icon:hover {
+    transform: scale(1.1); /* Slight zoom effect on hover */
 }
