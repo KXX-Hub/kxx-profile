@@ -80,6 +80,13 @@ Experience : 5 years:
   - Piano Teachers
   - Composer`;
 
+  const nftContent = `
+NFT Collection:
+  - Original Music NFTs
+  - Exclusive Digital Art
+  - Limited Edition Releases
+  - Smart Contract Integration`;
+
   return (
     <div className="main-page">
       <header className="header">
@@ -91,6 +98,7 @@ Experience : 5 years:
           <Box title="Coding" content={codingContent} path="/coding" />
           <Box title="Me" content={meContent} path="/me" />
           <Box title="Producing" content={producingContent} path="/producing" />
+          <Box title="NFT" content={nftContent} path="/nft" />
         </div>
       </main>
     </div>

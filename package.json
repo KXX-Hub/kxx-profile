@@ -4,9 +4,18 @@
   "private": true,
   "homepage": "https://www.0xkxx.com",
   "dependencies": {
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-scripts": "^5.0.1"
+    "@rainbow-me/rainbowkit": "^1.0.0",
+    "@tanstack/react-query": "^4.29.0",
+    "ajv": "^8.17.1",
+    "ajv-keywords": "^5.1.0",
+    "ethers": "^5.7.2",
+    "lucide-react": "^0.469.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.8.0",
+    "react-scripts": "5.0.1",
+    "viem": "^1.19.9",
+    "wagmi": "^1.4.7"
   },
   "scripts": {
     "start": "react-scripts start",
