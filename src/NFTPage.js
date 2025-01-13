@@ -1,63 +1,132 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { useAccount, useNetwork, useSwitchNetwork } from 'wagmi';
-import { sepolia } from 'wagmi/chains';
-import NFTPreviewGrid from './components/NFTPreviewGrid';
+import React, { useState } from 'react';
 
 const NFTPage = () => {
-  const { isConnected } = useAccount();
-  const { chain } = useNetwork();
-  const { switchNetwork } = useSwitchNetwork();
+  const [mintAmount, setMintAmount] = useState(1);
+  const [status, setStatus] = useState('');
+  const [isConnected, setIsConnected] = useState(false);
+  const [account, setAccount] = useState('');
 
-  const isWrongNetwork = chain?.id !== sepolia.id;
+  // Replace with your deployed contract address
+  const CONTRACT_ADDRESS = "0x3B626B56A96AD21F71e13306eAc2722C29a4014d";
+
+  const connectWallet = async () => {
+    if (typeof window.ethereum !== 'undefined') {
+      try {
+        const accounts = await window.ethereum.request({
+          method: 'eth_requestAccounts'
+        });
+        setAccount(accounts[0]);
+        setIsConnected(true);
+        setStatus('Wallet connected!');
+      } catch (error) {
+        setStatus('Error connecting wallet: ' + error.message);
+      }
+    } else {
+      setStatus('Please install MetaMask!');
+    }
+  };
+
+  const mintNFT = async () => {
+    if (!isConnected) {
+      setStatus('Please connect your wallet first');
+      return;
+    }
+
+    try {
+      setStatus('Initiating minting process...');
+      // The price is 0.01 ETH per NFT
+      const priceInWei = '10000000000000000' * mintAmount;
+
+      // Create the transaction
+      const transaction = {
+        from: account,
+        to: CONTRACT_ADDRESS,
+        value: priceInWei.toString(),
+        data: '0x6a627842' // This is the function signature for mint(uint256)
+      };
+
+      // Send the transaction
+      const txHash = await window.ethereum.request({
+        method: 'eth_sendTransaction',
+        params: [transaction],
+      });
+
+      setStatus(`Minting in progress! Transaction hash: ${txHash}`);
+    } catch (error) {
+      setStatus('Error minting NFT: ' + error.message);
+    }
+  };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-900 text-white">
-      {/* Header Section */}
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-bold">Music NFT Collection</h1>
-          <ConnectButton />
-        </div>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 p-4">
+      <h1 className="text-4xl text-white font-bold mb-8">KXX Music NFT Collection</h1>
 
-        {isConnected && isWrongNetwork && (
-          <div className="text-yellow-400 mb-4">
-            <button
-              onClick={() => switchNetwork?.(sepolia.id)}
-              className="px-4 py-2 bg-yellow-500 text-black rounded hover:bg-yellow-600"
-            >
-              Switch to Sepolia Network
-            </button>
+      <div className="mb-8">
+        {!isConnected ? (
+          <button
+            onClick={connectWallet}
+            className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            Connect Wallet
+          </button>
+        ) : (
+          <div className="text-white">
+            Connected: {account.slice(0, 6)}...{account.slice(-4)}
           </div>
         )}
       </div>
 
-      {/* NFT Preview Grid */}
-      {isConnected && !isWrongNetwork && (
-        <NFTPreviewGrid />
+      {isConnected && (
+        <div className="flex flex-col items-center space-y-4">
+          <div className="flex items-center space-x-4">
+            <button
+              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              onClick={() => setMintAmount(prev => Math.max(1, prev - 1))}
+            >
+              -
+            </button>
+            <span className="text-xl text-white">{mintAmount}</span>
+            <button
+              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              onClick={() => setMintAmount(prev => Math.min(5, prev + 1))}
+            >
+              +
+            </button>
+          </div>
+
+          <button
+            className="px-8 py-3 bg-green-500 text-white rounded hover:bg-green-600"
+            onClick={mintNFT}
+          >
+            Mint NFT ({0.01 * mintAmount} ETH)
+          </button>
+        </div>
       )}
 
-      {/* About Section */}
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-2xl mx-auto text-center">
+      {status && (
+        <div className="mt-4 text-white text-center">
+          {status}
+        </div>
+      )}
+
+      <div className="mt-12 space-y-6 text-white max-w-md">
+        <div>
           <h2 className="text-2xl font-bold mb-4">About This Collection</h2>
-          <p className="mb-4">
-            This is my personal music NFT collection featuring original compositions.
-            Each NFT represents a unique piece of music that I've created,
-            combining my passion for music production and blockchain technology.
-          </p>
-          <p className="text-gray-400">
-            Currently running on Sepolia testnet for development purposes.
+          <p>
+            Welcome to my exclusive music NFT collection. Each NFT represents a unique
+            piece from my original music compositions, bridging the gap between
+            traditional music production and Web3 technology.
           </p>
         </div>
-      </div>
 
-      {/* Back Button */}
-      <div className="container mx-auto px-4 py-8 text-center">
-        <Link to="/" className="px-6 py-2 bg-gray-700 rounded hover:bg-gray-600 inline-block">
-          Back to Home
-        </Link>
+        <div>
+          <h2 className="text-2xl font-bold mb-4">Collection Details</h2>
+          <ul className="list-disc pl-6">
+            <li>Total Supply: 1000 NFTs</li>
+            <li>Price per NFT: 0.01 ETH</li>
+            <li>Max Mint per Transaction: 5</li>
+          </ul>
+        </div>
       </div>
     </div>
   );

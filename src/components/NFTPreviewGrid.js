@@ -6,7 +6,7 @@ const NFTMedia = ({ tokenId, metadata }) => {
   const [audioElement, setAudioElement] = useState(null);
 
   useEffect(() => {
-    // 处理音频元素
+
     if (metadata?.animation_url) {
       const audio = new Audio(metadata.animation_url);
       audio.volume = volume;
