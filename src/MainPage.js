@@ -71,15 +71,6 @@ About Me:
   - Cybersecurity Engineer Intern
   - IEEE author`;
 
-  const producingContent = `
-Production:
-  - Music Album: KXX | XXXXXX
-  - Total Song : 3
-Experience : 5 years:
-  - Music Producer
-  - Piano Teachers
-  - Composer`;
-
   const nftContent = `
 NFT Collection:
   - Original Music NFTs
@@ -97,7 +88,6 @@ NFT Collection:
         <div className="box-container">
           <Box title="Coding" content={codingContent} path="/coding" />
           <Box title="Me" content={meContent} path="/me" />
-          <Box title="Producing" content={producingContent} path="/producing" />
           <Box title="NFT" content={nftContent} path="/nft" />
         </div>
       </main>

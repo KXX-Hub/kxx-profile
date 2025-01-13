@@ -1,213 +1,200 @@
+// src/components/NFTPreviewGrid.js
 import React, { useState, useEffect } from 'react';
+import { ethers } from 'ethers';
+import './NFTPreviewGrid.css';
 
-const NFTMedia = ({ tokenId, metadata }) => {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [volume, setVolume] = useState(1);
-  const [audioElement, setAudioElement] = useState(null);
+const NFTPreviewGrid = ({ tokenData, onPurchase }) => {
+  const [audioUrl, setAudioUrl] = useState('');
+  const [imageUrl, setImageUrl] = useState('/api/placeholder/400/400');
+  const [error, setError] = useState(null);
+  const [price, setPrice] = useState('');
+  const [validationError, setValidationError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [metadata, setMetadata] = useState(null);
 
   useEffect(() => {
+    const fetchMetadata = async () => {
+      if (!tokenData?.uri) return;
 
-    if (metadata?.animation_url) {
-      const audio = new Audio(metadata.animation_url);
-      audio.volume = volume;
-      setAudioElement(audio);
-    }
+      setIsLoading(true);
+      try {
+        const cid = tokenData.uri.replace('ipfs://', '');
+        const response = await fetch(`https://gateway.pinata.cloud/ipfs/${cid}`);
+        const data = await response.json();
+        setMetadata(data);
 
-    return () => {
-      if (audioElement) {
-        audioElement.pause();
-        audioElement.src = '';
+        if (data.animation_url) {
+          const audioCid = data.animation_url.replace('ipfs://', '');
+          setAudioUrl(`https://gateway.pinata.cloud/ipfs/${audioCid}`);
+        }
+
+        if (data.image) {
+          const imageCid = data.image.replace('ipfs://', '');
+          setImageUrl(`https://gateway.pinata.cloud/ipfs/${imageCid}`);
+        }
+      } catch (err) {
+        setError('Failed to load NFT metadata');
+        console.error('Error fetching metadata:', err);
+      } finally {
+        setIsLoading(false);
       }
     };
-  }, [metadata]);
 
-  const togglePlay = () => {
-    if (audioElement) {
-      if (isPlaying) {
-        audioElement.pause();
+    fetchMetadata();
+  }, [tokenData]);
+
+  const handlePriceChange = (e) => {
+    const value = e.target.value;
+    setPrice(value);
+
+    if (!value) {
+      setValidationError('Please enter a price');
+      return;
+    }
+
+    try {
+      const priceInWei = ethers.utils.parseEther(value);
+      const minPriceInWei = ethers.BigNumber.from(tokenData.minPrice);
+
+      if (priceInWei.lt(minPriceInWei)) {
+        setValidationError(`Price must be at least ${ethers.utils.formatEther(minPriceInWei)} ETH`);
       } else {
-        audioElement.play();
+        setValidationError('');
       }
-      setIsPlaying(!isPlaying);
+    } catch (err) {
+      setValidationError('Please enter a valid price in ETH');
     }
   };
 
-  const handleVolumeChange = (newVolume) => {
-    setVolume(newVolume);
-    if (audioElement) {
-      audioElement.volume = newVolume;
+  const handlePurchaseClick = () => {
+    if (!price) {
+      setValidationError('Please enter a price');
+      return;
+    }
+
+    try {
+      const priceInWei = ethers.utils.parseEther(price);
+      onPurchase(tokenData.id, priceInWei);
+    } catch (err) {
+      setValidationError('Invalid price format');
     }
   };
+
+  if (error) {
+    return (
+      <div className="nft-preview-grid error">
+        <div className="error-message">
+          <p>{error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="nft-preview-grid loading">
+        <div className="loading-message">
+          <p>Loading NFT metadata...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-4">
-      {/* NFT Image */}
-      <div className="relative w-full h-48 bg-gray-700 rounded-lg overflow-hidden">
-        {metadata?.image ? (
-          <img
-            src={metadata.image}
-            alt={metadata.name}
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <div className="text-4xl text-gray-500">♫</div>
-          </div>
-        )}
-      </div>
-
-      {/* Audio Controls */}
-      <div className="flex items-center space-x-4">
-        <button
-          onClick={togglePlay}
-          className="p-2 rounded-full bg-blue-500 hover:bg-blue-600 transition-colors"
-          disabled={!metadata?.animation_url}
-        >
-          {isPlaying ? "⏸" : "▶"}
-        </button>
-
-        <div className="flex items-center space-x-2">
-          <button
-            onClick={() => handleVolumeChange(volume === 0 ? 1 : 0)}
-            className="p-1 hover:bg-gray-700 rounded-full"
-          >
-            {volume === 0 ? "🔇" : "🔊"}
-          </button>
-          <input
-            type="range"
-            min="0"
-            max="1"
-            step="0.01"
-            value={volume}
-            onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
-            className="w-20 h-1 bg-gray-600 rounded-full"
-          />
-        </div>
+    <div className="nft-preview-grid">
+      <div className="preview-image-container">
+        <img
+          src={imageUrl}
+          alt={metadata?.name || "NFT Preview"}
+          className="preview-image"
+        />
       </div>
 
       {metadata && (
-        <div className="text-white">
-          <h3 className="font-bold">{metadata.name}</h3>
-          <p className="text-sm text-gray-400">{metadata.description}</p>
+        <div className="metadata-section">
+          <h3>{metadata.name}</h3>
+          {metadata.description && (
+            <p className="description">{metadata.description}</p>
+          )}
         </div>
       )}
-    </div>
-  );
-};
 
-const NFTCard = ({
-                   tokenId,
-                   price,
-                   phase,
-                   releaseDate,
-                   mintLimit,
-                   totalMinted,
-                   isAvailable,
-                   metadata
-                 }) => {
-  return (
-    <div className="bg-gray-800 rounded-lg p-4 flex flex-col space-y-4">
-      <NFTMedia
-        tokenId={tokenId}
-        metadata={metadata}
-      />
-
-      <div className="space-y-2">
-        <div className="flex justify-between text-sm text-gray-400">
-          <span>Supply: {mintLimit}</span>
-          <span>Minted: {totalMinted}</span>
+      {audioUrl && (
+        <div className="audio-section">
+          <h4>Preview Track</h4>
+          <audio controls className="preview-audio">
+            <source src={audioUrl} type="audio/mp3" />
+            Your browser does not support the audio element.
+          </audio>
         </div>
+      )}
 
-        <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
-          <div
-            className="h-full bg-blue-500"
-            style={{ width: `${(totalMinted / mintLimit) * 100}%` }}
+      <div className="purchase-section">
+        <label className="price-label">
+          Purchase Price (ETH)
+          <input
+            type="number"
+            placeholder="Enter price in ETH"
+            value={price}
+            onChange={handlePriceChange}
+            step="0.000000000000000001"
+            min={ethers.utils.formatEther(tokenData?.minPrice || '0')}
+            className="price-input"
           />
-        </div>
-      </div>
+        </label>
 
-      <div className="flex justify-between items-center">
-        <span className="text-white font-bold">{price} ETH</span>
+        {validationError && (
+          <p className="validation-error">{validationError}</p>
+        )}
+
         <button
-          className={`
-            px-4 py-2 rounded-lg font-bold transition-colors
-            ${isAvailable
-            ? 'bg-green-500 hover:bg-green-600 text-white'
-            : 'bg-gray-600 text-gray-400 cursor-not-allowed'}
-          `}
-          disabled={!isAvailable}
+          onClick={handlePurchaseClick}
+          disabled={!!validationError || !price}
+          className="purchase-button"
         >
-          {isAvailable ? 'Mint' : 'Not Available'}
+          Purchase NFT
         </button>
       </div>
-    </div>
-  );
-};
 
-const NFTPreviewGrid = () => {
-  const [currentPhase, setCurrentPhase] = useState(1);
-
-  // NFT 集合示例数据
-  const collections = {
-    1: [
-      {
-        tokenId: 1,
-        phase: 1,
-        price: 0.1,
-        releaseDate: "2025-02-01",
-        mintLimit: 100,
-        totalMinted: 20,
-        isAvailable: true,
-        metadata: {
-          name: "Summer Vibes",
-          description: "A chill electronic track perfect for summer days",
-          image: "/placeholder-image-1.jpg",
-          animation_url: "/placeholder-audio-1.mp3"
-        }
-      }
-    ],
-    2: [
-      {
-        tokenId: 2,
-        phase: 2,
-        price: 0.15,
-        releaseDate: "2025-03-01",
-        mintLimit: 50,
-        totalMinted: 0,
-        isAvailable: false,
-        metadata: {
-          name: "Midnight Jazz",
-          description: "Smooth jazz composition with modern elements",
-          image: "/placeholder-image-2.jpg",
-          animation_url: "/placeholder-audio-2.mp3"
-        }
-      }
-    ]
-  };
-
-  return (
-    <div className="w-full max-w-6xl mx-auto p-4 space-y-6">
-      <div className="flex space-x-4 justify-center">
-        {Object.keys(collections).map((phase) => (
-          <button
-            key={phase}
-            onClick={() => setCurrentPhase(Number(phase))}
-            className={`
-              px-4 py-2 rounded-lg transition-colors
-              ${currentPhase === Number(phase)
-              ? 'bg-blue-500 text-white'
-              : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}
-            `}
-          >
-            Phase {phase}
-          </button>
-        ))}
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {collections[currentPhase].map((nft) => (
-          <NFTCard key={nft.tokenId} {...nft} />
-        ))}
+      <div className="nft-info">
+        <h4>NFT Details</h4>
+        <div className="info-grid">
+          <div className="info-item">
+            <span className="label">Token ID:</span>
+            <span className="value">{tokenData?.id || 'N/A'}</span>
+          </div>
+          <div className="info-item">
+            <span className="label">Min Price:</span>
+            <span className="value">
+              {tokenData?.minPrice ? `${ethers.utils.formatEther(tokenData.minPrice)} ETH` : 'N/A'}
+            </span>
+          </div>
+          <div className="info-item">
+            <span className="label">Creator:</span>
+            <span className="value">
+              {tokenData?.creator ? `${tokenData.creator.slice(0, 6)}...${tokenData.creator.slice(-4)}` : 'N/A'}
+            </span>
+          </div>
+          <div className="info-item">
+            <span className="label">Status:</span>
+            <span className={`value status ${tokenData?.isForSale ? 'for-sale' : 'not-for-sale'}`}>
+              {tokenData?.isForSale ? '🟢 For Sale' : '🔴 Not for Sale'}
+            </span>
+          </div>
+          {metadata?.attributes && (
+            <div className="attributes-section">
+              <h4>Attributes</h4>
+              <div className="attributes-grid">
+                {metadata.attributes.map((attr, index) => (
+                  <div key={index} className="attribute-item">
+                    <span className="attribute-label">{attr.trait_type}:</span>
+                    <span className="attribute-value">{attr.value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

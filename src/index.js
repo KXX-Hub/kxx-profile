@@ -17,7 +17,7 @@ const { chains, publicClient } = configureChains(
 
 const { connectors } = getDefaultWallets({
   appName: 'KXX Music NFT',
-  projectId: 'YOUR_PROJECT_ID',
+  projectId: 'KXX Music NFT',
   chains
 });
 

@@ -1,0 +1,284 @@
+/* NFTPage.css */
+.nft-page {
+    background-color: #4a4a4a;
+    color: white;
+    font-family: 'Courier New', Courier, monospace;
+    min-height: 100vh;
+    padding: 2rem;
+}
+
+/* Header Styling */
+.nft-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 0 1rem;
+}
+
+.nft-title {
+    font-size: 2.5rem;
+    margin: 0;
+}
+
+/* Wallet Connection Area */
+.wallet-area {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.connect-button {
+    background-color: #3baac6;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background-color 0.3s ease;
+    font-weight: bold;
+}
+
+.connect-button:hover {
+    background-color: #2d8a9e;
+}
+
+.connect-button:disabled {
+    background-color: #636363;
+    cursor: not-allowed;
+}
+
+.wallet-display {
+    background-color: #636363;
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    font-family: monospace;
+}
+
+/* Main Content Grid */
+.nft-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    padding: 1rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* NFT List Section */
+.nft-list {
+    background-color: #636363;
+    padding: 1.5rem;
+    border-radius: 15px;
+    height: fit-content;
+}
+
+.nft-list-title {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    color: white;
+}
+
+.nft-items {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.nft-item {
+    background-color: #545454;
+    padding: 1rem;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.nft-item:hover {
+    background-color: #3baac6;
+    transform: translateX(5px);
+}
+
+.nft-item.selected {
+    background-color: #3baac6;
+}
+
+.nft-item h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.2rem;
+}
+
+.nft-item p {
+    margin: 0.25rem 0;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* Preview Section */
+.preview-section {
+    background-color: #636363;
+    padding: 1.5rem;
+    border-radius: 15px;
+}
+
+.preview-title {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    color: white;
+}
+
+/* NFT Preview Grid Styles */
+.nft-preview-grid {
+    background-color: #545454;
+    border-radius: 10px;
+    padding: 1.5rem;
+}
+
+.preview-image-container {
+    width: 100%;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+}
+
+.preview-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.preview-audio {
+    width: 100%;
+    margin: 1rem 0;
+}
+
+.preview-details {
+    margin-top: 1rem;
+}
+
+.price-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+
+.price-input {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    background-color: #636363;
+    border: 1px solid #787878;
+    border-radius: 5px;
+    color: white;
+    font-family: inherit;
+}
+
+.purchase-button {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: #3baac6;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.purchase-button:hover {
+    background-color: #2d8a9e;
+}
+
+.purchase-button:disabled {
+    background-color: #636363;
+    cursor: not-allowed;
+}
+
+.nft-info {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #787878;
+}
+
+.nft-info p {
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+}
+
+/* Back to Home Button */
+.back-home-btn {
+    text-decoration: none;
+    padding: 0.75rem 1.5rem;
+    background-color: white;
+    color: #4a4a4a;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    font-weight: bold;
+}
+
+.back-home-btn:hover {
+    background-color: #3baac6;
+    color: white;
+}
+
+/* Error Message */
+.error-message {
+    background-color: #ff4444;
+    color: white;
+    padding: 1rem;
+    border-radius: 10px;
+    margin: 0 1rem 1rem 1rem;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 2rem;
+    color: #a0a0a0;
+}
+
+/* Loading State */
+.loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .nft-content {
+        padding: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .nft-page {
+        padding: 1rem;
+    }
+
+    .nft-content {
+        grid-template-columns: 1fr;
+    }
+
+    .nft-header {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+        padding: 0;
+    }
+
+    .nft-title {
+        font-size: 2rem;
+    }
+
+    .wallet-area {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .connect-button,
+    .back-home-btn {
+        width: 100%;
+        text-align: center;
+    }
+}
