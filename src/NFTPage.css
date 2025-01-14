@@ -161,6 +161,7 @@
     display: block;
     margin-bottom: 0.5rem;
     font-weight: bold;
+    margin-right: 25px;
 }
 
 .price-input {
