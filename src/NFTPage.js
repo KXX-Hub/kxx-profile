@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import { Link } from 'react-router-dom';
 import NFTPreviewGrid from './components/NFTPreviewGrid';
-import './NFTPage.css';
+import './css/NFTPage.css';
 
 const NFTPage = () => {
   const [account, setAccount] = useState('');

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import './CodingPage.css';
+import './css/CodingPage.css';
 
 const CodingPage = () => {
   return (

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';  // Import Link from react-router-dom
-import './MainPage.css';
+import './css/MainPage.css';
 
 // TypewriterEffect Component
 const TypewriterEffect = ({ content }) => {

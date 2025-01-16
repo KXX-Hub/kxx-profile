@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import './MePage.css'; // Import the MePage styles
+import './css/MePage.css'; // Import the MePage styles
 
 const MePage = () => {
   const linkedinUrl = 'https://www.linkedin.com/in/kai-hung-0xkxx/'; // Replace with your GitHub URL

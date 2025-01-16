@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
-import './NFTPreviewGrid.css';
+import '../css/NFTPreviewGrid.css';
 
 const NFTPreviewGrid = ({ tokenData, onPurchase }) => {
   const [metadata, setMetadata] = useState(null);
