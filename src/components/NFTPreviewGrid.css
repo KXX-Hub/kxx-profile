@@ -1,9 +1,7 @@
-/* src/components/NFTPreviewGrid.css */
 .nft-preview-grid {
     background-color: #545454;
     border-radius: 10px;
     padding: 1.5rem;
-    color: white;
 }
 
 .preview-image-container {
@@ -26,60 +24,76 @@
     transform: scale(1.02);
 }
 
-.metadata-section {
-    margin: 1rem 0;
-    padding: 1rem;
-    background-color: #636363;
-    border-radius: 8px;
-}
-
-.metadata-section h3 {
-    margin: 0 0 0.5rem 0;
-    font-size: 1.2rem;
-    color: white;
-}
-
-.description {
-    font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.8);
-    line-height: 1.4;
-}
-
 .audio-section {
     margin: 1rem 0;
+    padding: 1.5rem;
+    background-color: #636363;
+    border-radius: 10px;
+    width: 100%;
 }
 
 .audio-section h4 {
-    margin-bottom: 0.5rem;
+    margin: 0 0 1rem 0;
+    font-size: 1.1rem;
     color: white;
 }
 
 .preview-audio {
     width: 100%;
-    margin: 0.5rem 0;
+    height: 40px;
+    margin-top: 0.5rem;
+    background-color: #545454;
+    border-radius: 5px;
 }
 
-.purchase-section {
+.metadata-section {
     margin: 1.5rem 0;
-    padding: 1rem;
+    padding: 1.5rem;
     background-color: #636363;
-    border-radius: 8px;
+    border-radius: 10px;
 }
 
-.price-label {
-    display: block;
-    margin-bottom: 0.5rem;
+.metadata-section h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1.2rem;
+    color: white;
+}
+
+.metadata-grid {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.metadata-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background-color: #545454;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.metadata-item:hover {
+    background-color: #707070;
+}
+
+.metadata-item .label {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+}
+
+.metadata-item .value {
     font-weight: bold;
 }
 
 .price-input {
-    width: 100%;
-    padding: 0.75rem;
-    margin: 0.5rem 0;
-    background-color: #545454;
+    background-color: #636363;
     border: 1px solid #787878;
-    border-radius: 5px;
     color: white;
+    padding: 0.5rem;
+    border-radius: 4px;
+    width: 150px;
     font-family: inherit;
 }
 
@@ -88,151 +102,46 @@
     border-color: #3baac6;
 }
 
-.validation-error {
+.error-text {
     color: #ff4444;
+    margin-top: 0.5rem;
     font-size: 0.9rem;
-    margin: 0.5rem 0;
+}
+
+.status.for-sale {
+    color: #4caf50;
+    background-color: rgba(76, 175, 80, 0.1);
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+}
+
+.status.not-for-sale {
+    color: #ff4444;
+    background-color: rgba(255, 68, 68, 0.1);
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
 }
 
 .purchase-button {
     width: 100%;
     padding: 0.75rem;
-    margin-top: 1rem;
+    margin-top: 1.5rem;
     background-color: #3baac6;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     font-weight: bold;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
 }
 
 .purchase-button:hover:not(:disabled) {
     background-color: #2d8a9e;
+    transform: translateY(-2px);
 }
 
 .purchase-button:disabled {
     background-color: #636363;
     cursor: not-allowed;
-}
-
-.nft-info {
-    margin-top: 1.5rem;
-    padding: 1rem;
-    background-color: #636363;
-    border-radius: 8px;
-}
-
-.nft-info h4 {
-    margin: 0 0 1rem 0;
-    color: white;
-}
-
-.info-grid {
-    display: grid;
-    gap: 0.75rem;
-}
-
-.info-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.5rem;
-    background-color: #545454;
-    border-radius: 5px;
-}
-
-.info-item .label {
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 0.9rem;
-}
-
-.info-item .value {
-    font-weight: bold;
-}
-
-.status {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.status.for-sale {
-    color: #4caf50;
-}
-
-.status.not-for-sale {
-    color: #ff4444;
-}
-
-.attributes-section {
-    margin-top: 1.5rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid #787878;
-}
-
-.attributes-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 0.75rem;
-}
-
-.attribute-item {
-    padding: 0.5rem;
-    background-color: #545454;
-    border-radius: 5px;
-    font-size: 0.9rem;
-}
-
-.attribute-label {
-    color: rgba(255, 255, 255, 0.8);
-    margin-right: 0.5rem;
-}
-
-.attribute-value {
-    font-weight: bold;
-}
-
-/* Loading State */
-.loading {
-    min-height: 400px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.loading-message {
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 1.1rem;
-}
-
-/* Error State */
-.error {
-    min-height: 200px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.error-message {
-    color: #ff4444;
-    text-align: center;
-    font-size: 1.1rem;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .nft-preview-grid {
-        padding: 1rem;
-    }
-
-    .attributes-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .info-item {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.25rem;
-    }
+    transform: none;
 }

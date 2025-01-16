@@ -1,8 +1,7 @@
-// src/NFTPage.js
 import React, { useState, useEffect } from 'react';
+import { ethers } from 'ethers';
 import { Link } from 'react-router-dom';
 import NFTPreviewGrid from './components/NFTPreviewGrid';
-import { ethers } from 'ethers';
 import './NFTPage.css';
 
 const NFTPage = () => {
@@ -11,11 +10,77 @@ const NFTPage = () => {
   const [error, setError] = useState(null);
   const [selectedNft, setSelectedNft] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [albumInfo, setAlbumInfo] = useState(null);
+
+  // Contract Configuration
+  const CONTRACT_CONFIG = {
+    address: "0x7B248aD1948148367AA1235c54E0873933C78300",
+    abi: [
+      "function totalSupply() view returns (uint256)",
+      "function tracks(uint256) view returns (string name, string uri, uint256 albumId, uint256 trackNumber, uint256 minPrice, uint256 maxSupply, uint256 currentSupply, bool isForSale, address creator)",
+      "function albums(uint256) view returns (string name, string uri, uint256 totalTracks, uint256 maxSupply, uint256 currentSupply, bool exists)",
+      "function purchaseTrack(uint256 tokenId) public payable",
+      "function getAlbumTracks(uint256 albumId) public view returns (tuple(string name, string uri, uint256 albumId, uint256 trackNumber, uint256 minPrice, uint256 maxSupply, uint256 currentSupply, bool isForSale, address creator)[])",
+      "event TrackMinted(uint256 indexed tokenId, uint256 indexed albumId, uint256 trackNumber, string name, address owner)",
+      "event TrackPurchased(uint256 indexed tokenId, address buyer, uint256 price)"
+    ]
+  };
+
+  const getContract = async () => {
+    if (!window.ethereum) throw new Error('MetaMask not installed');
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    return new ethers.Contract(CONTRACT_CONFIG.address, CONTRACT_CONFIG.abi, signer);
+  };
+
+  const loadNFTs = async (walletAddress) => {
+    try {
+      setLoading(true);
+      const contract = await getContract();
+
+      // Get album info
+      const album = await contract.albums(1);
+      setAlbumInfo({
+        name: album.name,
+        totalTracks: album.totalTracks.toString(),
+        maxSupply: album.maxSupply.toString(),
+        currentSupply: album.currentSupply.toString(),
+        uri: album.uri
+      });
+
+      // Get tracks info
+      const tracks = await contract.getAlbumTracks(1);
+      const nftData = tracks.map((track, index) => ({
+        id: index + 1,
+        name: track.name,
+        uri: track.uri,
+        minPrice: track.minPrice.toString(),
+        isForSale: track.isForSale,
+        creator: track.creator,
+        albumId: track.albumId.toString(),
+        trackNumber: track.trackNumber.toString(),
+        maxSupply: track.maxSupply.toString(),
+        currentSupply: track.currentSupply.toString()
+      }));
+
+      setNfts(nftData);
+      if (nftData.length > 0 && !selectedNft) {
+        setSelectedNft(nftData[0]);
+      }
+    } catch (err) {
+      setError(`Failed to load NFTs: ${err.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const connectWallet = async () => {
     try {
+      setLoading(true);
+      setError(null);
+
       if (!window.ethereum) {
-        throw new Error('Please install MetaMask to continue');
+        throw new Error('Please install MetaMask');
       }
 
       const accounts = await window.ethereum.request({
@@ -23,106 +88,49 @@ const NFTPage = () => {
       });
 
       setAccount(accounts[0]);
-
-      try {
-        await window.ethereum.request({
-          method: 'wallet_switchEthereumChain',
-          params: [{ chainId: '0xaa36a7' }],
-        });
-      } catch (switchError) {
-        if (switchError.code === 4902) {
-          await window.ethereum.request({
-            method: 'wallet_addEthereumChain',
-            params: [{
-              chainId: '0xaa36a7',
-              chainName: 'Sepolia',
-              nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
-              rpcUrls: ['https://sepolia.infura.io/v3/'],
-              blockExplorerUrls: ['https://sepolia.etherscan.io']
-            }]
-          });
-        }
-      }
-
-      loadNFTs(accounts[0]);
-
+      await loadNFTs(accounts[0]);
     } catch (err) {
-      setError(err.message);
-    }
-  };
-
-  const getContract = () => {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner();
-    const contractABI = [
-      "function totalSupply() view returns (uint256)",
-      "function getMusicByTokenId(uint256) view returns (tuple(string name, string uri, uint256 minPrice, bool isForSale, address creator))",
-      "function purchaseMusic(uint256 tokenId) public payable",
-      "event MusicPurchased(uint256 indexed tokenId, address indexed buyer, uint256 price)"
-    ];
-    return new ethers.Contract(
-      "0x3B626B56A96AD21F71e13306eAc2722C29a4014d", // Replace with your contract address
-      contractABI,
-      signer
-    );
-  };
-
-  const loadNFTs = async (address) => {
-    try {
-      const contract = getContract();
-      const totalSupply = await contract.totalSupply();
-      const nftData = [];
-
-      for (let i = 1; i <= totalSupply; i++) {
-        const music = await contract.getMusicByTokenId(i);
-        nftData.push({
-          id: i,
-          name: music.name,
-          uri: music.uri,
-          minPrice: music.minPrice.toString(),
-          isForSale: music.isForSale,
-          creator: music.creator
-        });
-      }
-
-      setNfts(nftData);
-      if (nftData.length > 0) {
-        setSelectedNft(nftData[0]);
-      }
-    } catch (err) {
-      setError(err.message);
-    }
-  };
-
-  const handlePurchase = async (tokenId, priceInWei) => {
-    if (!account) {
-      alert('Please connect your wallet first');
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const contract = getContract();
-      const tx = await contract.purchaseMusic(tokenId, {
-        value: priceInWei
-      });
-
-      alert('Transaction submitted. Please wait for confirmation...');
-      await tx.wait();
-      alert(`NFT #${tokenId} has been purchased successfully!`);
-
-      // Reload NFTs to update the UI
-      await loadNFTs(account);
-
-    } catch (err) {
-      alert(err.message);
+      setError(`Wallet connection failed: ${err.message}`);
     } finally {
       setLoading(false);
     }
   };
 
-  // Listen for account changes
+  const handlePurchase = async (tokenId, priceInWei) => {
+    if (!account) {
+      alert('Please connect wallet first');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const contract = await getContract();
+
+      const tx = await contract.purchaseTrack(tokenId, {
+        value: priceInWei,
+        gasLimit: 300000
+      });
+
+      await tx.wait();
+      alert('Purchase successful!');
+      await loadNFTs(account);
+    } catch (err) {
+      alert(`Purchase failed: ${err.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
+    const init = async () => {
+      if (window.ethereum?.selectedAddress) {
+        setAccount(window.ethereum.selectedAddress);
+        await loadNFTs(window.ethereum.selectedAddress);
+      }
+    };
+
+    init();
+
     if (window.ethereum) {
       window.ethereum.on('accountsChanged', (accounts) => {
         if (accounts.length > 0) {
@@ -133,46 +141,73 @@ const NFTPage = () => {
           setNfts([]);
         }
       });
+
+      window.ethereum.on('chainChanged', () => {
+        window.location.reload();
+      });
     }
+
     return () => {
       if (window.ethereum) {
         window.ethereum.removeListener('accountsChanged', () => {});
+        window.ethereum.removeListener('chainChanged', () => {});
       }
     };
   }, []);
-
   return (
     <div className="nft-page">
       <div className="nft-header">
-        <h1 className="nft-title">Music NFT Gallery</h1>
-        <div className="wallet-area">
-          {!account ? (
+        <div className="left-section">
+          <h1 className="nft-title">Music NFT Gallery</h1>
+          {albumInfo && (
+            <div className="album-info">
+              <h2 className="album-name">{albumInfo.name}</h2>
+              <p className="album-details">
+                Total Tracks: {albumInfo.totalTracks} |
+                Supply: {albumInfo.currentSupply}/{albumInfo.maxSupply}
+              </p>
+            </div>
+          )}
+          {account ? (
+            <div className="wallet-section">
+              <div className="wallet-display">
+                {`${account.slice(0, 6)}...${account.slice(-4)}`}
+              </div>
+              <button
+                onClick={async () => {
+                  setAccount('');
+                  setNfts([]);
+                  setSelectedNft(null);
+                  setError(null);
+                }}
+                className="disconnect-button"
+              >
+                Disconnect
+              </button>
+            </div>
+          ) : (
             <button
               onClick={connectWallet}
               disabled={loading}
               className="connect-button"
             >
-              Connect Wallet
+              {loading ? 'Connecting...' : 'Connect Wallet'}
             </button>
-          ) : (
-            <div className="wallet-display">
-              {account.slice(0, 6)}...{account.slice(-4)}
-            </div>
           )}
-          <Link to="/" className="back-home-btn">Back to Home</Link>
         </div>
+        <Link to="/" className="back-home-btn">Back to Home</Link>
       </div>
 
       {error && (
         <div className="error-message">
-          <p>{error}</p>
+          {error}
         </div>
       )}
 
       <div className="nft-content">
         <div className="nft-list">
           <h2 className="nft-list-title">Available NFTs</h2>
-          <div className={`nft-items ${loading ? 'loading' : ''}`}>
+          <div className="nft-items">
             {nfts.map((nft) => (
               <div
                 key={nft.id}
@@ -184,9 +219,9 @@ const NFTPage = () => {
                 <p>Min Price: {ethers.utils.formatEther(nft.minPrice)} ETH</p>
               </div>
             ))}
-            {nfts.length === 0 && (
+            {nfts.length === 0 && !loading && (
               <div className="empty-state">
-                <p>No NFTs available. Please connect your wallet to view NFTs.</p>
+                No NFTs available. Please connect your wallet to view NFTs.
               </div>
             )}
           </div>
@@ -201,7 +236,7 @@ const NFTPage = () => {
             />
           ) : (
             <div className="empty-state">
-              <p>Select an NFT to preview</p>
+              Select a track to preview
             </div>
           )}
         </div>

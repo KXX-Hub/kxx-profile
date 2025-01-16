@@ -1,54 +1,58 @@
-// src/components/NFTPreviewGrid.js
 import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import './NFTPreviewGrid.css';
 
 const NFTPreviewGrid = ({ tokenData, onPurchase }) => {
+  const [metadata, setMetadata] = useState(null);
   const [audioUrl, setAudioUrl] = useState('');
   const [imageUrl, setImageUrl] = useState('/api/placeholder/400/400');
-  const [error, setError] = useState(null);
-  const [price, setPrice] = useState('');
-  const [validationError, setValidationError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [metadata, setMetadata] = useState(null);
+  const [customPrice, setCustomPrice] = useState('');
+  const [priceError, setPriceError] = useState('');
+  const [audioKey, setAudioKey] = useState(0); // 添加 key 来强制重新渲染音频元素
 
   useEffect(() => {
-    const fetchMetadata = async () => {
+    const loadMetadata = async () => {
+      // 重置音频URL和状态
+      setAudioUrl('');
+      setAudioKey(prev => prev + 1);
+      setImageUrl('/api/placeholder/400/400');
+
       if (!tokenData?.uri) return;
 
-      setIsLoading(true);
       try {
-        const cid = tokenData.uri.replace('ipfs://', '');
-        const response = await fetch(`https://gateway.pinata.cloud/ipfs/${cid}`);
+        const ipfsHash = tokenData.uri.replace('ipfs://', '');
+        const response = await fetch(`https://gateway.pinata.cloud/ipfs/${ipfsHash}`);
         const data = await response.json();
         setMetadata(data);
 
+        // 更新音频URL
         if (data.animation_url) {
-          const audioCid = data.animation_url.replace('ipfs://', '');
-          setAudioUrl(`https://gateway.pinata.cloud/ipfs/${audioCid}`);
+          const audioHash = data.animation_url.replace('ipfs://', '');
+          const newAudioUrl = `https://gateway.pinata.cloud/ipfs/${audioHash}`;
+          setAudioUrl(newAudioUrl);
         }
 
+        // 更新图片URL
         if (data.image) {
-          const imageCid = data.image.replace('ipfs://', '');
-          setImageUrl(`https://gateway.pinata.cloud/ipfs/${imageCid}`);
+          const imageHash = data.image.replace('ipfs://', '');
+          setImageUrl(`https://gateway.pinata.cloud/ipfs/${imageHash}`);
         }
       } catch (err) {
-        setError('Failed to load NFT metadata');
-        console.error('Error fetching metadata:', err);
-      } finally {
-        setIsLoading(false);
+        console.error('Error loading metadata:', err);
       }
     };
 
-    fetchMetadata();
+    loadMetadata();
+    // 重置价格输入
+    setCustomPrice(ethers.utils.formatEther(tokenData?.minPrice || '0'));
   }, [tokenData]);
 
   const handlePriceChange = (e) => {
     const value = e.target.value;
-    setPrice(value);
+    setCustomPrice(value);
 
     if (!value) {
-      setValidationError('Please enter a price');
+      setPriceError('Please enter a price');
       return;
     }
 
@@ -57,145 +61,89 @@ const NFTPreviewGrid = ({ tokenData, onPurchase }) => {
       const minPriceInWei = ethers.BigNumber.from(tokenData.minPrice);
 
       if (priceInWei.lt(minPriceInWei)) {
-        setValidationError(`Price must be at least ${ethers.utils.formatEther(minPriceInWei)} ETH`);
+        setPriceError(`Price must be at least ${ethers.utils.formatEther(minPriceInWei)} ETH`);
       } else {
-        setValidationError('');
+        setPriceError('');
       }
     } catch (err) {
-      setValidationError('Please enter a valid price in ETH');
+      setPriceError('Please enter a valid price');
     }
   };
 
-  const handlePurchaseClick = () => {
-    if (!price) {
-      setValidationError('Please enter a price');
-      return;
-    }
-
+  const handlePurchase = () => {
     try {
-      const priceInWei = ethers.utils.parseEther(price);
+      const priceInWei = ethers.utils.parseEther(customPrice);
       onPurchase(tokenData.id, priceInWei);
     } catch (err) {
-      setValidationError('Invalid price format');
+      setPriceError('Invalid price format');
     }
   };
-
-  if (error) {
-    return (
-      <div className="nft-preview-grid error">
-        <div className="error-message">
-          <p>{error}</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (isLoading) {
-    return (
-      <div className="nft-preview-grid loading">
-        <div className="loading-message">
-          <p>Loading NFT metadata...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="nft-preview-grid">
       <div className="preview-image-container">
-        <img
-          src={imageUrl}
-          alt={metadata?.name || "NFT Preview"}
-          className="preview-image"
-        />
+        <img src={imageUrl} alt="NFT Preview" className="preview-image" />
       </div>
-
-      {metadata && (
-        <div className="metadata-section">
-          <h3>{metadata.name}</h3>
-          {metadata.description && (
-            <p className="description">{metadata.description}</p>
-          )}
-        </div>
-      )}
 
       {audioUrl && (
         <div className="audio-section">
           <h4>Preview Track</h4>
-          <audio controls className="preview-audio">
+          <audio
+            key={audioKey} // 使用 key 来强制重新渲染
+            controls
+            className="preview-audio"
+            controlsList="nodownload"
+          >
             <source src={audioUrl} type="audio/mp3" />
             Your browser does not support the audio element.
           </audio>
         </div>
       )}
 
-      <div className="purchase-section">
-        <label className="price-label">
-          Purchase Price (ETH)
-          <input
-            type="number"
-            placeholder="Enter price in ETH"
-            value={price}
-            onChange={handlePriceChange}
-            step="0.000000000000000001"
-            min={ethers.utils.formatEther(tokenData?.minPrice || '0')}
-            className="price-input"
-          />
-        </label>
+      <div className="metadata-section">
+        <h3>{tokenData.name}</h3>
+        <div className="metadata-grid">
+          <div className="metadata-item">
+            <span className="label">Track Number</span>
+            <span className="value">{tokenData.trackNumber}</span>
+          </div>
+          <div className="metadata-item">
+            <span className="label">Min Price</span>
+            <span className="value">{ethers.utils.formatEther(tokenData.minPrice)} ETH</span>
+          </div>
+          {tokenData.isForSale && (
+            <div className="metadata-item">
+              <span className="label">Your Offer</span>
+              <input
+                type="number"
+                value={customPrice}
+                onChange={handlePriceChange}
+                placeholder="Enter price in ETH"
+                step="0.001"
+                min={ethers.utils.formatEther(tokenData.minPrice)}
+                className="price-input"
+              />
+            </div>
+          )}
+          <div className="metadata-item">
+            <span className="label">Status</span>
+            <span className={`value status ${tokenData.isForSale ? 'for-sale' : 'not-for-sale'}`}>
+              {tokenData.isForSale ? '🟢 For Sale' : '🔴 Not for Sale'}
+            </span>
+          </div>
+        </div>
+        {priceError && <p className="error-text">{priceError}</p>}
+      </div>
 
-        {validationError && (
-          <p className="validation-error">{validationError}</p>
-        )}
-
+      {tokenData.isForSale && (
         <button
-          onClick={handlePurchaseClick}
-          disabled={!!validationError || !price}
+          onClick={handlePurchase}
           className="purchase-button"
+          disabled={!!priceError || !customPrice}
         >
           Purchase NFT
         </button>
-      </div>
-
-      <div className="nft-info">
-        <h4>NFT Details</h4>
-        <div className="info-grid">
-          <div className="info-item">
-            <span className="label">Token ID:</span>
-            <span className="value">{tokenData?.id || 'N/A'}</span>
-          </div>
-          <div className="info-item">
-            <span className="label">Min Price:</span>
-            <span className="value">
-              {tokenData?.minPrice ? `${ethers.utils.formatEther(tokenData.minPrice)} ETH` : 'N/A'}
-            </span>
-          </div>
-          <div className="info-item">
-            <span className="label">Creator:</span>
-            <span className="value">
-              {tokenData?.creator ? `${tokenData.creator.slice(0, 6)}...${tokenData.creator.slice(-4)}` : 'N/A'}
-            </span>
-          </div>
-          <div className="info-item">
-            <span className="label">Status:</span>
-            <span className={`value status ${tokenData?.isForSale ? 'for-sale' : 'not-for-sale'}`}>
-              {tokenData?.isForSale ? '🟢 For Sale' : '🔴 Not for Sale'}
-            </span>
-          </div>
-          {metadata?.attributes && (
-            <div className="attributes-section">
-              <h4>Attributes</h4>
-              <div className="attributes-grid">
-                {metadata.attributes.map((attr, index) => (
-                  <div key={index} className="attribute-item">
-                    <span className="attribute-label">{attr.trait_type}:</span>
-                    <span className="attribute-value">{attr.value}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
+      )}
     </div>
   );
 };
