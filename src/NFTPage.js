@@ -154,22 +154,79 @@ const NFTPage = () => {
       }
     };
   }, []);
+
   return (
     <div className="nft-page">
-      <div className="nft-header">
-        <div className="left-section">
-          <h1 className="nft-title">Music NFT Gallery</h1>
-          {albumInfo && (
-            <div className="album-info">
-              <h2 className="album-name">{albumInfo.name}</h2>
-              <p className="album-details">
-                Total Tracks: {albumInfo.totalTracks} |
-                Supply: {albumInfo.currentSupply}/{albumInfo.maxSupply}
-              </p>
+      <div className="profile-header">
+        <h1>Music NFT Gallery</h1>
+        <div className="profile-links">
+          <a href="https://github.com/yourusername" target="_blank" rel="noopener noreferrer" className="social-link">
+            <i className="fab fa-github"></i>
+          </a>
+          <a href="https://instagram.com/yourusername" target="_blank" rel="noopener noreferrer" className="social-link">
+            <i className="fab fa-instagram"></i>
+          </a>
+          <a href="https://discord.gg/yourusername" target="_blank" rel="noopener noreferrer" className="social-link">
+            <i className="fab fa-discord"></i>
+          </a>
+        </div>
+      </div>
+
+      <div className="nft-container">
+        {albumInfo && (
+          <div className="album-info">
+            <h2>{albumInfo.name}</h2>
+            <p>Total Tracks: {albumInfo.totalTracks} | Supply: {albumInfo.currentSupply}/{albumInfo.maxSupply}</p>
+          </div>
+        )}
+
+        {error && (
+          <div className="error-message">
+            {error}
+          </div>
+        )}
+
+        <div className="nft-content">
+          <div className="nft-list">
+            <h2>Available NFTs</h2>
+            <div className="nft-items">
+              {nfts.map((nft) => (
+                <div
+                  key={nft.id}
+                  onClick={() => setSelectedNft(nft)}
+                  className={`nft-item ${selectedNft?.id === nft.id ? 'selected' : ''}`}
+                >
+                  <h3>{nft.name}</h3>
+                  <p>Token ID: {nft.id}</p>
+                  <p>Min Price: {ethers.utils.formatEther(nft.minPrice)} ETH</p>
+                </div>
+              ))}
+              {nfts.length === 0 && !loading && (
+                <div className="empty-state">
+                  No NFTs available. Please connect your wallet to view NFTs.
+                </div>
+              )}
             </div>
-          )}
+          </div>
+
+          <div className="preview-section">
+            <h2>NFT Preview</h2>
+            {selectedNft ? (
+              <NFTPreviewGrid
+                tokenData={selectedNft}
+                onPurchase={handlePurchase}
+              />
+            ) : (
+              <div className="empty-state">
+                Select a track to preview
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="wallet-section">
           {account ? (
-            <div className="wallet-section">
+            <div className="wallet-info">
               <div className="wallet-display">
                 {`${account.slice(0, 6)}...${account.slice(-4)}`}
               </div>
@@ -195,50 +252,9 @@ const NFTPage = () => {
             </button>
           )}
         </div>
-        <Link to="/" className="back-home-btn">Back to Home</Link>
-      </div>
 
-      {error && (
-        <div className="error-message">
-          {error}
-        </div>
-      )}
-
-      <div className="nft-content">
-        <div className="nft-list">
-          <h2 className="nft-list-title">Available NFTs</h2>
-          <div className="nft-items">
-            {nfts.map((nft) => (
-              <div
-                key={nft.id}
-                onClick={() => setSelectedNft(nft)}
-                className={`nft-item ${selectedNft?.id === nft.id ? 'selected' : ''}`}
-              >
-                <h3>{nft.name}</h3>
-                <p>Token ID: {nft.id}</p>
-                <p>Min Price: {ethers.utils.formatEther(nft.minPrice)} ETH</p>
-              </div>
-            ))}
-            {nfts.length === 0 && !loading && (
-              <div className="empty-state">
-                No NFTs available. Please connect your wallet to view NFTs.
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="preview-section">
-          <h2 className="preview-title">NFT Preview</h2>
-          {selectedNft ? (
-            <NFTPreviewGrid
-              tokenData={selectedNft}
-              onPurchase={handlePurchase}
-            />
-          ) : (
-            <div className="empty-state">
-              Select a track to preview
-            </div>
-          )}
+        <div className="button-container">
+          <Link to="/" className="back-home-btn">Back to Home</Link>
         </div>
       </div>
     </div>

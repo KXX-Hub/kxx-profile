@@ -1,96 +1,133 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';  // Import Link from react-router-dom
+import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import './css/MainPage.css';
+import { FaCode, FaUser, FaEthereum, FaYoutube, FaGithub, FaInstagram, FaDiscord } from 'react-icons/fa';
+import NFTPage from './NFTPage';
 
-// TypewriterEffect Component
-const TypewriterEffect = ({ content }) => {
-  const [displayedContent, setDisplayedContent] = useState('');
-  const contentRef = useRef(content || ''); // 預設為空字串
+/**
+ * Banner component with background image and overlay
+ */
+const Banner = () => (
+  <div className="banner-section">
+    <img src="/img/Banner.jpg" alt="Profile Banner" className="banner-image" />
+    <div className="banner-overlay" />
+  </div>
+);
 
-  useEffect(() => {
-    if (!content || typeof content !== 'string') {
-      setDisplayedContent('');
-      return;
-    }
-
-    contentRef.current = content;
-    setDisplayedContent('');
-    let index = 0;
-    let timeoutId;
-
-    const typeNextChar = () => {
-      const nextChar = contentRef.current[index];
-      if (index < contentRef.current.length && typeof nextChar === 'string') {
-        setDisplayedContent((prev) => prev + nextChar);
-        index++;
-        timeoutId = setTimeout(typeNextChar, 20);
-      }
-    };
-
-    typeNextChar();
-
-    return () => {
-      clearTimeout(timeoutId);
-    };
-  }, [content]);
-
-  return <pre className="project-text">{displayedContent}</pre>;
-};
-
-// Box Component
-const Box = ({ title, content, path }) => {
-  const [isHovered, setIsHovered] = useState(false);
+/**
+ * Social links component
+ */
+const SocialLinks = () => {
+  const socialLinks = [
+    { icon: <FaGithub />, url: 'https://github.com/KXX-HUB', label: 'GitHub' },
+    { icon: <FaInstagram />, url: 'https://www.instagram.com/0xkxx_prod/', label: 'Instagram Production' },
+    { icon: <FaInstagram />, url: 'https://www.instagram.com/0x_kxx/', label: 'Instagram Personal' },
+    { icon: <FaDiscord />, url: '#', label: '0x_kxx' },
+  ];
 
   return (
-    <div className="box-wrapper">
-      <Link to={path} className="box" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
-        <h3 className="box-title">{title}</h3>
-      </Link>
-      <div className={`content-box ${isHovered ? 'visible' : ''}`}>
-        {isHovered && content && <TypewriterEffect key={title} content={content} />}
-      </div>
+    <div className="social-links">
+      {socialLinks.map((link, index) => (
+        <a
+          key={index}
+          href={link.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="social-link"
+          aria-label={link.label}
+        >
+          {link.icon}
+        </a>
+      ))}
     </div>
   );
 };
 
+/**
+ * Profile images component
+ */
+const ProfileImages = () => (
+  <div className="profile-images">
+    <div className="profile-avatar">
+      <img src="/img/1.jpg" alt="Profile Avatar" className="avatar-image" />
+    </div>
+  </div>
+);
 
-const MainPage = () => {
-  const codingContent = `
-Projects:
-  - Remote Telemedicine consult system
-  - Ethereum wallet tracker
-  - Zimbra auto mail bot
-  - Auto API check bot
-  - Gas line notify
-  - NFT
-  - Solidity & smart contract`;
+/**
+ * Profile information component with user details and social links
+ */
+const ProfileInfo = () => (
+  <div className="profile-info">
+    <h1 data-text="KXX">KXX</h1>
+    <p className="tagline">Full Stack Developer | Content Creator</p>
+    <div className="profile-description">
+      <p>
+        Passionate about creating innovative solutions and sharing knowledge through content creation. 
+        Specializing in web development, blockchain technology, and digital content production.
+      </p>
+    </div>
+    <SocialLinks />
+  </div>
+);
 
-  const meContent = `
-About Me:
-  - Software Developer
-  - Cybersecurity Engineer Intern
-  - IEEE author`;
+/**
+ * Profile section component
+ */
+const ProfileSection = () => (
+  <div className="profile-section">
+    <ProfileImages />
+    <ProfileInfo />
+  </div>
+);
 
-  const nftContent = `
-NFT Collection:
-  - Original Music NFTs
-  - Exclusive Digital Art
-  - Limited Edition Releases
-  - Smart Contract Integration`;
+/**
+ * Navigation box component
+ */
+const NavigationBox = ({ title, path, icon, onClick }) => (
+  <div className="box" onClick={() => onClick(path)}>
+    <span className="box-icon">{icon}</span>
+    <h2 className="box-title">{title}</h2>
+  </div>
+);
+
+/**
+ * Navigation menu component
+ */
+const NavigationMenu = () => {
+  const navItems = [
+    { title: 'Coding', path: '/coding', icon: <FaCode /> },
+    { title: 'Me', path: '/me', icon: <FaUser /> },
+    { title: 'NFT', path: '/nft', icon: <FaEthereum /> },
+    { title: 'Vlog', path: '/vlog', icon: <FaYoutube /> }
+  ];
+
+  const navigate = useNavigate();
+
+  const handleCardClick = (path) => {
+    navigate(path);
+  };
 
   return (
-    <div className="main-page">
-      <header className="header">
-        <h1 className="title">GM! I'm Kai.</h1>
-        <h2 className="subtitle">Welcome to my digital gallery.</h2>
-      </header>
-      <main>
-        <div className="box-container">
-          <Box title="Coding" content={codingContent} path="/coding" />
-          <Box title="Me" content={meContent} path="/me" />
-          <Box title="NFT" content={nftContent} path="/nft" />
+    <div className="box-container">
+      {navItems.map((item, index) => (
+        <div key={index} className="box-wrapper">
+          <NavigationBox {...item} onClick={handleCardClick} />
         </div>
-      </main>
+      ))}
+    </div>
+  );
+};
+
+/**
+ * Main page component
+ */
+const MainPage = () => {
+  return (
+    <div className="main-page">
+      <Banner />
+      <ProfileSection />
+      <NavigationMenu />
     </div>
   );
 };

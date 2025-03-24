@@ -3,27 +3,86 @@ import { Link } from 'react-router-dom';
 import './css/CodingPage.css';
 
 const CodingPage = () => {
+  const projects = [
+    {
+      title: "Telemedicine Consult System",
+      description: "A backend system for telemedicine consultation using Line Bot",
+      tech: ["Node.js", "Line Bot API", "MongoDB", "Express"],
+      link: "https://github.com/HappyGroupHub/TelemedicConsult-Backend-LineBot"
+    },
+    {
+      title: "Ethereum Wallet Tracker",
+      description: "Track and monitor Ethereum wallet activities",
+      tech: ["React", "Web3.js", "Ethereum", "Node.js"],
+      link: "https://github.com/HappyGroupHub/Ethereum-Wallet-Tracker"
+    },
+    {
+      title: "Zimbra Auto Mail Bot",
+      description: "Automated email management system for Zimbra",
+      tech: ["Python", "Zimbra API", "Automation"],
+      link: "https://github.com/KXX-Hub/Zimbra_Auto_Mail_Bot"
+    },
+    {
+      title: "Auto API Check Bot",
+      description: "Automated API monitoring and testing system",
+      tech: ["Python", "API Testing", "Automation"],
+      link: "https://github.com/KXX-Hub/Auto_API_Check_Bot"
+    },
+    {
+      title: "Gas Line Notify",
+      description: "Ethereum gas price notification system via Line",
+      tech: ["Node.js", "Line Bot API", "Ethereum", "Web3.js"],
+      link: "https://github.com/KXX-Hub/Line_Gas_Notify"
+    },
+    {
+      title: "Solidity, NFT & Smart Contract",
+      description: "Blockchain development projects and tutorials",
+      tech: ["Solidity", "NFT", "Smart Contract", "Web3"],
+      link: "https://github.com/KXX-Hub/IThome"
+    }
+  ];
+
   return (
     <div className="coding-page">
-      <h1 className="coding-title">Welcome to My Coding Space</h1>
-      <div className="content-container">
-        <div className="left-panel">
-          <div className="coding-box">
-            <p>Projects</p>
-          </div>
-        </div>
-        <div className="right-panel">
-          <ul className="project-list">
-            <li><Link to="https://github.com/HappyGroupHub/TelemedicConsult-Backend-LineBot">Telemedicine Consult System</Link></li>
-            <li><Link to="https://github.com/HappyGroupHub/Ethereum-Wallet-Tracker">Ethereum Wallet Tracker</Link></li>
-            <li><Link to="https://github.com/KXX-Hub/Zimbra_Auto_Mail_Bot">Zimbra Auto Mail Bot</Link></li>
-            <li><Link to="https://github.com/KXX-Hub/Auto_API_Check_Bot">Auto API Check Bot</Link></li>
-            <li><Link to="https://github.com/KXX-Hub/Line_Gas_Notify">Gas Line Notify</Link></li>
-            <li><Link to="https://github.com/KXX-Hub/IThome">Solidity, NFT & Smart Contract</Link></li>
-          </ul>
+      <div className="profile-header">
+        <h1>Code Portfolio</h1>
+        <div className="profile-links">
+          <a href="https://github.com/HappyGroupHub" target="_blank" rel="noopener noreferrer" className="social-link">
+            <i className="fab fa-github"></i>
+          </a>
+          <a href="https://github.com/KXX-Hub" target="_blank" rel="noopener noreferrer" className="social-link">
+            <i className="fab fa-github"></i>
+          </a>
         </div>
       </div>
-      <Link to="/" className="back-home-btn">Back to Home</Link>
+
+      <div className="coding-container">
+        <div className="projects-section">
+          <h2>My Projects</h2>
+          <div className="projects-grid">
+            {projects.map((project, index) => (
+              <div key={index} className="project-card">
+                <div className="project-content">
+                  <h3>{project.title}</h3>
+                  <p>{project.description}</p>
+                  <div className="project-tech">
+                    {project.tech.map((tech, techIndex) => (
+                      <span key={techIndex} className="tech-tag">{tech}</span>
+                    ))}
+                  </div>
+                  <a href={project.link} target="_blank" rel="noopener noreferrer" className="view-project">
+                    View on GitHub
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="button-container">
+          <Link to="/" className="back-home-btn">Back to Home</Link>
+        </div>
+      </div>
     </div>
   );
 };

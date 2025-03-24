@@ -1,16 +1,26 @@
 .nft-preview-grid {
-    background-color: #545454;
-    border-radius: 10px;
-    padding: 1.5rem;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 20px;
+    padding: 2rem;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 1s ease-out;
 }
 
 .preview-image-container {
     width: 100%;
     aspect-ratio: 1;
+    border-radius: 15px;
     overflow: hidden;
-    border-radius: 10px;
-    margin-bottom: 1rem;
-    background-color: #636363;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.preview-image-container:hover {
+    transform: scale(1.02);
 }
 
 .preview-image {
@@ -21,127 +31,282 @@
 }
 
 .preview-image:hover {
-    transform: scale(1.02);
+    transform: scale(1.05);
 }
 
 .audio-section {
-    margin: 1rem 0;
+    margin: 2rem 0;
     padding: 1.5rem;
-    background-color: #636363;
-    border-radius: 10px;
-    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .audio-section h4 {
-    margin: 0 0 1rem 0;
-    font-size: 1.1rem;
-    color: white;
+    color: var(--accent-color);
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+    font-weight: 600;
 }
 
 .preview-audio {
     width: 100%;
     height: 40px;
-    margin-top: 0.5rem;
-    background-color: #545454;
-    border-radius: 5px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .metadata-section {
-    margin: 1.5rem 0;
-    padding: 1.5rem;
-    background-color: #636363;
-    border-radius: 10px;
+    margin-top: 2rem;
 }
 
 .metadata-section h3 {
-    margin: 0 0 1rem 0;
-    font-size: 1.2rem;
-    color: white;
+    color: #fff;
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    font-weight: 700;
 }
 
 .metadata-grid {
     display: grid;
-    gap: 0.75rem;
+    gap: 1rem;
 }
 
 .metadata-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.75rem;
-    background-color: #545454;
-    border-radius: 5px;
-    transition: background-color 0.3s ease;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
 }
 
 .metadata-item:hover {
-    background-color: #707070;
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
 }
 
 .metadata-item .label {
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--accent-color-2);
     font-size: 0.9rem;
+    font-weight: 500;
 }
 
 .metadata-item .value {
-    font-weight: bold;
+    color: #fff;
+    font-weight: 600;
 }
 
 .price-input {
-    background-color: #636363;
-    border: 1px solid #787878;
-    color: white;
-    padding: 0.5rem;
-    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    color: #fff;
+    font-size: 0.9rem;
     width: 150px;
-    font-family: inherit;
+    transition: all 0.3s ease;
 }
 
 .price-input:focus {
     outline: none;
-    border-color: #3baac6;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 10px rgba(0, 255, 157, 0.2);
 }
 
-.error-text {
-    color: #ff4444;
-    margin-top: 0.5rem;
+.status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
     font-size: 0.9rem;
 }
 
 .status.for-sale {
-    color: #4caf50;
-    background-color: rgba(76, 175, 80, 0.1);
-    padding: 0.25rem 0.75rem;
-    border-radius: 15px;
+    color: #00ff9d;
+    background: rgba(0, 255, 157, 0.1);
+    border: 1px solid rgba(0, 255, 157, 0.2);
 }
 
 .status.not-for-sale {
     color: #ff4444;
-    background-color: rgba(255, 68, 68, 0.1);
-    padding: 0.25rem 0.75rem;
-    border-radius: 15px;
+    background: rgba(255, 68, 68, 0.1);
+    border: 1px solid rgba(255, 68, 68, 0.2);
+}
+
+.error-text {
+    color: #ff4444;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background: rgba(255, 68, 68, 0.1);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 68, 68, 0.2);
 }
 
 .purchase-button {
     width: 100%;
-    padding: 0.75rem;
-    margin-top: 1.5rem;
-    background-color: #3baac6;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
+    padding: 1rem;
+    margin-top: 2rem;
+    background: transparent;
+    color: var(--text-color);
+    border: 1px solid var(--accent-color);
+    border-radius: 12px;
+    font-weight: 500;
+    letter-spacing: 2px;
     transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.purchase-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg,
+        var(--accent-color),
+        var(--accent-color-2),
+        var(--accent-color-3)
+    );
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: -1;
 }
 
 .purchase-button:hover:not(:disabled) {
-    background-color: #2d8a9e;
+    color: var(--primary-color);
     transform: translateY(-2px);
+    border-color: transparent;
+    box-shadow: 
+        0 0 20px rgba(0, 255, 157, 0.4),
+        0 0 30px rgba(0, 255, 157, 0.2),
+        0 0 40px rgba(0, 255, 157, 0.1);
+}
+
+.purchase-button:hover:not(:disabled)::before {
+    opacity: 1;
 }
 
 .purchase-button:disabled {
-    background-color: #636363;
+    opacity: 0.5;
     cursor: not-allowed;
-    transform: none;
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .nft-preview-grid {
+        padding: 1.5rem;
+    }
+    .preview-image-container {
+        margin-bottom: 1.5rem;
+    }
+    .audio-section {
+        margin: 1.5rem 0;
+        padding: 1rem;
+    }
+    .metadata-section h3 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    .metadata-item {
+        padding: 0.8rem;
+    }
+    .purchase-button {
+        padding: 0.8rem;
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .nft-preview-grid {
+        padding: 1rem;
+    }
+    .preview-image-container {
+        margin-bottom: 1rem;
+    }
+    .audio-section {
+        margin: 1rem 0;
+        padding: 0.8rem;
+    }
+    .metadata-section h3 {
+        font-size: 1.3rem;
+    }
+    .metadata-item {
+        padding: 0.6rem;
+    }
+    .price-input {
+        width: 120px;
+        padding: 0.4rem 0.8rem;
+    }
+    .purchase-button {
+        padding: 0.7rem;
+        font-size: 0.75rem;
+    }
+}
+
+/* Fix for very small screens */
+@media (max-width: 360px) {
+    .nft-preview-grid {
+        padding: 0.8rem;
+    }
+    .preview-image-container {
+        margin-bottom: 0.8rem;
+    }
+    .audio-section {
+        margin: 0.8rem 0;
+        padding: 0.6rem;
+    }
+    .metadata-section h3 {
+        font-size: 1.2rem;
+    }
+    .metadata-item {
+        padding: 0.5rem;
+    }
+    .price-input {
+        width: 100px;
+        padding: 0.3rem 0.6rem;
+    }
+    .purchase-button {
+        padding: 0.6rem;
+        font-size: 0.7rem;
+    }
+}
+
+/* Fix for landscape orientation on mobile */
+@media (max-height: 600px) and (orientation: landscape) {
+    .nft-preview-grid {
+        padding: 1rem;
+    }
+    .preview-image-container {
+        margin-bottom: 1rem;
+    }
+    .audio-section {
+        margin: 1rem 0;
+    }
+    .metadata-section {
+        margin-top: 1rem;
+    }
 }
