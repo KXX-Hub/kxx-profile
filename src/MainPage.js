@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './css/MainPage.css';
-import { FaCode, FaUser, FaEthereum, FaYoutube, FaGithub, FaInstagram, FaDiscord } from 'react-icons/fa';
+import { FaCode, FaUser, FaEthereum, FaYoutube, FaGithub, FaInstagram, FaMusic } from 'react-icons/fa';
 import NFTPage from './NFTPage';
 
 /**
@@ -21,8 +21,7 @@ const SocialLinks = () => {
   const socialLinks = [
     { icon: <FaGithub />, url: 'https://github.com/KXX-HUB', label: 'GitHub' },
     { icon: <FaInstagram />, url: 'https://www.instagram.com/0xkxx_prod/', label: 'Instagram Production' },
-    { icon: <FaInstagram />, url: 'https://www.instagram.com/0x_kxx/', label: 'Instagram Personal' },
-    { icon: <FaDiscord />, url: '#', label: '0x_kxx' },
+    { icon: <FaMusic />, url: 'https://www.instagram.com/0x_kxx/', label: 'Instagram Music' },
   ];
 
   return (

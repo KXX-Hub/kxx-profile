@@ -73,7 +73,7 @@ const MePage = () => {
       year: '2020 - 2024',
       title: 'Fu Jen Catholic University',
       subtitle: 'Bachelor of Science in Medical Information Innovation Application',
-      description: 'GPA: 3.45/4.0. Research focus on Medical Informatics System, Blockchain Technology and Cybersecurity. Graduated with distinction.',
+      description: 'Research focus on Medical Informatics System, Blockchain Technology and Cybersecurity. Graduated with distinction.',
       icon: <FaGraduationCap />,
       category: 'education'
     },
@@ -166,7 +166,6 @@ const MePage = () => {
     education: [
       'UIUC MSIM (2025-Present)',
       'FJU BS in Medical Information (2020-2024)',
-      'GPA: 3.45/4.0',
       'IEEE Conference Publications'
     ],
     work: [
@@ -210,26 +209,26 @@ const MePage = () => {
       </div>
 
       <div className="overview-section">
-        <h2 className="overview-title">Overview</h2>
-        <div className="overview-grid">
-          <div className="overview-card">
-            <h3>Education</h3>
+        <h1>Overview</h1>
+        <div className="overview-blocks">
+          <div className="overview-block">
+            <h2>Education</h2>
             <ul>
               {overviewData.education.map((item, index) => (
                 <li key={index}>{item}</li>
               ))}
             </ul>
           </div>
-          <div className="overview-card">
-            <h3>Work Experience</h3>
+          <div className="overview-block">
+            <h2>Work Experience</h2>
             <ul>
               {overviewData.work.map((item, index) => (
                 <li key={index}>{item}</li>
               ))}
             </ul>
           </div>
-          <div className="overview-card">
-            <h3>Certifications & Skills</h3>
+          <div className="overview-block">
+            <h2>Certifications & Skills</h2>
             <ul>
               {overviewData.certifications.map((item, index) => (
                 <li key={index}>{item}</li>

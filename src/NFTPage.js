@@ -160,14 +160,14 @@ const NFTPage = () => {
       <div className="profile-header">
         <h1>Music NFT Gallery</h1>
         <div className="profile-links">
-          <a href="https://github.com/yourusername" target="_blank" rel="noopener noreferrer" className="social-link">
+          <a href="https://github.com/KXX-HUB" target="_blank" rel="noopener noreferrer" className="social-link">
             <i className="fab fa-github"></i>
           </a>
-          <a href="https://instagram.com/yourusername" target="_blank" rel="noopener noreferrer" className="social-link">
+          <a href="https://www.instagram.com/0xkxx_prod/" target="_blank" rel="noopener noreferrer" className="social-link">
             <i className="fab fa-instagram"></i>
           </a>
-          <a href="https://discord.gg/yourusername" target="_blank" rel="noopener noreferrer" className="social-link">
-            <i className="fab fa-discord"></i>
+          <a href="https://www.instagram.com/0x_kxx/" target="_blank" rel="noopener noreferrer" className="social-link">
+            <i className="fas fa-music"></i>
           </a>
         </div>
       </div>
