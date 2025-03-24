@@ -800,35 +800,52 @@ body {
 }
 
 .nav-icons {
-    position: fixed;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 100;
-    background: rgba(18, 18, 18, 0.8);
-    padding: 0.5rem;
-    border-radius: 0.5rem;
-    backdrop-filter: blur(5px);
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  z-index: 100;
 }
 
 .nav-icon {
-    color: #4a90e2;
-    font-size: 1.5rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    filter: drop-shadow(0 0 2px rgba(74, 144, 226, 0.3));
+  color: var(--accent-color);
+  font-size: 1.5rem;
+  transition: all 0.3s ease;
+  opacity: 0.8;
+  cursor: pointer;
 }
 
 .nav-icon:hover {
-    color: #5c6bc0;
-    transform: translateX(5px);
-    filter: drop-shadow(0 0 5px rgba(74, 144, 226, 0.5));
+  color: var(--text-color);
+  transform: scale(1.1);
+  opacity: 1;
 }
 
-/* Responsive Design */
-@media (max-width: 1024px) {
-    .nav-icons {
-        display: none;
-    }
+/* Hide navigation icons when all content is on the same side */
+@media (max-width: 768px) {
+  .nav-icons {
+    display: none;
+  }
+}
+
+/* Show navigation icons only when content is alternating sides */
+@media (min-width: 769px) {
+  .nav-icons {
+    display: flex;
+  }
+  
+  /* Adjust position based on content layout */
+  .nav-icons.left-side {
+    left: 1.5rem;
+  }
+  
+  .nav-icons.right-side {
+    left: auto;
+    right: 1.5rem;
+  }
 }
 
 .me-page {
