@@ -12,10 +12,10 @@ const VlogPage = () => {
                     <a href="https://github.com/KXX-HUB" target="_blank" rel="noopener noreferrer" className="social-link">
                         <FaGithub />
                     </a>
-                    <a href="https://www.linkedin.com/in/zhikai-hong-b91b0b299/" target="_blank" rel="noopener noreferrer" className="social-link">
+                    <a href="https://www.linkedin.com/in/kai-hung-0xkxx/" target="_blank" rel="noopener noreferrer" className="social-link">
                         <FaLinkedin />
                     </a>
-                    <a href="https://www.instagram.com/0xkxx_prod/" target="_blank" rel="noopener noreferrer" className="social-link">
+                    <a href="https://www.instagram.com/0x_kxx/" target="_blank" rel="noopener noreferrer" className="social-link">
                         <FaInstagram />
                     </a>
                 </div>

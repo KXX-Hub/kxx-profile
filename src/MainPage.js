@@ -20,9 +20,9 @@ const Banner = () => (
 const SocialLinks = () => {
   const socialLinks = [
     { icon: <FaGithub />, url: 'https://github.com/KXX-HUB', label: 'GitHub' },
-    { icon: <FaLinkedin />, url: 'https://www.linkedin.com/in/zhikai-hong-b91b0b299/', label: 'LinkedIn' },
-    { icon: <FaInstagram />, url: 'https://www.instagram.com/0xkxx_prod/', label: 'Instagram Production' },
-    { icon: <FaMusic />, url: 'https://www.instagram.com/0x_kxx/', label: 'Instagram Music' },
+    { icon: <FaLinkedin />, url: 'https://www.linkedin.com/in/kai-hung-0xkxx/', label: 'LinkedIn' },
+    { icon: <FaInstagram />, url: 'https://www.instagram.com/0x_kxx/', label: 'Instagram Personal' },
+    { icon: <FaMusic />, url: 'https://www.instagram.com/0xkxx_prod/', label: 'Instagram Production' },
   ];
 
   return (
