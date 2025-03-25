@@ -108,9 +108,10 @@
 
 .projects-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
     gap: 2rem;
     margin-top: 2rem;
+    width: 100%;
 }
 
 .project-card {
@@ -119,7 +120,8 @@
     overflow: hidden;
     border: 1px solid rgba(255, 255, 255, 0.05);
     transition: all 0.3s ease;
-    animation: slideIn 0.5s ease-out;
+    height: 100%;
+    width: 100%;
 }
 
 .project-card:hover {
@@ -129,27 +131,36 @@
 }
 
 .project-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
     padding: 1.5rem;
 }
 
 .project-content h3 {
     color: #ffffff;
     font-size: 1.3rem;
-    margin-bottom: 0.8rem;
+    margin-bottom: 1rem;
 }
 
 .project-content p {
     color: #b0b0b0;
     font-size: 0.9rem;
-    margin-bottom: 1rem;
     line-height: 1.6;
+    flex-grow: 1;
+    margin-bottom: 1rem;
 }
 
 .project-tech {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.view-project {
+    margin-top: auto;
+    width: 100%;
 }
 
 .tech-tag {
@@ -273,9 +284,9 @@
 }
 
 /* Responsive Design */
-@media (max-width: 1024px) {
-    .coding-container {
-        padding: 1.5rem;
+@media (max-width: 1200px) {
+    .projects-grid {
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
@@ -292,9 +303,19 @@
     .projects-section h2 {
         font-size: 1.8rem;
     }
-    .project-card {
+    .projects-grid {
+        grid-template-columns: 1fr;
         max-width: 500px;
-        margin: 0 auto;
+        margin-left: auto;
+        margin-right: auto;
+        gap: 1.5rem;
+    }
+    .project-card {
+        width: 100%;
+    }
+    .project-content {
+        min-height: auto;
+        padding: 1.5rem;
     }
 }
 
@@ -308,15 +329,12 @@
     .projects-section h2 {
         font-size: 1.5rem;
     }
-    .project-content {
-        padding: 1rem;
+    .projects-grid {
+        padding: 0;
+        max-width: 100%;
     }
-    .project-content h3 {
-        font-size: 1.2rem;
-    }
-    .back-home-btn {
-        padding: 0.8rem 2rem;
-        font-size: 0.8rem;
+    .project-card {
+        max-width: 100%;
     }
 }
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FaGithub, FaInstagram, FaDiscord } from 'react-icons/fa';
+import { FaGithub, FaInstagram, FaLinkedin } from 'react-icons/fa';
 import './css/VlogPage.css';
 
 const VlogPage = () => {
@@ -9,18 +9,18 @@ const VlogPage = () => {
             <div className="profile-header">
                 <h1>Vlog</h1>
                 <div className="profile-links">
-                    <a href="https://github.com/yourusername" target="_blank" rel="noopener noreferrer" className="social-link">
+                    <a href="https://github.com/KXX-HUB" target="_blank" rel="noopener noreferrer" className="social-link">
                         <FaGithub />
                     </a>
-                    <a href="https://instagram.com/yourusername" target="_blank" rel="noopener noreferrer" className="social-link">
-                        <FaInstagram />
+                    <a href="https://www.linkedin.com/in/zhikai-hong-b91b0b299/" target="_blank" rel="noopener noreferrer" className="social-link">
+                        <FaLinkedin />
                     </a>
-                    <a href="https://discord.gg/yourusername" target="_blank" rel="noopener noreferrer" className="social-link">
-                        <FaDiscord />
+                    <a href="https://www.instagram.com/0xkxx_prod/" target="_blank" rel="noopener noreferrer" className="social-link">
+                        <FaInstagram />
                     </a>
                 </div>
             </div>
-s
+
             <div className="vlog-container">
                 <div className="vlog-content">
                     <div className="video-section">

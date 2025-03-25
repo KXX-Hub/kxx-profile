@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './css/MainPage.css';
-import { FaCode, FaUser, FaEthereum, FaYoutube, FaGithub, FaInstagram, FaMusic } from 'react-icons/fa';
+import { FaCode, FaUser, FaEthereum, FaYoutube, FaGithub, FaInstagram, FaMusic, FaLinkedin } from 'react-icons/fa';
 import NFTPage from './NFTPage';
 
 /**
@@ -20,6 +20,7 @@ const Banner = () => (
 const SocialLinks = () => {
   const socialLinks = [
     { icon: <FaGithub />, url: 'https://github.com/KXX-HUB', label: 'GitHub' },
+    { icon: <FaLinkedin />, url: 'https://www.linkedin.com/in/zhikai-hong-b91b0b299/', label: 'LinkedIn' },
     { icon: <FaInstagram />, url: 'https://www.instagram.com/0xkxx_prod/', label: 'Instagram Production' },
     { icon: <FaMusic />, url: 'https://www.instagram.com/0x_kxx/', label: 'Instagram Music' },
   ];
@@ -59,11 +60,11 @@ const ProfileImages = () => (
 const ProfileInfo = () => (
   <div className="profile-info">
     <h1 data-text="KXX">KXX</h1>
-    <p className="tagline">Full Stack Developer | Content Creator</p>
+    <p className="tagline">Software Engineer| Blockchain | Cybersecurity | Content Creator</p>
     <div className="profile-description">
       <p>
-        Passionate about creating innovative solutions and sharing knowledge through content creation. 
-        Specializing in web development, blockchain technology, and digital content production.
+        Dedicated to exploring and implementing blockchain and cybersecurity solutions. 
+        Continuously learning and growing in software development while contributing to the tech community through knowledge sharing.
       </p>
     </div>
     <SocialLinks />

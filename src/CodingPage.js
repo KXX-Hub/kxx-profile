@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { FaGithub, FaLinkedin } from 'react-icons/fa';
 import './css/CodingPage.css';
 
 const CodingPage = () => {
@@ -47,11 +48,11 @@ const CodingPage = () => {
       <div className="profile-header">
         <h1>Code Portfolio</h1>
         <div className="profile-links">
-          <a href="https://github.com/HappyGroupHub" target="_blank" rel="noopener noreferrer" className="social-link">
-            <i className="fab fa-github"></i>
+          <a href="https://github.com/KXX-HUB" target="_blank" rel="noopener noreferrer" className="social-link">
+            <FaGithub />
           </a>
-          <a href="https://github.com/KXX-Hub" target="_blank" rel="noopener noreferrer" className="social-link">
-            <i className="fab fa-github"></i>
+          <a href="https://www.linkedin.com/in/zhikai-hong-b91b0b299/" target="_blank" rel="noopener noreferrer" className="social-link">
+            <FaLinkedin />
           </a>
         </div>
       </div>
