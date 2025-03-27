@@ -1,8 +1,8 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import './css/MainPage.css';
-import { FaCode, FaUser, FaEthereum, FaYoutube, FaGithub, FaInstagram, FaMusic, FaLinkedin } from 'react-icons/fa';
-import NFTPage from './NFTPage';
+import { FaCode, FaUser, FaEthereum, FaYoutube } from 'react-icons/fa';
+import SocialLinks from './components/common/SocialLinks';
 
 /**
  * Banner component with background image and overlay
@@ -13,35 +13,6 @@ const Banner = () => (
     <div className="banner-overlay" />
   </div>
 );
-
-/**
- * Social links component
- */
-const SocialLinks = () => {
-  const socialLinks = [
-    { icon: <FaGithub />, url: 'https://github.com/KXX-HUB', label: 'GitHub' },
-    { icon: <FaLinkedin />, url: 'https://www.linkedin.com/in/kai-hung-0xkxx/', label: 'LinkedIn' },
-    { icon: <FaInstagram />, url: 'https://www.instagram.com/0x_kxx/', label: 'Instagram Personal' },
-    { icon: <FaMusic />, url: 'https://www.instagram.com/0xkxx_prod/', label: 'Instagram Production' },
-  ];
-
-  return (
-    <div className="social-links">
-      {socialLinks.map((link, index) => (
-        <a
-          key={index}
-          href={link.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="social-link"
-          aria-label={link.label}
-        >
-          {link.icon}
-        </a>
-      ))}
-    </div>
-  );
-};
 
 /**
  * Profile images component
@@ -60,7 +31,7 @@ const ProfileImages = () => (
 const ProfileInfo = () => (
   <div className="profile-info">
     <h1 data-text="KXX">KXX</h1>
-    <p className="tagline">Software Engineer| Blockchain | Cybersecurity | Content Creator</p>
+    <p className="tagline">Software Engineer | Vibe Coder | Blockchain | Cybersecurity | Content Creator</p>
     <div className="profile-description">
       <p>
         Dedicated to exploring and implementing blockchain and cybersecurity solutions. 
@@ -104,15 +75,11 @@ const NavigationMenu = () => {
 
   const navigate = useNavigate();
 
-  const handleCardClick = (path) => {
-    navigate(path);
-  };
-
   return (
     <div className="box-container">
       {navItems.map((item, index) => (
         <div key={index} className="box-wrapper">
-          <NavigationBox {...item} onClick={handleCardClick} />
+          <NavigationBox {...item} onClick={navigate} />
         </div>
       ))}
     </div>
