@@ -74,6 +74,7 @@ body {
   max-width: 1200px;
   margin: -100px auto 3rem;
   padding: 2.5rem;
+  padding-bottom: 4rem;
   background: rgba(26, 26, 26, 0.85);
   backdrop-filter: blur(10px);
   border-radius: 20px;
@@ -89,8 +90,8 @@ body {
 }
 
 .profile-avatar {
-  width: 220px;
-  height: 220px;
+  width: 280px;
+  height: 280px;
   border-radius: 20px;
   overflow: hidden;
   border: 3px solid var(--accent-color);
@@ -146,12 +147,12 @@ body {
 }
 
 .avatar-image {
-  width: 120%;
-  height: 120%;
+  width: 130%;
+  height: 130%;
   object-fit: cover;
-  object-position: center 20%;
+  object-position: center top;
   transition: transform 0.3s ease;
-  margin: -10% 0 0 -10%;
+  margin: -15% 0 0 -15%;
 }
 
 .profile-info {
@@ -246,7 +247,7 @@ body {
   grid-template-columns: repeat(4, 1fr);
   gap: 1.5rem;
   max-width: 1200px;
-  margin: 0 auto;
+  margin: 0 auto 3rem;
   padding: 0 2rem;
   position: relative;
   z-index: 2;
