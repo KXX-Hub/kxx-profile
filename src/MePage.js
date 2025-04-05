@@ -240,39 +240,37 @@ const MePage = () => {
 
       <div className="filter-section">
         <div className="filter-buttons">
-          <FilterButton 
-            active={activeFilter === 'all'} 
+          <FilterButton
+            active={activeFilter === 'all'}
             onClick={() => handleFilter('all')}
             category="all"
           >
             <FaList /> All
           </FilterButton>
-          <FilterButton 
-            active={activeFilter === 'education'} 
+          <FilterButton
+            active={activeFilter === 'education'}
             onClick={() => handleFilter('education')}
             category="education"
           >
             <FaGraduationCap /> Education
           </FilterButton>
-          <FilterButton 
-            active={activeFilter === 'work'} 
+          <FilterButton
+            active={activeFilter === 'work'}
             onClick={() => handleFilter('work')}
             category="work"
           >
             <FaBriefcase /> Work
           </FilterButton>
-          <FilterButton 
-            active={activeFilter === 'certification'} 
+          <FilterButton
+            active={activeFilter === 'certification'}
             onClick={() => handleFilter('certification')}
             category="certification"
           >
             <FaCertificate /> Certifications
           </FilterButton>
-          {activeFilter !== 'all' && (
-            <button className="clear-filter" onClick={clearFilter}>
-              <FaTimes />
-            </button>
-          )}
+          <button className="clear-filter" onClick={clearFilter}>
+            <FaTimes />
+          </button>
         </div>
       </div>
 
