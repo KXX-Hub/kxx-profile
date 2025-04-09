@@ -53,16 +53,6 @@ const ProfileSection = () => (
 );
 
 /**
- * Navigation box component
- */
-const NavigationBox = ({ title, path, icon, onClick }) => (
-  <div className="box" onClick={() => onClick(path)}>
-    <span className="box-icon">{icon}</span>
-    <h2 className="box-title">{title}</h2>
-  </div>
-);
-
-/**
  * Navigation menu component
  */
 const NavigationMenu = () => {
@@ -76,12 +66,21 @@ const NavigationMenu = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="box-container">
-      {navItems.map((item, index) => (
-        <div key={index} className="box-wrapper">
-          <NavigationBox {...item} onClick={navigate} />
-        </div>
-      ))}
+    <div className="navigation-section">
+      <div className="nav-content">
+        {navItems.map((item, index) => (
+          <button 
+            key={index} 
+            className="nav-button"
+            onClick={() => navigate(item.path)}
+          >
+            <div className="nav-button-content">
+              <span className="nav-icon">{item.icon}</span>
+              <span className="nav-title">{item.title}</span>
+            </div>
+          </button>
+        ))}
+      </div>
     </div>
   );
 };
@@ -92,9 +91,11 @@ const NavigationMenu = () => {
 const MainPage = () => {
   return (
     <div className="main-page">
-      <Banner />
-      <ProfileSection />
-      <NavigationMenu />
+      <div className="main-content">
+        <Banner />
+        <ProfileSection />
+        <NavigationMenu />
+      </div>
     </div>
   );
 };
