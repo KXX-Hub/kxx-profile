@@ -2,7 +2,7 @@
   "name": "",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://www.0xkxx.com",
+  "homepage": ".",
   "dependencies": {
     "@rainbow-me/rainbowkit": "^1.0.0",
     "@tanstack/react-query": "^4.29.0",
