@@ -1,19 +1,19 @@
 .me-page {
     min-height: 100vh;
     padding: 2rem;
-    padding-left: 6rem;
     background: var(--background);
     color: var(--text);
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     position: relative;
     overflow: hidden;
-    max-width: 1200px;
+    width: 100%;
+    max-width: 1400px;
     margin: 0 auto;
-    background: var(--secondary-color);
 }
 
 .me-page .content {
-    max-width: 1200px;
+    width: 100%;
+    max-width: 1400px;
     margin: 0 auto;
     padding: 1rem;
 }
@@ -75,7 +75,8 @@
 
 /* Timeline Container */
 .timeline-container {
-    max-width: 1200px;
+    width: 100%;
+    max-width: 1400px;
     margin: 0 auto;
     position: relative;
     padding: 2rem 0;
@@ -121,9 +122,10 @@
 }
 
 .timeline-content {
-    width: 45%;
-    background: var(--box-bg);
-    padding: 1.5rem;
+    width: 100%;
+    max-width: 1400px;
+    background: rgba(18, 18, 18, 0.6);
+    padding: 2rem;
     border-radius: 15px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
@@ -293,7 +295,6 @@
 @media (max-width: 768px) {
     .me-page {
         padding: 1.5rem;
-        padding-left: 4rem;
     }
 
     .profile-header h1 {
@@ -406,7 +407,6 @@
 
     .me-page {
         padding: 1rem;
-        padding-left: 3.5rem;
     }
 
     .timeline-section {
@@ -444,9 +444,10 @@
 }
 
 .overview-section {
+    width: 100%;
+    max-width: 1400px;
     padding: 2rem;
     margin: 2rem auto;
-    max-width: 1200px;
     background: rgba(18, 18, 18, 0.6);
     border-radius: 1.5rem;
     backdrop-filter: blur(10px);
@@ -461,18 +462,23 @@
 }
 
 .overview-blocks {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    width: 100%;
+    display: flex;
+    flex-wrap: nowrap;
     gap: 2rem;
-    padding: 0 2rem 2rem;
+    justify-content: space-between;
+    padding: 2rem 0;
 }
 
 .overview-block {
-    background: rgba(30, 30, 30, 0.8);
-    border-radius: 1rem;
+    flex: 1;
+    min-width: 0;
+    max-width: none;
     padding: 2rem;
-    min-height: 300px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
 }
 
 .overview-block:hover {
@@ -511,36 +517,30 @@
 }
 
 /* Responsive styles */
-@media (max-width: 1024px) {
+@media (max-width: 1200px) {
     .overview-section {
-        margin: 1.5rem;
-    }
-
-    .overview-blocks {
-        gap: 1.5rem;
-        padding: 0 1.5rem 1.5rem;
-    }
-
-    .overview-block {
-        min-height: 250px;
+        max-width: 1200px;
     }
 }
 
 @media (max-width: 768px) {
+    .overview-section {
+        max-width: 100%;
+        padding: 1rem;
+    }
+    
+    .overview-blocks {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .overview-block {
+        width: 100%;
+    }
+
     .overview-section h1 {
         font-size: 2.5rem;
         margin: 1.5rem 0 2rem;
-    }
-
-    .overview-blocks {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-        padding: 0 1.5rem 1.5rem;
-    }
-
-    .overview-block {
-        min-height: auto;
-        padding: 1.5rem;
     }
 
     .overview-block h2 {

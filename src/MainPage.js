@@ -57,10 +57,26 @@ const ProfileSection = () => (
  */
 const NavigationMenu = () => {
   const navItems = [
-    { title: 'Coding', path: '/coding', icon: <FaCode /> },
-    { title: 'Me', path: '/me', icon: <FaUser /> },
-    { title: 'NFT', path: '/nft', icon: <FaEthereum /> },
-    { title: 'Vlog', path: '/vlog', icon: <FaYoutube /> }
+    { 
+      title: 'Coding', 
+      path: '/coding', 
+      icon: <FaCode />
+    },
+    { 
+      title: 'Me', 
+      path: '/me', 
+      icon: <FaUser />
+    },
+    { 
+      title: 'NFT', 
+      path: '/nft', 
+      icon: <FaEthereum />
+    },
+    { 
+      title: 'Vlog', 
+      path: '/vlog', 
+      icon: <FaYoutube />
+    }
   ];
 
   const navigate = useNavigate();
