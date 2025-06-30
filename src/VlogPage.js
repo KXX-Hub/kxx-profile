@@ -1,34 +1,94 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import PageLayout from './components/layout/PageLayout';
 import './css/VlogPage.css';
 
-const VlogContent = () => (
-  <div className="vlog-container">
-    <div className="vlog-content">
-      <div className="video-section">
-        <iframe
-          width="100%"
-          height="500"
-          src="https://www.youtube.com/embed/DdOK0MIA8kE"
-          title="Vlog Video"
-          frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-        />
-      </div>
+const YOUTUBE_CHANNEL_ID = 'UCVTmN2IJY1Zc3bArF-RsUWg';
+const YOUTUBE_API_KEY = 'AIzaSyD1Ewh11NuZMeBI9RsQdMcaGSDi0Zj1Ajk'; // TODO: 請填入你的 YouTube Data API v3 金鑰
 
-      <div className="video-info">
-        <h2>2025.02.22</h2>
-        <p className="video-description">
-          露營Vlog⛺️ | 露營真有趣🔥 | 大家爆買大花錢 | 洗碗大戰 | 攝影大集合
-        </p>
-        <div className="video-meta">
-          <span className="video-date">2025.02.22</span>
-        </div>
+const VlogContent = () => {
+  const [videos, setVideos] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchLatestVideos = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        // 取得最新三部影片
+        const res = await axios.get(
+          `https://www.googleapis.com/youtube/v3/search?key=${YOUTUBE_API_KEY}&channelId=${YOUTUBE_CHANNEL_ID}&part=snippet,id&order=date&maxResults=3`
+        );
+        if (res.data.items && res.data.items.length > 0) {
+          setVideos(res.data.items);
+        } else {
+          setError('找不到最新影片');
+        }
+      } catch (err) {
+        setError('取得影片失敗: ' + err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchLatestVideos();
+  }, []);
+
+  if (loading) return <div className="vlog-container">載入中...</div>;
+  if (error) return <div className="vlog-container">{error}</div>;
+  if (!videos.length) return null;
+
+  return (
+    <div className="vlog-container">
+      <div className="vlog-content" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+        {videos.map((video, idx) => {
+          const videoId = video.id.videoId;
+          const snippet = video.snippet;
+          return (
+            <div
+              className="video-card"
+              key={videoId || idx}
+              style={{
+                boxShadow: '0 4px 24px rgba(0,0,0,0.15)',
+                borderRadius: 18,
+                background: 'rgba(30,30,30,0.95)',
+                padding: 24,
+                margin: '0 auto',
+                maxWidth: 900,
+                minWidth: 300,
+                width: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 16,
+              }}
+            >
+              <iframe
+                width="100%"
+                height="360"
+                src={`https://www.youtube.com/embed/${videoId}`}
+                title={snippet.title}
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                style={{ borderRadius: 12, maxWidth: '100%' }}
+              />
+              <div className="video-info" style={{ width: '100%', textAlign: 'left' }}>
+                <h2 style={{ fontSize: '1.5rem', color: '#fff', margin: '0 0 0.5rem 0' }}>{snippet.title}</h2>
+                <div className="video-meta" style={{ color: '#4a90e2', fontSize: '1rem', marginBottom: 8 }}>
+                  Update-Date：{new Date(snippet.publishedAt).toLocaleDateString()}
+                </div>
+                <p className="video-description" style={{ color: '#b0b0b0', fontSize: '1rem', margin: 0 }}>
+                  {snippet.description ? snippet.description.slice(0, 50) + (snippet.description.length > 50 ? '...' : '') : '—'}
+                </p>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 const VlogPage = () => {
   return (
