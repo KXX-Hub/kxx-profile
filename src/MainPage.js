@@ -20,7 +20,7 @@ const Banner = () => (
 const ProfileImages = () => (
   <div className="profile-images">
     <div className="profile-avatar">
-      <img src="/img/1.jpg" alt="Profile Avatar" className="avatar-image" />
+      <img src="/img/1.JPG" alt="Profile Avatar" className="avatar-image" />
     </div>
   </div>
 );
