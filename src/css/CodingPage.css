@@ -1,48 +1,66 @@
+/* Coding Page - Classic Mac Pixel Design */
 .coding-page {
     min-height: 100vh;
-    background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
-    color: #e0e0e0;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    padding: 2rem;
+    background: #2B2520;
+    color: #ECECEC;
+    font-family: 'VT323', 'Press Start 2P', monospace;
+    padding: 3rem 2rem;
     position: relative;
-    overflow: hidden;
-    max-width: 1200px;
-    margin: 0 auto;
+    overflow-x: hidden;
+    image-rendering: pixelated;
 }
 
+/* Pixel background pattern */
+.coding-page::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.3;
+  background-image:
+    radial-gradient(circle at center, rgba(212, 165, 116, 0.25) 1px, transparent 1px),
+    radial-gradient(circle at center, rgba(201, 192, 176, 0.15) 1px, transparent 1px);
+  background-size: 24px 24px, 16px 16px;
+  background-position: 12px 12px, 0 0;
+  image-rendering: pixelated;
+}
+
+/* Header */
 .profile-header {
     text-align: center;
     margin-bottom: 4rem;
-    animation: fadeIn 1s ease-out;
+    animation: fadeIn 0.8s ease-out;
+    position: relative;
+    z-index: 1;
 }
 
 .profile-header h1 {
-    font-size: 3rem;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 2.5rem;
     font-weight: 900;
-    margin-bottom: 1.5rem;
-    color: #ffffff;
+    margin-bottom: 2rem;
+    color: #D4A574;
+    text-shadow: 4px 4px 0px rgba(26, 26, 26, 0.9);
+    letter-spacing: 3px;
     position: relative;
     display: inline-block;
+    image-rendering: pixelated;
 }
 
 .profile-header h1::after {
     content: '';
     position: absolute;
     left: 0;
-    bottom: -8px;
+    bottom: -12px;
     width: 100%;
-    height: 2px;
-    background: linear-gradient(45deg, 
-        #4a90e2 0%,
-        #5c6bc0 50%,
-        #3f51b5 100%
-    );
-    background-size: 200% 200%;
-    animation: gradientShift 5s ease infinite;
-    box-shadow:
-        0 0 5px rgba(74, 144, 226, 0.3),
-        0 0 10px rgba(74, 144, 226, 0.2),
-        0 0 15px rgba(74, 144, 226, 0.1);
+    height: 4px;
+    background: #D4A574;
+    box-shadow: 3px 3px 0px rgba(26, 26, 26, 0.9);
+    border-radius: 2px;
 }
 
 .profile-links {
@@ -53,28 +71,24 @@
 }
 
 .social-link {
-    color: #b0b0b0;
-    font-size: 2rem;
-    transition: all 0.3s ease;
-    filter: drop-shadow(0 0 2px rgba(74, 144, 226, 0.3));
+    color: #7A7A7A;
+    font-size: 2.5rem;
+    transition: all 0.2s ease;
+    filter: drop-shadow(3px 3px 0px rgba(26, 26, 26, 0.8));
 }
 
 .social-link:hover {
-    color: #4a90e2;
-    transform: translateY(-2px) scale(1.1);
-    filter: drop-shadow(0 0 5px rgba(74, 144, 226, 0.5));
+    color: #D4A574;
+    transform: scale(1.1) translateY(-3px);
+    filter: drop-shadow(4px 4px 0px rgba(26, 26, 26, 0.9));
 }
 
+/* Main Container */
 .coding-container {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
-    padding: 2rem;
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 20px;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-    animation: fadeIn 1s ease-out;
+    position: relative;
+    z-index: 1;
 }
 
 .projects-section {
@@ -82,173 +96,172 @@
 }
 
 .projects-section h2 {
-    color: #4a90e2;
-    font-size: 2rem;
-    margin-bottom: 2rem;
+    font-family: 'Press Start 2P', cursive;
+    color: #C9C0B0;
+    font-size: 1.8rem;
+    margin-bottom: 3rem;
     text-align: center;
-    position: relative;
-    display: inline-block;
+    text-shadow: 3px 3px 0px rgba(26, 26, 26, 0.9);
+    letter-spacing: 2px;
 }
 
-.projects-section h2::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    bottom: -8px;
-    width: 100%;
-    height: 2px;
-    background: linear-gradient(45deg, 
-        #4a90e2 0%,
-        #5c6bc0 50%,
-        #3f51b5 100%
-    );
-    background-size: 200% 200%;
-    animation: gradientShift 5s ease infinite;
-}
-
+/* Projects Grid - 2 columns for better readability */
 .projects-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-    gap: 2rem;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2.5rem;
     margin-top: 2rem;
-    width: 100%;
 }
 
+/* Project Card - Classic Mac Window Style */
 .project-card {
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(61, 53, 48, 0.9);
+    border: 4px solid #4F4540;
     border-radius: 15px;
     overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.05);
     transition: all 0.3s ease;
-    height: 100%;
-    width: 100%;
+    box-shadow: 6px 6px 0px rgba(26, 26, 26, 0.8);
+    position: relative;
+    image-rendering: pixelated;
+}
+
+.project-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 35px;
+    background: #4F4540;
+    border-bottom: 2px solid #3D3530;
 }
 
 .project-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(74, 144, 226, 0.1);
-    border-color: rgba(74, 144, 226, 0.2);
+    transform: translateY(-8px);
+    border-color: #D4A574;
+    box-shadow: 10px 10px 0px rgba(26, 26, 26, 0.9);
 }
 
+/* Project Content */
 .project-content {
+    padding: 3rem 2rem 2rem;
     display: flex;
     flex-direction: column;
-    height: 100%;
-    padding: 1.5rem;
+    gap: 1.2rem;
+    min-height: 320px;
 }
 
 .project-content h3 {
-    color: #ffffff;
-    font-size: 1.3rem;
-    margin-bottom: 1rem;
+    font-family: 'Press Start 2P', cursive;
+    color: #D4A574;
+    font-size: 1.1rem;
+    margin-bottom: 0.8rem;
+    line-height: 1.6;
+    text-shadow: 2px 2px 0px rgba(26, 26, 26, 0.9);
 }
 
 .project-content p {
-    color: #b0b0b0;
-    font-size: 0.9rem;
-    line-height: 1.6;
+    font-family: 'VT323', monospace;
+    color: #ECECEC;
+    font-size: 1.4rem;
+    line-height: 1.7;
     flex-grow: 1;
     margin-bottom: 1rem;
 }
 
+/* Tech Tags */
 .project-tech {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: 0.8rem;
     margin-bottom: 1.5rem;
 }
 
-.view-project {
-    margin-top: auto;
-    width: 100%;
-}
-
 .tech-tag {
-    background: rgba(74, 144, 226, 0.1);
-    color: #4a90e2;
-    padding: 0.3rem 0.8rem;
-    border-radius: 15px;
-    font-size: 0.8rem;
-    border: 1px solid rgba(74, 144, 226, 0.2);
+    font-family: 'VT323', monospace;
+    background: rgba(212, 165, 116, 0.15);
+    color: #D4A574;
+    padding: 0.5rem 1rem;
+    border: 2px solid #D4A574;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    box-shadow: 2px 2px 0px rgba(26, 26, 26, 0.6);
+    image-rendering: pixelated;
 }
 
+.tech-tag:hover {
+    background: rgba(212, 165, 116, 0.25);
+    transform: translateY(-2px);
+    box-shadow: 3px 3px 0px rgba(26, 26, 26, 0.8);
+}
+
+/* View Project Button */
 .view-project {
-    display: inline-block;
-    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Press Start 2P', cursive;
+    color: #2B2520;
+    background: #D4A574;
     text-decoration: none;
-    padding: 0.8rem 1.5rem;
-    border-radius: 25px;
-    background: #4a90e2;
-    font-weight: 500;
-    transition: all 0.3s ease;
+    padding: 1rem 2rem;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    transition: all 0.2s ease;
     text-align: center;
+    border: 3px solid #D4A574;
+    box-shadow: 4px 4px 0px rgba(26, 26, 26, 0.8);
+    margin-top: auto;
+    letter-spacing: 1px;
+    image-rendering: pixelated;
 }
 
 .view-project:hover {
-    background: #5c6bc0;
-    box-shadow: 0 0 20px rgba(74, 144, 226, 0.3);
-    transform: translateY(-2px);
+    background: #C9C0B0;
+    border-color: #C9C0B0;
+    transform: translateY(-3px);
+    box-shadow: 6px 6px 0px rgba(26, 26, 26, 0.9);
 }
 
+/* Back Button */
 .button-container {
     width: 100%;
     display: flex;
     justify-content: center;
-    margin-top: 3rem;
+    margin-top: 4rem;
 }
 
 .back-home-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    font-family: 'Press Start 2P', cursive;
     text-decoration: none;
     background: transparent;
-    color: #e0e0e0;
-    padding: 1rem 3rem;
+    color: #C9C0B0;
+    padding: 1.2rem 3rem;
     border-radius: 12px;
-    font-weight: 500;
+    font-size: 0.8rem;
     letter-spacing: 2px;
     transition: all 0.3s ease;
-    position: relative;
-    border: 1px solid #4a90e2;
-    box-shadow: 0 0 10px rgba(74, 144, 226, 0.2);
+    border: 4px solid #C9C0B0;
     text-transform: uppercase;
-    font-size: 0.9rem;
-    overflow: hidden;
-    z-index: 1;
-}
-
-.back-home-btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(45deg,
-        #4a90e2,
-        #5c6bc0,
-        #3f51b5
-    );
-    opacity: 0;
-    transition: all 0.3s ease;
-    z-index: -1;
+    box-shadow: 6px 6px 0px rgba(26, 26, 26, 0.8);
+    image-rendering: pixelated;
 }
 
 .back-home-btn:hover {
-    color: #ffffff;
-    transform: translateY(-2px);
-    border-color: transparent;
-    box-shadow: 
-        0 0 20px rgba(74, 144, 226, 0.3),
-        0 0 30px rgba(74, 144, 226, 0.2),
-        0 0 40px rgba(74, 144, 226, 0.1);
+    background: #D4A574;
+    color: #2B2520;
+    border-color: #D4A574;
+    transform: translateY(-5px);
+    box-shadow: 8px 8px 0px rgba(26, 26, 26, 0.9);
 }
 
-.back-home-btn:hover::before {
-    opacity: 1;
-}
-
+/* Animations */
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -260,129 +273,109 @@
     }
 }
 
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateX(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-@keyframes gradientShift {
-    0% {
-        background-position: 0% 50%;
-    }
-    50% {
-        background-position: 100% 50%;
-    }
-    100% {
-        background-position: 0% 50%;
-    }
-}
-
 /* Responsive Design */
 @media (max-width: 1200px) {
     .projects-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: 1fr;
+        max-width: 700px;
+        margin: 0 auto;
     }
 }
 
 @media (max-width: 768px) {
     .coding-page {
-        padding: 1rem;
+        padding: 2rem 1rem;
     }
+    
     .profile-header h1 {
-        font-size: 2.5rem;
-    }
-    .coding-container {
-        padding: 1.5rem;
-    }
-    .projects-section h2 {
         font-size: 1.8rem;
     }
+    
+    .projects-section h2 {
+        font-size: 1.4rem;
+    }
+    
     .projects-grid {
-        grid-template-columns: 1fr;
+        gap: 2rem;
         max-width: 500px;
-        margin-left: auto;
-        margin-right: auto;
-        gap: 1.5rem;
     }
-    .project-card {
-        width: 100%;
-    }
+    
     .project-content {
+        padding: 2.5rem 1.5rem 1.5rem;
         min-height: auto;
-        padding: 1.5rem;
+    }
+    
+    .project-content h3 {
+        font-size: 0.9rem;
+    }
+    
+    .project-content p {
+        font-size: 1.2rem;
+    }
+    
+    .tech-tag {
+        font-size: 1rem;
+        padding: 0.4rem 0.8rem;
+    }
+    
+    .view-project {
+        font-size: 0.65rem;
+        padding: 0.9rem 1.5rem;
+    }
+    
+    .back-home-btn {
+        font-size: 0.7rem;
+        padding: 1rem 2rem;
     }
 }
 
 @media (max-width: 480px) {
     .profile-header h1 {
+        font-size: 1.4rem;
+        letter-spacing: 1px;
+    }
+    
+    .profile-links {
+        gap: 1.5rem;
+    }
+    
+    .social-link {
         font-size: 2rem;
     }
-    .coding-container {
-        padding: 1rem;
-    }
+    
     .projects-section h2 {
-        font-size: 1.5rem;
+        font-size: 1.2rem;
     }
+    
     .projects-grid {
-        padding: 0;
         max-width: 100%;
     }
+    
     .project-card {
-        max-width: 100%;
+        border-width: 3px;
     }
-}
-
-/* Fix for very small screens */
-@media (max-width: 360px) {
-    .coding-page {
-        padding: 0.8rem;
-    }
-    .profile-header h1 {
-        font-size: 1.8rem;
-    }
-    .coding-container {
-        padding: 0.8rem;
-    }
-    .projects-section h2 {
-        font-size: 1.3rem;
-    }
-    .project-content {
-        padding: 0.8rem;
-    }
+    
     .project-content h3 {
+        font-size: 0.75rem;
+        line-height: 1.5;
+    }
+    
+    .project-content p {
         font-size: 1.1rem;
     }
+    
     .tech-tag {
-        padding: 0.2rem 0.6rem;
-        font-size: 0.75rem;
+        font-size: 0.9rem;
+        padding: 0.3rem 0.6rem;
     }
+    
+    .view-project {
+        font-size: 0.6rem;
+        padding: 0.8rem 1.2rem;
+    }
+    
     .back-home-btn {
-        padding: 0.6rem 1.5rem;
-        font-size: 0.75rem;
-    }
-}
-
-/* Fix for landscape orientation on mobile */
-@media (max-height: 600px) and (orientation: landscape) {
-    .coding-page {
-        padding: 1rem;
-    }
-    .profile-header {
-        margin-bottom: 2rem;
-    }
-    .coding-container {
-        padding: 1rem;
-    }
-    .projects-section {
-        margin-bottom: 2rem;
-    }
-    .button-container {
-        margin-top: 2rem;
+        font-size: 0.65rem;
+        padding: 0.9rem 1.5rem;
     }
 }

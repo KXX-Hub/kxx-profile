@@ -87,11 +87,11 @@ const MePage = () => {
     },
     {
       year: '2024',
-      title: 'IEEE Conference Publications',
-      subtitle: 'International Conference on Applied System Innovation',
+      title: 'Springer Journal Publications',
+      subtitle: 'Lecture Notes in Electrical Engineering',
       description: (
         <>
-          Second author of two research papers:
+          Second author of two research papers published in Springer:
           <br />
           1. <a href="https://link.springer.com/chapter/10.1007/978-3-031-64957-8_8" target="_blank" rel="noopener noreferrer" className="timeline-link">
             "A Social-Software-Based Telemedicine Information System for Facilitating Healthcare Services"
@@ -166,7 +166,7 @@ const MePage = () => {
     education: [
       'UIUC MSIM (2025-Present)',
       'FJU BS in Medical Information (2020-2024)',
-      'IEEE Conference Publications'
+      'Springer Journal Publications'
     ],
     work: [
       'Cybersecurity Engineer Intern at Galaxy Software',
@@ -268,7 +268,7 @@ const MePage = () => {
           >
             <FaCertificate /> Certifications
           </FilterButton>
-          <button className="clear-filter" onClick={clearFilter}>
+          <button className="clear-filter" onClick={clearFilter} title="Clear Filter">
             <FaTimes />
           </button>
         </div>

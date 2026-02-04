@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import { Link } from 'react-router-dom';
+import { FaWallet } from 'react-icons/fa';
 import NFTPreviewGrid from './components/NFTPreviewGrid';
 import './css/NFTPage.css';
 
@@ -26,17 +27,54 @@ const NFTPage = () => {
     ]
   };
 
-  const getContract = async () => {
-    if (!window.ethereum) throw new Error('MetaMask not installed');
+  // Get read-only contract (no wallet needed)
+  const getReadOnlyContract = async () => {
+    try {
+      // Try to use user's MetaMask provider first (read-only)
+      if (window.ethereum) {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        return new ethers.Contract(CONTRACT_CONFIG.address, CONTRACT_CONFIG.abi, provider);
+      }
+      
+      // Fallback to public providers
+      const providers = [
+        'https://eth.llamarpc.com',
+        'https://rpc.ankr.com/eth',
+        'https://eth-mainnet.public.blastapi.io',
+        'https://ethereum.publicnode.com'
+      ];
+      
+      // Try each provider until one works
+      for (const rpcUrl of providers) {
+        try {
+          const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+          await provider.getNetwork(); // Test connection
+          return new ethers.Contract(CONTRACT_CONFIG.address, CONTRACT_CONFIG.abi, provider);
+        } catch (err) {
+          continue; // Try next provider
+        }
+      }
+      
+      throw new Error('Unable to connect to Ethereum network. Please install MetaMask or try again later.');
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  // Get contract with signer (wallet needed for transactions)
+  const getSignerContract = async () => {
+    if (!window.ethereum) throw new Error('Please install MetaMask');
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
     return new ethers.Contract(CONTRACT_CONFIG.address, CONTRACT_CONFIG.abi, signer);
   };
 
-  const loadNFTs = async (walletAddress) => {
+  // Load NFTs without wallet (read-only)
+  const loadNFTs = async () => {
     try {
       setLoading(true);
-      const contract = await getContract();
+      setError(null);
+      const contract = await getReadOnlyContract();
 
       // Get album info
       const album = await contract.albums(1);
@@ -74,6 +112,7 @@ const NFTPage = () => {
     }
   };
 
+  // Connect wallet (only when user wants to purchase)
   const connectWallet = async () => {
     try {
       setLoading(true);
@@ -88,23 +127,27 @@ const NFTPage = () => {
       });
 
       setAccount(accounts[0]);
-      await loadNFTs(accounts[0]);
+      return accounts[0];
     } catch (err) {
       setError(`Wallet connection failed: ${err.message}`);
+      throw err;
     } finally {
       setLoading(false);
     }
   };
 
+  // Handle purchase - connect wallet if not connected
   const handlePurchase = async (tokenId, priceInWei) => {
-    if (!account) {
-      alert('Please connect wallet first');
-      return;
-    }
-
     try {
       setLoading(true);
-      const contract = await getContract();
+      
+      // Connect wallet if not connected
+      let walletAddress = account;
+      if (!walletAddress) {
+        walletAddress = await connectWallet();
+      }
+
+      const contract = await getSignerContract();
 
       const tx = await contract.purchaseTrack(tokenId, {
         value: priceInWei,
@@ -113,7 +156,9 @@ const NFTPage = () => {
 
       await tx.wait();
       alert('Purchase successful!');
-      await loadNFTs(account);
+      
+      // Reload NFT data
+      await loadNFTs();
     } catch (err) {
       alert(`Purchase failed: ${err.message}`);
     } finally {
@@ -121,30 +166,31 @@ const NFTPage = () => {
     }
   };
 
+  // Load NFTs on page load (no wallet required)
   useEffect(() => {
-    const init = async () => {
-      if (window.ethereum?.selectedAddress) {
-        setAccount(window.ethereum.selectedAddress);
-        await loadNFTs(window.ethereum.selectedAddress);
-      }
-    };
+    loadNFTs();
 
-    init();
-
+    // Listen for wallet changes
     if (window.ethereum) {
       window.ethereum.on('accountsChanged', (accounts) => {
         if (accounts.length > 0) {
           setAccount(accounts[0]);
-          loadNFTs(accounts[0]);
         } else {
           setAccount('');
-          setNfts([]);
         }
       });
 
       window.ethereum.on('chainChanged', () => {
         window.location.reload();
       });
+
+      // Check if already connected
+      window.ethereum.request({ method: 'eth_accounts' })
+        .then(accounts => {
+          if (accounts.length > 0) {
+            setAccount(accounts[0]);
+          }
+        });
     }
 
     return () => {
@@ -157,8 +203,38 @@ const NFTPage = () => {
 
   return (
     <div className="nft-page">
+      {/* Wallet button in top right corner */}
+      <div className="wallet-corner">
+        {account ? (
+          <div className="wallet-info-corner">
+            <div className="wallet-display-corner">
+              <FaWallet style={{ marginRight: '0.5rem' }} />
+              {`${account.slice(0, 6)}...${account.slice(-4)}`}
+            </div>
+            <button
+              onClick={() => {
+                setAccount('');
+              }}
+              className="disconnect-button-corner"
+            >
+              Disconnect
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={connectWallet}
+            disabled={loading}
+            className="connect-button-corner"
+          >
+            <FaWallet style={{ marginRight: '0.5rem' }} />
+            {loading ? 'Connecting...' : 'Connect Wallet'}
+          </button>
+        )}
+      </div>
+
       <div className="profile-header">
         <h1>Music NFT Gallery</h1>
+        <p className="subtitle">Listen to music and collect NFTs on the blockchain</p>
         <div className="profile-links">
           <a href="https://github.com/KXX-HUB" target="_blank" rel="noopener noreferrer" className="social-link">
             <i className="fab fa-github"></i>
@@ -186,9 +262,15 @@ const NFTPage = () => {
           </div>
         )}
 
+        {loading && !nfts.length && (
+          <div className="loading-state">
+            Loading NFTs...
+          </div>
+        )}
+
         <div className="nft-content">
           <div className="nft-list">
-            <h2>Available NFTs</h2>
+            <h2>Available Tracks</h2>
             <div className="nft-items">
               {nfts.map((nft) => (
                 <div
@@ -197,60 +279,32 @@ const NFTPage = () => {
                   className={`nft-item ${selectedNft?.id === nft.id ? 'selected' : ''}`}
                 >
                   <h3>{nft.name}</h3>
-                  <p>Token ID: {nft.id}</p>
-                  <p>Min Price: {ethers.utils.formatEther(nft.minPrice)} ETH</p>
+                  <p>Track #{nft.trackNumber}</p>
+                  <p>Price: {ethers.utils.formatEther(nft.minPrice)} ETH</p>
                 </div>
               ))}
               {nfts.length === 0 && !loading && (
                 <div className="empty-state">
-                  No NFTs available. Please connect your wallet to view NFTs.
+                  No tracks available at the moment.
                 </div>
               )}
             </div>
           </div>
 
           <div className="preview-section">
-            <h2>NFT Preview</h2>
+            <h2>Track Preview</h2>
             {selectedNft ? (
               <NFTPreviewGrid
                 tokenData={selectedNft}
                 onPurchase={handlePurchase}
+                isConnected={!!account}
               />
             ) : (
               <div className="empty-state">
-                Select a track to preview
+                Select a track to preview and listen
               </div>
             )}
           </div>
-        </div>
-
-        <div className="wallet-section">
-          {account ? (
-            <div className="wallet-info">
-              <div className="wallet-display">
-                {`${account.slice(0, 6)}...${account.slice(-4)}`}
-              </div>
-              <button
-                onClick={async () => {
-                  setAccount('');
-                  setNfts([]);
-                  setSelectedNft(null);
-                  setError(null);
-                }}
-                className="disconnect-button"
-              >
-                Disconnect
-              </button>
-            </div>
-          ) : (
-            <button
-              onClick={connectWallet}
-              disabled={loading}
-              className="connect-button"
-            >
-              {loading ? 'Connecting...' : 'Connect Wallet'}
-            </button>
-          )}
         </div>
 
         <div className="button-container">

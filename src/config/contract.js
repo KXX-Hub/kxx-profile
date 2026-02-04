@@ -4,12 +4,12 @@ const path = require('path');
 const config = require('../config');
 
 async function getMinPrice(songId) {
-  // 檢查是否有特定歌曲的最低價格設定
+  // Check if there's a specific song minimum price setting
   if (config.project.nft.minPrices.songs[songId]) {
     return hre.ethers.utils.parseEther(config.project.nft.minPrices.songs[songId]);
   }
-  // 否則使用默認最低價格
-  return hre.ethers.utils.parseEther(config.project.nft.minPrices.default || "0.01"); // 默認最低價格 0.01 ETH
+  // Otherwise use default minimum price
+  return hre.ethers.utils.parseEther(config.project.nft.minPrices.default || "0.01"); // Default minimum price 0.01 ETH
 }
 
 async function main() {
@@ -24,7 +24,7 @@ async function main() {
 
   console.log(` ✅ MusicAlbumNFT deployed to: ${musicAlbumNFT.address}`);
 
-  // 更新配置文件中的合約地址
+  // Update contract address in config file
   if (network === 'sepolia') {
     config.ethereum.contracts.testnet = musicAlbumNFT.address;
   } else if (network === 'mainnet') {
@@ -37,11 +37,11 @@ async function main() {
   );
   console.log('📝 Updated config.js with new contract address');
 
-  // 等待區塊確認
+  // Wait for block confirmations
   console.log('⏳ Waiting for block confirmations...');
   await musicAlbumNFT.deployTransaction.wait(5);
 
-  // 驗證合約
+  // Verify contract
   if (process.env.ETHERSCAN_API_KEY) {
     console.log(' 🔍 Verifying contract on Etherscan...');
     try {
@@ -59,7 +59,7 @@ async function main() {
     }
   }
 
-  // 鑄造 NFT
+  // Mint NFT
   const metadataDir = path.join(__dirname, '../metadata', network === 'sepolia' ? 'testnet/sepolia' : 'mainnet');
 
   if (!fs.existsSync(metadataDir)) {

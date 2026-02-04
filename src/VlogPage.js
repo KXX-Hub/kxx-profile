@@ -3,8 +3,8 @@ import axios from 'axios';
 import PageLayout from './components/layout/PageLayout';
 import './css/VlogPage.css';
 
-const YOUTUBE_CHANNEL_ID = 'UCVTmN2IJY1Zc3bArF-RsUWg';
-const YOUTUBE_API_KEY = 'AIzaSyD1Ewh11NuZMeBI9RsQdMcaGSDi0Zj1Ajk'; // TODO: 請填入你的 YouTube Data API v3 金鑰
+const YOUTUBE_CHANNEL_ID = process.env.REACT_APP_YOUTUBE_CHANNEL_ID || 'UCVTmN2IJY1Zc3bArF-RsUWg';
+const YOUTUBE_API_KEY = process.env.REACT_APP_YOUTUBE_API_KEY || '';
 
 const VlogContent = () => {
   const [videos, setVideos] = useState([]);
@@ -16,17 +16,17 @@ const VlogContent = () => {
       try {
         setLoading(true);
         setError(null);
-        // 取得最新三部影片
+        // Get latest 3 videos
         const res = await axios.get(
           `https://www.googleapis.com/youtube/v3/search?key=${YOUTUBE_API_KEY}&channelId=${YOUTUBE_CHANNEL_ID}&part=snippet,id&order=date&maxResults=3`
         );
         if (res.data.items && res.data.items.length > 0) {
           setVideos(res.data.items);
         } else {
-          setError('找不到最新影片');
+          setError('No latest videos found');
         }
       } catch (err) {
-        setError('取得影片失敗: ' + err.message);
+        setError('Failed to fetch videos: ' + err.message);
       } finally {
         setLoading(false);
       }
@@ -34,7 +34,7 @@ const VlogContent = () => {
     fetchLatestVideos();
   }, []);
 
-  if (loading) return <div className="vlog-container">載入中...</div>;
+  if (loading) return <div className="vlog-container">Loading...</div>;
   if (error) return <div className="vlog-container">{error}</div>;
   if (!videos.length) return null;
 
@@ -73,11 +73,11 @@ const VlogContent = () => {
                 allowFullScreen
                 style={{ borderRadius: 12, maxWidth: '100%' }}
               />
-              <div className="video-info" style={{ width: '100%', textAlign: 'left' }}>
-                <h2 style={{ fontSize: '1.5rem', color: '#fff', margin: '0 0 0.5rem 0' }}>{snippet.title}</h2>
-                <div className="video-meta" style={{ color: '#4a90e2', fontSize: '1rem', marginBottom: 8 }}>
-                  Update-Date：{new Date(snippet.publishedAt).toLocaleDateString()}
-                </div>
+               <div className="video-info" style={{ width: '100%', textAlign: 'left' }}>
+                 <h2 style={{ fontSize: '1.5rem', color: '#fff', margin: '0 0 0.5rem 0' }}>{snippet.title}</h2>
+                 <div className="video-meta" style={{ color: '#4a90e2', fontSize: '1rem', marginBottom: 8 }}>
+                   Update-Date: {new Date(snippet.publishedAt).toLocaleDateString()}
+                 </div>
                 <p className="video-description" style={{ color: '#b0b0b0', fontSize: '1rem', margin: 0 }}>
                   {snippet.description ? snippet.description.slice(0, 50) + (snippet.description.length > 50 ? '...' : '') : '—'}
                 </p>

@@ -2,17 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import '../css/NFTPreviewGrid.css';
 
-const NFTPreviewGrid = ({ tokenData, onPurchase }) => {
+const NFTPreviewGrid = ({ tokenData, onPurchase, isConnected }) => {
   const [metadata, setMetadata] = useState(null);
   const [audioUrl, setAudioUrl] = useState('');
   const [imageUrl, setImageUrl] = useState('/api/placeholder/400/400');
   const [customPrice, setCustomPrice] = useState('');
   const [priceError, setPriceError] = useState('');
-  const [audioKey, setAudioKey] = useState(0); // 添加 key 来强制重新渲染音频元素
+  const [audioKey, setAudioKey] = useState(0); // Add key to force re-render audio element
 
   useEffect(() => {
     const loadMetadata = async () => {
-      // 重置音频URL和状态
+      // Reset audio URL and state
       setAudioUrl('');
       setAudioKey(prev => prev + 1);
       setImageUrl('/api/placeholder/400/400');
@@ -25,14 +25,14 @@ const NFTPreviewGrid = ({ tokenData, onPurchase }) => {
         const data = await response.json();
         setMetadata(data);
 
-        // 更新音频URL
+        // Update audio URL
         if (data.animation_url) {
           const audioHash = data.animation_url.replace('ipfs://', '');
           const newAudioUrl = `https://gateway.pinata.cloud/ipfs/${audioHash}`;
           setAudioUrl(newAudioUrl);
         }
 
-        // 更新图片URL
+        // Update image URL
         if (data.image) {
           const imageHash = data.image.replace('ipfs://', '');
           setImageUrl(`https://gateway.pinata.cloud/ipfs/${imageHash}`);
@@ -43,7 +43,7 @@ const NFTPreviewGrid = ({ tokenData, onPurchase }) => {
     };
 
     loadMetadata();
-    // 重置价格输入
+    // Reset price input
     setCustomPrice(ethers.utils.formatEther(tokenData?.minPrice || '0'));
   }, [tokenData]);
 
@@ -89,7 +89,7 @@ const NFTPreviewGrid = ({ tokenData, onPurchase }) => {
         <div className="audio-section">
           <h4>Preview Track</h4>
           <audio
-            key={audioKey} // 使用 key 来强制重新渲染
+            key={audioKey} // Use key to force re-render
             controls
             className="preview-audio"
             controlsList="nodownload"
@@ -139,9 +139,9 @@ const NFTPreviewGrid = ({ tokenData, onPurchase }) => {
         <button
           onClick={handlePurchase}
           className="purchase-button"
-          disabled={!!priceError || !customPrice}
+          disabled={!isConnected && false} // Never disable, just change text
         >
-          Purchase NFT
+          {isConnected ? 'Purchase NFT' : 'Connect Wallet to Purchase'}
         </button>
       )}
     </div>

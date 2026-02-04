@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './css/MainPage.css';
-import { FaCode, FaUser, FaEthereum, FaYoutube } from 'react-icons/fa';
+import { FaCode, FaUser, FaEthereum, FaCamera, FaVideo } from 'react-icons/fa';
 import SocialLinks from './components/common/SocialLinks';
 
 /**
@@ -30,8 +30,8 @@ const ProfileImages = () => (
  */
 const ProfileInfo = () => (
   <div className="profile-info">
-    <h1 data-text="KXX">KXX</h1>
-    <p className="tagline">Software Engineer | Vibe Coder | Blockchain | Cybersecurity | Content Creator</p>
+    <h1 data-text="Chih-Kai, Hung">Chih-Kai, Hung</h1>
+    <p className="tagline">Software Engineer | Fullstack Developer | Blockchain | Cybersecurity | Content Creator</p>
     <div className="profile-description">
       <p>
         Dedicated to exploring and implementing blockchain and cybersecurity solutions. 
@@ -58,24 +58,29 @@ const ProfileSection = () => (
 const NavigationMenu = () => {
   const navItems = [
     { 
-      title: 'Coding', 
-      path: '/coding', 
-      icon: <FaCode />
-    },
-    { 
       title: 'Me', 
       path: '/me', 
       icon: <FaUser />
     },
     { 
+      title: 'Coding', 
+      path: '/coding', 
+      icon: <FaCode />
+    },
+    { 
+      title: 'Photos', 
+      path: '/photos', 
+      icon: <FaCamera />
+    },
+    { 
+      title: 'Videos', 
+      path: '/videos', 
+      icon: <FaVideo />
+    },
+    { 
       title: 'NFT', 
       path: '/nft', 
       icon: <FaEthereum />
-    },
-    { 
-      title: 'Vlog', 
-      path: '/vlog', 
-      icon: <FaYoutube />
     }
   ];
 

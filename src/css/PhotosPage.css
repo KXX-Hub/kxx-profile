@@ -1,0 +1,1201 @@
+/* ==================== PHOTOS PAGE - MACINTOSH CLASSIC THEME ==================== */
+
+:root {
+  --mac-bg-beige: #C9C0B0;
+  --mac-bg-dark: #2B2520;
+  --mac-bg-medium: #3D3530;
+  --mac-bg-light: #4F4540;
+  
+  --mac-black: #1A1A1A;
+  --mac-gray-dark: #4A4A4A;
+  --mac-gray-medium: #7A7A7A;
+  --mac-gray-light: #AFAFAF;
+  --mac-white: #ECECEC;
+  --mac-accent: #D4A574;
+  --mac-accent-light: #C9C0B0;
+  
+  --font-pixel: 'Press Start 2P', cursive;
+  --font-mono: 'VT323', monospace;
+  
+  --spacing-xs: 8px;
+  --spacing-sm: 16px;
+  --spacing-md: 24px;
+  --spacing-lg: 32px;
+  --spacing-xl: 48px;
+  
+  --pixel-border-width: 4px;
+}
+
+/* ==================== Page Layout ==================== */
+.photos-page {
+  min-height: 100vh;
+  background: var(--mac-bg-dark);
+  color: var(--mac-white);
+  padding: var(--spacing-lg) var(--spacing-md);
+  font-family: var(--font-mono);
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* CRT Scanline Effect */
+.photos-page::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.08),
+    rgba(0, 0, 0, 0.08) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+  pointer-events: none;
+  z-index: 1000;
+  animation: scanline 8s linear infinite;
+}
+
+@keyframes scanline {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(100%); }
+}
+
+/* Pixel Grid Background */
+.photos-page::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    linear-gradient(rgba(42, 37, 32, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(42, 37, 32, 0.05) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ==================== Header ==================== */
+.photos-page .page-header {
+  text-align: center;
+  margin-bottom: var(--spacing-xl);
+  padding: var(--spacing-lg) var(--spacing-md);
+  position: relative;
+  z-index: 1;
+}
+
+.photos-page .page-header h1 {
+  font-family: var(--font-pixel);
+  font-size: 2rem;
+  margin-bottom: var(--spacing-md);
+  color: var(--mac-accent);
+  text-shadow: 
+    3px 3px 0px var(--mac-black),
+    0 0 2px var(--mac-gray-light);
+  letter-spacing: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+}
+
+.photos-page .page-header h1 svg {
+  filter: drop-shadow(2px 2px 0px var(--mac-black));
+}
+
+.photos-page .page-header .subtitle {
+  font-family: var(--font-mono);
+  font-size: 1.2rem;
+  color: var(--mac-gray-light);
+  margin-top: var(--spacing-sm);
+  text-shadow: 1px 1px 0px var(--mac-black);
+  letter-spacing: 1px;
+}
+
+/* ==================== Upload Section ==================== */
+.upload-section {
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--spacing-lg);
+  position: relative;
+  z-index: 1;
+}
+
+.upload-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: 16px 32px;
+  background: var(--mac-accent);
+  border: var(--pixel-border-width) solid var(--mac-black);
+  color: var(--mac-black);
+  font-family: var(--font-pixel);
+  font-size: 0.7rem;
+  cursor: pointer;
+  transition: all 0.1s ease;
+  box-shadow: 
+    6px 6px 0px var(--mac-black),
+    0 0 2px var(--mac-accent);
+  text-transform: uppercase;
+  border-radius: 8px;
+}
+
+.upload-btn:hover {
+  background: var(--mac-accent-light);
+  transform: translate(-2px, -2px);
+  box-shadow: 
+    8px 8px 0px var(--mac-black),
+    0 0 4px var(--mac-accent);
+}
+
+.upload-btn.uploading {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.upload-btn .spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ==================== Filter Section ==================== */
+.photos-page .filter-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-lg);
+  position: relative;
+  z-index: 10;
+}
+
+.photos-page .filter-buttons {
+  display: flex;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.filter-dropdown {
+  position: relative;
+}
+
+.photos-page .filter-btn {
+  padding: 12px 24px;
+  background: var(--mac-bg-medium);
+  border: var(--pixel-border-width) solid var(--mac-black);
+  color: var(--mac-white);
+  font-family: var(--font-pixel);
+  font-size: 0.55rem;
+  cursor: pointer;
+  transition: all 0.1s ease;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  text-transform: uppercase;
+  box-shadow: 
+    4px 4px 0px var(--mac-black);
+  border-radius: 6px;
+}
+
+.photos-page .filter-btn:hover {
+  background: var(--mac-bg-light);
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px var(--mac-black);
+}
+
+.photos-page .filter-btn.active {
+  background: var(--mac-accent);
+  color: var(--mac-black);
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 4px;
+  background: var(--mac-bg-medium);
+  border: var(--pixel-border-width) solid var(--mac-black);
+  border-radius: 6px;
+  box-shadow: 6px 6px 0px var(--mac-black);
+  min-width: 200px;
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 100;
+}
+
+.dropdown-menu button {
+  display: block;
+  width: 100%;
+  padding: 10px 16px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid var(--mac-bg-light);
+  color: var(--mac-white);
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.1s ease;
+}
+
+.dropdown-menu button:last-child {
+  border-bottom: none;
+}
+
+.dropdown-menu button:hover {
+  background: var(--mac-bg-light);
+}
+
+.dropdown-menu button.active {
+  background: var(--mac-accent);
+  color: var(--mac-black);
+}
+
+.photos-page .clear-filter {
+  width: 44px;
+  height: 44px;
+  background: var(--mac-bg-light);
+  border: var(--pixel-border-width) solid var(--mac-black);
+  color: var(--mac-white);
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.1s ease;
+  box-shadow: 4px 4px 0px var(--mac-black);
+}
+
+.photos-page .clear-filter:hover {
+  background: var(--mac-accent);
+  color: var(--mac-black);
+  transform: rotate(90deg);
+}
+
+.active-filter {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  color: var(--mac-gray-light);
+  background: var(--mac-bg-medium);
+  padding: 8px 16px;
+  border-radius: 4px;
+  border: 2px solid var(--mac-bg-light);
+}
+
+.active-filter strong {
+  color: var(--mac-accent);
+}
+
+/* ==================== Photos Container ==================== */
+.photos-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: var(--spacing-lg) var(--spacing-md);
+  position: relative;
+  z-index: 1;
+}
+
+/* ==================== Photos Grid ==================== */
+.photos-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-md);
+}
+
+/* ==================== Photo Card ==================== */
+.photo-card {
+  position: relative;
+  background: var(--mac-bg-medium);
+  border: var(--pixel-border-width) solid var(--mac-black);
+  cursor: pointer;
+  transition: all 0.1s ease;
+  box-shadow: 
+    6px 6px 0px var(--mac-black);
+  opacity: 0;
+  animation: pixelFadeIn 0.5s ease forwards;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.photo-card:hover {
+  border-color: var(--mac-accent);
+  box-shadow: 
+    10px 10px 0px var(--mac-black),
+    0 0 4px var(--mac-accent);
+  transform: translate(-4px, -4px);
+}
+
+/* Stagger animation */
+.photo-card:nth-child(1) { animation-delay: 0.05s; }
+.photo-card:nth-child(2) { animation-delay: 0.1s; }
+.photo-card:nth-child(3) { animation-delay: 0.15s; }
+.photo-card:nth-child(4) { animation-delay: 0.2s; }
+.photo-card:nth-child(5) { animation-delay: 0.25s; }
+.photo-card:nth-child(6) { animation-delay: 0.3s; }
+.photo-card:nth-child(7) { animation-delay: 0.35s; }
+.photo-card:nth-child(8) { animation-delay: 0.4s; }
+.photo-card:nth-child(9) { animation-delay: 0.45s; }
+.photo-card:nth-child(10) { animation-delay: 0.5s; }
+.photo-card:nth-child(11) { animation-delay: 0.55s; }
+.photo-card:nth-child(12) { animation-delay: 0.6s; }
+
+@keyframes pixelFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.photo-thumbnail {
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: var(--mac-bg-dark);
+}
+
+.photo-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.2s ease;
+}
+
+.photo-card:hover .photo-thumbnail img {
+  transform: scale(1.1);
+}
+
+.photo-info {
+  padding: var(--spacing-xs);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  background: var(--mac-bg-dark);
+  border-top: 2px solid var(--mac-black);
+}
+
+.info-tag {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  background: var(--mac-bg-medium);
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--mac-gray-light);
+}
+
+.info-tag.device {
+  color: var(--mac-accent);
+}
+
+.info-tag.settings {
+  color: var(--mac-accent-light);
+}
+
+.info-tag svg {
+  font-size: 0.6rem;
+}
+
+/* ==================== Photo Meta (New EXIF Display) ==================== */
+.photo-meta {
+  padding: var(--spacing-sm);
+  background: var(--mac-bg-dark);
+  border-top: 2px solid var(--mac-black);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.meta-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--mac-gray-light);
+  line-height: 1.3;
+}
+
+.meta-row .meta-icon {
+  font-size: 0.7rem;
+  color: var(--mac-accent);
+  flex-shrink: 0;
+  width: 14px;
+}
+
+.meta-row span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Device row */
+.meta-row.device {
+  color: var(--mac-accent);
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+/* Date row */
+.meta-row.date {
+  color: var(--mac-gray-light);
+}
+
+/* Settings row (aperture, shutter, ISO) */
+.meta-row.settings {
+  color: var(--mac-accent-light);
+  font-size: 0.8rem;
+}
+
+.meta-row.settings span {
+  letter-spacing: 0.5px;
+}
+
+/* Focal length badge */
+.meta-row.focal {
+  margin-top: 2px;
+}
+
+.focal-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  background: var(--mac-accent);
+  color: var(--mac-black);
+  font-family: var(--font-pixel);
+  font-size: 0.5rem;
+  border-radius: 4px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+}
+
+/* Location row */
+.meta-row.location {
+  color: var(--mac-gray-medium);
+  font-size: 0.75rem;
+}
+
+.meta-row.location .meta-icon {
+  color: var(--mac-gray-medium);
+}
+
+/* Hover effect on photo card */
+.photo-card:hover .photo-meta {
+  background: var(--mac-bg-medium);
+}
+
+.photo-card:hover .meta-row.device {
+  color: var(--mac-white);
+}
+
+/* ==================== Photo Modal ==================== */
+.photo-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: var(--spacing-lg);
+}
+
+.modal-content {
+  position: relative;
+  max-width: 90vw;
+  max-height: 90vh;
+  background: var(--mac-bg-medium);
+  border: var(--pixel-border-width) solid var(--mac-accent);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 
+    12px 12px 0px var(--mac-black),
+    0 0 20px rgba(212, 165, 116, 0.3);
+}
+
+.modal-content img {
+  max-width: 100%;
+  max-height: 70vh;
+  display: block;
+}
+
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 40px;
+  height: 40px;
+  background: var(--mac-bg-dark);
+  border: 3px solid var(--mac-accent);
+  color: var(--mac-accent);
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.1s ease;
+  z-index: 10;
+}
+
+.modal-close:hover {
+  background: var(--mac-accent);
+  color: var(--mac-black);
+  transform: rotate(90deg);
+}
+
+.modal-info {
+  padding: var(--spacing-md);
+  background: var(--mac-bg-dark);
+  border-top: 3px solid var(--mac-black);
+}
+
+.modal-info h3 {
+  font-family: var(--font-pixel);
+  font-size: 0.7rem;
+  color: var(--mac-accent);
+  margin-bottom: var(--spacing-sm);
+  word-break: break-all;
+}
+
+.modal-info p {
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  color: var(--mac-gray-light);
+  margin: var(--spacing-xs) 0;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.modal-info p svg {
+  color: var(--mac-accent);
+}
+
+.settings-info {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  color: var(--mac-accent-light);
+  margin-top: var(--spacing-sm);
+  padding-top: var(--spacing-sm);
+  border-top: 2px solid var(--mac-bg-medium);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+/* ==================== Loading & Error States ==================== */
+.photos-page .loading-message,
+.photos-page .error-message,
+.photos-page .no-items {
+  text-align: center;
+  padding: var(--spacing-xl) var(--spacing-md);
+  font-family: var(--font-pixel);
+  font-size: 0.8rem;
+  color: var(--mac-gray-light);
+  text-shadow: 1px 1px 0px var(--mac-black);
+  animation: macBlink 1s infinite;
+  grid-column: 1 / -1;
+}
+
+@keyframes macBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.photos-page .error-message {
+  color: var(--mac-accent);
+}
+
+/* ==================== Back Button ==================== */
+.photos-page .button-container {
+  text-align: center;
+  margin-top: var(--spacing-xl);
+  position: relative;
+  z-index: 1;
+}
+
+.photos-page .back-home-btn {
+  display: inline-block;
+  padding: 16px 32px;
+  background: var(--mac-bg-medium);
+  border: var(--pixel-border-width) solid var(--mac-accent);
+  color: var(--mac-accent);
+  text-decoration: none;
+  font-family: var(--font-pixel);
+  font-size: 0.7rem;
+  transition: all 0.1s ease;
+  box-shadow: 
+    6px 6px 0px var(--mac-black),
+    0 0 2px var(--mac-accent);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  border-radius: 8px;
+}
+
+.photos-page .back-home-btn::before {
+  content: '◀ ';
+  animation: arrowBounce 1s infinite;
+}
+
+@keyframes arrowBounce {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(-4px); }
+}
+
+.photos-page .back-home-btn:hover {
+  background: var(--mac-accent);
+  color: var(--mac-black);
+  border-color: var(--mac-black);
+  box-shadow: 
+    8px 8px 0px var(--mac-black),
+    0 0 4px var(--mac-accent);
+  transform: translate(-2px, -2px);
+}
+
+/* ==================== View Toggle ==================== */
+.view-toggle {
+  display: flex;
+  gap: 4px;
+}
+
+.filter-divider {
+  width: 2px;
+  height: 30px;
+  background: var(--mac-bg-light);
+  margin: 0 8px;
+}
+
+/* ==================== Map Placeholder ==================== */
+.map-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  color: var(--mac-gray-light);
+  font-family: var(--font-mono);
+  text-align: center;
+}
+
+.map-placeholder svg {
+  font-size: 4rem;
+  margin-bottom: var(--spacing-md);
+  color: var(--mac-accent);
+}
+
+.map-placeholder p {
+  font-size: 1.2rem;
+  margin: var(--spacing-xs) 0;
+}
+
+/* ==================== Map View ==================== */
+.map-view {
+  position: relative;
+  width: 100%;
+  height: 600px;
+  border: var(--pixel-border-width) solid var(--mac-black);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 8px 8px 0px var(--mac-black);
+}
+
+.photo-map {
+  width: 100%;
+  height: 100%;
+  background: var(--mac-bg-dark);
+}
+
+.photo-map .leaflet-popup-content-wrapper {
+  background: var(--mac-bg-medium);
+  border: 2px solid var(--mac-accent);
+  border-radius: 8px;
+  color: var(--mac-white);
+}
+
+.photo-map .leaflet-popup-tip {
+  background: var(--mac-bg-medium);
+  border: 1px solid var(--mac-accent);
+}
+
+.map-popup {
+  font-family: var(--font-mono);
+  text-align: center;
+  padding: 4px;
+}
+
+.map-popup strong {
+  font-family: var(--font-pixel);
+  font-size: 0.6rem;
+  color: var(--mac-accent);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.map-popup p {
+  font-size: 0.9rem;
+  color: var(--mac-gray-light);
+  margin: 0;
+}
+
+/* ==================== Location Overlay ==================== */
+.location-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(10px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-lg);
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.location-content {
+  background: var(--mac-bg-medium);
+  border: var(--pixel-border-width) solid var(--mac-accent);
+  border-radius: 16px;
+  max-width: 90vw;
+  max-height: 85vh;
+  overflow: hidden;
+  box-shadow: 
+    12px 12px 0px var(--mac-black),
+    0 0 30px rgba(212, 165, 116, 0.2);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from { 
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.location-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: var(--mac-bg-dark);
+  border-bottom: 3px solid var(--mac-black);
+}
+
+.location-header h2 {
+  font-family: var(--font-pixel);
+  font-size: 0.9rem;
+  color: var(--mac-accent);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin: 0;
+  text-shadow: 2px 2px 0px var(--mac-black);
+}
+
+.location-header h2 svg {
+  font-size: 1.2rem;
+}
+
+.location-header .close-btn {
+  width: 40px;
+  height: 40px;
+  background: var(--mac-bg-medium);
+  border: 3px solid var(--mac-accent);
+  color: var(--mac-accent);
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.1s ease;
+}
+
+.location-header .close-btn:hover {
+  background: var(--mac-accent);
+  color: var(--mac-black);
+  transform: rotate(90deg);
+}
+
+.location-photos-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg);
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.location-photo-card {
+  position: relative;
+  background: var(--mac-bg-dark);
+  border: 3px solid var(--mac-black);
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.1s ease;
+  box-shadow: 4px 4px 0px var(--mac-black);
+}
+
+.location-photo-card:hover {
+  border-color: var(--mac-accent);
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px var(--mac-black);
+}
+
+.location-photo-card img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  transition: transform 0.2s ease;
+}
+
+.location-photo-card:hover img {
+  transform: scale(1.05);
+}
+
+.location-photo-info {
+  padding: var(--spacing-xs);
+  background: var(--mac-bg-dark);
+  border-top: 2px solid var(--mac-black);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.location-photo-info span {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--mac-gray-light);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.location-photo-info span svg {
+  color: var(--mac-accent);
+  font-size: 0.6rem;
+}
+
+/* Scrollbar styling for location photos */
+.location-photos-grid::-webkit-scrollbar {
+  width: 8px;
+}
+
+.location-photos-grid::-webkit-scrollbar-track {
+  background: var(--mac-bg-dark);
+}
+
+.location-photos-grid::-webkit-scrollbar-thumb {
+  background: var(--mac-accent);
+  border-radius: 4px;
+}
+
+/* Mobile responsive for map */
+@media (max-width: 900px) {
+  .map-view {
+    height: 500px;
+  }
+  
+  .location-photos-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .map-view {
+    height: 400px;
+  }
+  
+  .location-photos-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm);
+  }
+  
+  .location-header {
+    padding: var(--spacing-sm);
+  }
+  
+  .location-header h2 {
+    font-size: 0.7rem;
+  }
+  
+  .location-photo-info {
+    display: none;
+  }
+}
+
+/* ==================== Admin Button ==================== */
+.admin-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 10px 20px;
+  background: var(--mac-bg-medium);
+  border: 3px solid var(--mac-gray-medium);
+  color: var(--mac-gray-light);
+  font-family: var(--font-pixel);
+  font-size: 0.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 6px;
+  transition: all 0.1s ease;
+  box-shadow: 3px 3px 0px var(--mac-black);
+}
+
+.admin-btn:hover {
+  background: var(--mac-bg-light);
+  border-color: var(--mac-accent);
+  color: var(--mac-accent);
+}
+
+.admin-btn.logged-in {
+  background: var(--mac-accent);
+  color: var(--mac-black);
+  border-color: var(--mac-black);
+}
+
+.admin-btn.logged-in:hover {
+  background: var(--mac-accent-light);
+}
+
+/* ==================== Login Modal ==================== */
+.login-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+}
+
+.login-content {
+  position: relative;
+  background: var(--mac-bg-medium);
+  border: var(--pixel-border-width) solid var(--mac-accent);
+  border-radius: 12px;
+  padding: var(--spacing-xl);
+  text-align: center;
+  box-shadow: 12px 12px 0px var(--mac-black);
+  min-width: 300px;
+}
+
+.login-content h2 {
+  font-family: var(--font-pixel);
+  font-size: 1rem;
+  color: var(--mac-accent);
+  margin-bottom: var(--spacing-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+}
+
+.login-content input {
+  width: 100%;
+  padding: 14px;
+  background: var(--mac-bg-dark);
+  border: 3px solid var(--mac-gray-medium);
+  color: var(--mac-white);
+  font-family: var(--font-mono);
+  font-size: 1.2rem;
+  border-radius: 6px;
+  margin-bottom: var(--spacing-sm);
+  text-align: center;
+}
+
+.login-content input:focus {
+  outline: none;
+  border-color: var(--mac-accent);
+}
+
+.login-error {
+  color: #ff6b6b;
+  font-family: var(--font-pixel);
+  font-size: 0.6rem;
+  margin-bottom: var(--spacing-sm);
+}
+
+.login-submit {
+  width: 100%;
+  padding: 14px;
+  background: var(--mac-accent);
+  border: 3px solid var(--mac-black);
+  color: var(--mac-black);
+  font-family: var(--font-pixel);
+  font-size: 0.7rem;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.1s ease;
+  box-shadow: 4px 4px 0px var(--mac-black);
+}
+
+.login-submit:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px var(--mac-black);
+}
+
+/* ==================== Delete Button ==================== */
+.delete-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 32px;
+  height: 32px;
+  background: rgba(255, 80, 80, 0.9);
+  border: 2px solid var(--mac-black);
+  color: var(--mac-white);
+  font-size: 0.8rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  opacity: 0;
+  transition: all 0.1s ease;
+  z-index: 5;
+}
+
+.photo-card:hover .delete-btn {
+  opacity: 1;
+}
+
+.delete-btn:hover {
+  background: #ff4444;
+  transform: scale(1.1);
+}
+
+.modal-delete {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 8px 16px;
+  background: rgba(255, 80, 80, 0.9);
+  border: 2px solid var(--mac-black);
+  color: var(--mac-white);
+  font-family: var(--font-pixel);
+  font-size: 0.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 6px;
+  transition: all 0.1s ease;
+  z-index: 10;
+}
+
+.modal-delete:hover {
+  background: #ff4444;
+}
+
+/* ==================== Sort Menu ==================== */
+.sort-menu {
+  right: 0;
+  left: auto;
+}
+
+.sort-btn {
+  background: var(--mac-bg-light) !important;
+}
+
+/* ==================== Responsive Design ==================== */
+@media (max-width: 1200px) {
+  .photos-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .photos-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-sm);
+  }
+  
+  .photos-page .page-header h1 {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .photos-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-xs);
+  }
+  
+  .photos-page {
+    padding: var(--spacing-md) var(--spacing-sm);
+  }
+  
+  .photos-page .page-header h1 {
+    font-size: 1rem;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+  
+  .upload-btn {
+    padding: 12px 20px;
+    font-size: 0.6rem;
+  }
+  
+  .photos-page .filter-btn {
+    padding: 8px 12px;
+    font-size: 0.5rem;
+  }
+  
+  .photo-info,
+  .photo-meta {
+    display: none;
+  }
+  
+  .photos-page .back-home-btn {
+    font-size: 0.6rem;
+    padding: 12px 24px;
+  }
+  
+  .modal-content {
+    max-width: 95vw;
+  }
+  
+  .modal-info h3 {
+    font-size: 0.6rem;
+  }
+  
+  .modal-info p {
+    font-size: 0.9rem;
+  }
+}

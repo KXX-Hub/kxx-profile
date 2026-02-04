@@ -19,7 +19,7 @@ const ProfileInfo = () => (
     <p className="tagline">Software Engineer | Blockchain | Cybersecurity | Content Creator</p>
     <div className="profile-description">
       <p>
-        🎵 Vibe Coding: Dedicated to exploring and implementing blockchain and cybersecurity solutions. 
+        💻 Fullstack Developer: Dedicated to exploring and implementing blockchain and cybersecurity solutions. 
         Continuously learning and growing in software development while contributing to the tech community through knowledge sharing.
       </p>
     </div>

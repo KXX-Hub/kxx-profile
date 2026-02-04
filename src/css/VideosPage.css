@@ -1,0 +1,297 @@
+/* ==================== VIDEOS PAGE - MACINTOSH CLASSIC THEME ==================== */
+
+:root {
+  --mac-bg-beige: #C9C0B0;
+  --mac-bg-dark: #2B2520;
+  --mac-bg-medium: #3D3530;
+  --mac-bg-light: #4F4540;
+  
+  --mac-black: #1A1A1A;
+  --mac-gray-dark: #4A4A4A;
+  --mac-gray-medium: #7A7A7A;
+  --mac-gray-light: #AFAFAF;
+  --mac-white: #ECECEC;
+  --mac-accent: #D4A574;
+  --mac-accent-light: #C9C0B0;
+  
+  --mac-grid: rgba(42, 37, 32, 0.05);
+  --mac-border: #1A1A1A;
+  --mac-shadow: rgba(0, 0, 0, 0.3);
+  
+  --font-pixel: 'Press Start 2P', cursive;
+  --font-mono: 'VT323', monospace;
+  
+  --spacing-xs: 8px;
+  --spacing-sm: 16px;
+  --spacing-md: 24px;
+  --spacing-lg: 32px;
+  --spacing-xl: 48px;
+  
+  --pixel-border-width: 4px;
+}
+
+/* ==================== Page Layout ==================== */
+.videos-page {
+  min-height: 100vh;
+  background: var(--mac-bg-dark);
+  color: var(--mac-white);
+  padding: var(--spacing-lg) var(--spacing-md);
+  font-family: var(--font-mono);
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* CRT Scanline Effect */
+.videos-page::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.08),
+    rgba(0, 0, 0, 0.08) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+  pointer-events: none;
+  z-index: 1000;
+  animation: scanline 8s linear infinite;
+}
+
+@keyframes scanline {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(100%); }
+}
+
+/* Pixel Grid Background */
+.videos-page::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    linear-gradient(var(--mac-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--mac-grid) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ==================== Header ==================== */
+.page-header {
+  text-align: center;
+  margin-bottom: var(--spacing-xl);
+  padding: var(--spacing-lg) var(--spacing-md);
+  position: relative;
+  z-index: 1;
+}
+
+.page-header h1 {
+  font-family: var(--font-pixel);
+  font-size: 2rem;
+  margin-bottom: var(--spacing-md);
+  color: var(--mac-accent);
+  text-shadow: 
+    3px 3px 0px var(--mac-black),
+    0 0 2px var(--mac-gray-light);
+  letter-spacing: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+}
+
+.page-header h1 svg {
+  filter: drop-shadow(2px 2px 0px var(--mac-black));
+}
+
+.page-header .subtitle {
+  font-family: var(--font-mono);
+  font-size: 1.2rem;
+  color: var(--mac-gray-light);
+  margin-top: var(--spacing-sm);
+  text-shadow: 1px 1px 0px var(--mac-black);
+  letter-spacing: 1px;
+}
+
+/* ==================== Videos Container ==================== */
+.videos-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: var(--spacing-lg) var(--spacing-md);
+  position: relative;
+  z-index: 1;
+}
+
+/* ==================== Videos Grid ==================== */
+.videos-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-lg);
+}
+
+/* ==================== Media Card Overrides ==================== */
+.videos-page .media-card {
+  position: relative;
+  background: var(--mac-bg-medium);
+  border: var(--pixel-border-width) solid var(--mac-black);
+  cursor: pointer;
+  transition: all 0.1s ease;
+  box-shadow: 
+    8px 8px 0px var(--mac-black),
+    0 0 2px rgba(175, 175, 175, 0.3);
+  opacity: 0;
+  animation: pixelFadeIn 0.5s ease forwards;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.videos-page .media-card:hover {
+  border-color: var(--mac-accent);
+  box-shadow: 
+    12px 12px 0px var(--mac-black),
+    0 0 4px var(--mac-accent);
+  transform: translate(-4px, -4px);
+}
+
+/* Stagger animation */
+.videos-page .media-card:nth-child(1) { animation-delay: 0.1s; }
+.videos-page .media-card:nth-child(2) { animation-delay: 0.15s; }
+.videos-page .media-card:nth-child(3) { animation-delay: 0.2s; }
+.videos-page .media-card:nth-child(4) { animation-delay: 0.25s; }
+.videos-page .media-card:nth-child(5) { animation-delay: 0.3s; }
+.videos-page .media-card:nth-child(6) { animation-delay: 0.35s; }
+.videos-page .media-card:nth-child(7) { animation-delay: 0.4s; }
+.videos-page .media-card:nth-child(8) { animation-delay: 0.45s; }
+.videos-page .media-card:nth-child(9) { animation-delay: 0.5s; }
+.videos-page .media-card:nth-child(10) { animation-delay: 0.55s; }
+.videos-page .media-card:nth-child(11) { animation-delay: 0.6s; }
+.videos-page .media-card:nth-child(12) { animation-delay: 0.65s; }
+
+@keyframes pixelFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==================== Loading & Error States ==================== */
+.loading-message,
+.error-message,
+.no-items {
+  text-align: center;
+  padding: var(--spacing-xl) var(--spacing-md);
+  font-family: var(--font-pixel);
+  font-size: 0.8rem;
+  color: var(--mac-gray-light);
+  text-shadow: 1px 1px 0px var(--mac-black);
+  animation: macBlink 1s infinite;
+}
+
+@keyframes macBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.error-message {
+  color: var(--mac-accent);
+}
+
+/* ==================== Back Button ==================== */
+.button-container {
+  text-align: center;
+  margin-top: var(--spacing-xl);
+  position: relative;
+  z-index: 1;
+}
+
+.back-home-btn {
+  display: inline-block;
+  padding: 16px 32px;
+  background: var(--mac-bg-medium);
+  border: var(--pixel-border-width) solid var(--mac-accent);
+  color: var(--mac-accent);
+  text-decoration: none;
+  font-family: var(--font-pixel);
+  font-size: 0.7rem;
+  transition: all 0.1s ease;
+  box-shadow: 
+    6px 6px 0px var(--mac-black),
+    0 0 2px var(--mac-accent);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  border-radius: 8px;
+}
+
+.back-home-btn::before {
+  content: '◀ ';
+  animation: arrowBounce 1s infinite;
+}
+
+@keyframes arrowBounce {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(-4px); }
+}
+
+.back-home-btn:hover {
+  background: var(--mac-accent);
+  color: var(--mac-black);
+  border-color: var(--mac-black);
+  box-shadow: 
+    8px 8px 0px var(--mac-black),
+    0 0 4px var(--mac-accent);
+  transform: translate(-2px, -2px);
+}
+
+/* ==================== Responsive Design ==================== */
+@media (max-width: 1024px) {
+  .videos-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-md);
+  }
+  
+  .page-header h1 {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .page-header h1 {
+    font-size: 1.2rem;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+  
+  .page-header .subtitle {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .videos-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-sm);
+  }
+  
+  .videos-page {
+    padding: var(--spacing-md) var(--spacing-sm);
+  }
+  
+  .page-header h1 {
+    font-size: 1rem;
+  }
+  
+  .back-home-btn {
+    font-size: 0.6rem;
+    padding: 12px 24px;
+  }
+}
