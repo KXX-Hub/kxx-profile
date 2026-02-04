@@ -5,7 +5,7 @@ import CodingPage from './CodingPage';
 import MePage from './MePage';
 import NFTPage from './NFTPage';
 import VideosPage from './VideosPage';
-import PhotosPage from './PhotosPage';
+// import PhotosPage from './PhotosPage';
 import ClickExplosion from './components/ClickExplosion';
 import './App.css';
 
@@ -19,9 +19,11 @@ function App() {
         <Route path="/me" element={<MePage />} />
         <Route path="/nft" element={<NFTPage />} />
         <Route path="/videos" element={<VideosPage />} />
-        <Route path="/photos" element={<PhotosPage />} />
+        {/* Photos page temporarily hidden for testing */}
+        {/* <Route path="/photos" element={<PhotosPage />} /> */}
         {/* Legacy redirects */}
-        <Route path="/portfolio" element={<Navigate to="/photos" replace />} />
+        {/* <Route path="/portfolio" element={<Navigate to="/photos" replace />} /> */}
+        <Route path="/portfolio" element={<Navigate to="/" replace />} />
         <Route path="/vlog" element={<Navigate to="/videos" replace />} />
       </Routes>
     </Router>
