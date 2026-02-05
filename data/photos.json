@@ -1,0 +1,22 @@
+[
+  {
+    "id": "sample-1",
+    "url": "/photos/sample-1.jpg",
+    "thumbnail": "/photos/sample-1-thumb.jpg",
+    "filename": "sample-1.jpg",
+    "uploadedAt": "2026-02-05T00:00:00.000Z",
+    "date": "2025-12-21 16:32:10",
+    "device": "Sony A7C",
+    "location": "Taipei, Taiwan",
+    "settings": {
+      "aperture": "f/2.8",
+      "shutter": "1/250s",
+      "iso": "ISO 200",
+      "focalLength": "35mm"
+    },
+    "gps": {
+      "latitude": 25.033,
+      "longitude": 121.5654
+    }
+  }
+]
