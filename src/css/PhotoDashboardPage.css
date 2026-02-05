@@ -816,6 +816,51 @@
     color: rgba(255, 255, 255, 0.3);
 }
 
+/* GPS Inputs */
+.gps-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.gps-inputs .label-text {
+    font-size: 13px;
+    color: #9da3b0;
+}
+
+.gps-row {
+    display: flex;
+    gap: 10px;
+}
+
+.gps-row input {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+    padding: 12px 14px;
+    color: #fff;
+    font-size: 14px;
+    font-family: inherit;
+}
+
+.gps-row input:focus {
+    outline: none;
+    border-color: #ff9f43;
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.gps-row input::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 12px;
+}
+
+.gps-hint {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.4);
+    margin-top: 4px;
+}
+
 .edit-actions {
     display: flex;
     gap: 12px;

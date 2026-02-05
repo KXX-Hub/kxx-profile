@@ -1,6 +1,125 @@
 /* ==================== Global Navigation - Pixel Retro Style ==================== */
 @import url('https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap');
 
+/* ==================== Page Navigation Arrows (Pixel Style) ==================== */
+.page-nav-arrow {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 999;
+  
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 12px;
+  
+  background: linear-gradient(180deg, #3a3530 0%, #2a2520 100%);
+  border: 4px solid #d4a574;
+  color: #d4a574;
+  
+  font-family: 'Press Start 2P', cursive;
+  font-size: 10px;
+  cursor: pointer;
+  
+  box-shadow: 
+    4px 4px 0 #0a0a0a,
+    inset 2px 2px 0 rgba(255, 255, 255, 0.1),
+    inset -2px -2px 0 rgba(0, 0, 0, 0.3);
+  
+  transition: all 0.15s ease;
+  image-rendering: pixelated;
+}
+
+.page-nav-arrow:hover {
+  background: linear-gradient(180deg, #4a4540 0%, #3a3530 100%);
+  box-shadow: 
+    6px 6px 0 #0a0a0a,
+    inset 2px 2px 0 rgba(255, 255, 255, 0.15),
+    inset -2px -2px 0 rgba(0, 0, 0, 0.3),
+    0 0 20px rgba(212, 165, 116, 0.3);
+  transform: translateY(-50%) scale(1.05);
+}
+
+.page-nav-arrow:active {
+  transform: translateY(-50%) scale(0.98);
+  box-shadow: 
+    2px 2px 0 #0a0a0a,
+    inset 2px 2px 0 rgba(0, 0, 0, 0.2);
+}
+
+.page-nav-left {
+  left: 0;
+  border-left: none;
+  border-radius: 0 12px 12px 0;
+  padding-left: 8px;
+}
+
+.page-nav-right {
+  right: 0;
+  border-right: none;
+  border-radius: 12px 0 0 12px;
+  padding-right: 8px;
+}
+
+.arrow-icon {
+  font-size: 14px;
+  line-height: 1;
+  text-shadow: 2px 2px 0 #0a0a0a;
+  animation: arrowPulse 1.5s infinite;
+}
+
+.page-nav-left .arrow-icon {
+  animation-name: arrowPulseLeft;
+}
+
+.page-nav-right .arrow-icon {
+  animation-name: arrowPulseRight;
+}
+
+@keyframes arrowPulseLeft {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(-3px); }
+}
+
+@keyframes arrowPulseRight {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(3px); }
+}
+
+.arrow-label {
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-shadow: 1px 1px 0 #0a0a0a;
+  white-space: nowrap;
+}
+
+/* Hide label on smaller screens */
+@media (max-width: 768px) {
+  .arrow-label {
+    display: none;
+  }
+  
+  .page-nav-arrow {
+    padding: 14px 10px;
+  }
+  
+  .arrow-icon {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-nav-arrow {
+    padding: 12px 8px;
+    border-width: 3px;
+  }
+  
+  .arrow-icon {
+    font-size: 10px;
+  }
+}
+
+/* ==================== Global Nav Bar ==================== */
 .global-nav {
   position: fixed;
   bottom: 0;

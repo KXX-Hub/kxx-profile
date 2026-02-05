@@ -181,9 +181,9 @@
 }
 
 .timeline-description {
-    font-size: 0.9rem;
-    line-height: 1.6;
-    color: rgba(236, 236, 236, 0.8);
+    font-size: 1.1rem;
+    line-height: 1.7;
+    color: rgba(236, 236, 236, 0.85);
 }
 
 .timeline-link {

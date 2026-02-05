@@ -2,43 +2,69 @@ import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import '../css/NFTPreviewGrid.css';
 
+// Multiple IPFS gateways to try
+const IPFS_GATEWAYS = [
+  'https://gateway.pinata.cloud/ipfs/',
+  'https://ipfs.io/ipfs/',
+  'https://cloudflare-ipfs.com/ipfs/',
+  'https://dweb.link/ipfs/'
+];
+
 const NFTPreviewGrid = ({ tokenData, onPurchase, isConnected }) => {
   const [metadata, setMetadata] = useState(null);
   const [audioUrl, setAudioUrl] = useState('');
   const [imageUrl, setImageUrl] = useState('https://placehold.co/400x400/2B2520/C9C0B0?text=Loading...');
   const [customPrice, setCustomPrice] = useState('');
   const [priceError, setPriceError] = useState('');
-  const [audioKey, setAudioKey] = useState(0); // Add key to force re-render audio element
+  const [audioKey, setAudioKey] = useState(0);
+  const [imageError, setImageError] = useState(false);
+
+  // Try to fetch from multiple gateways
+  const fetchFromIPFS = async (hash) => {
+    for (const gateway of IPFS_GATEWAYS) {
+      try {
+        const response = await fetch(`${gateway}${hash}`, { 
+          signal: AbortSignal.timeout(5000) // 5 second timeout
+        });
+        if (response.ok) {
+          return response;
+        }
+      } catch (err) {
+        console.log(`Gateway ${gateway} failed, trying next...`);
+      }
+    }
+    throw new Error('All gateways failed');
+  };
 
   useEffect(() => {
     const loadMetadata = async () => {
-      // Reset audio URL and state
       setAudioUrl('');
       setAudioKey(prev => prev + 1);
       setImageUrl('https://placehold.co/400x400/2B2520/C9C0B0?text=Loading...');
+      setImageError(false);
 
       if (!tokenData?.uri) return;
 
       try {
         const ipfsHash = tokenData.uri.replace('ipfs://', '');
-        const response = await fetch(`https://gateway.pinata.cloud/ipfs/${ipfsHash}`);
+        const response = await fetchFromIPFS(ipfsHash);
         const data = await response.json();
         setMetadata(data);
 
-        // Update audio URL
+        // Update audio URL (use first gateway that works for metadata)
         if (data.animation_url) {
           const audioHash = data.animation_url.replace('ipfs://', '');
-          const newAudioUrl = `https://gateway.pinata.cloud/ipfs/${audioHash}`;
-          setAudioUrl(newAudioUrl);
+          setAudioUrl(`${IPFS_GATEWAYS[0]}${audioHash}`);
         }
 
         // Update image URL
         if (data.image) {
           const imageHash = data.image.replace('ipfs://', '');
-          setImageUrl(`https://gateway.pinata.cloud/ipfs/${imageHash}`);
+          setImageUrl(`${IPFS_GATEWAYS[0]}${imageHash}`);
         }
       } catch (err) {
         console.error('Error loading metadata:', err);
+        setImageUrl('https://placehold.co/400x400/2B2520/C9C0B0?text=Failed+to+load');
       }
     };
 
@@ -82,7 +108,22 @@ const NFTPreviewGrid = ({ tokenData, onPurchase, isConnected }) => {
   return (
     <div className="nft-preview-grid">
       <div className="preview-image-container">
-        <img src={imageUrl} alt="NFT Preview" className="preview-image" />
+        <img 
+          src={imageUrl} 
+          alt="NFT Preview" 
+          className="preview-image"
+          onError={(e) => {
+            // Try next gateway on error
+            if (!imageError && metadata?.image) {
+              setImageError(true);
+              const imageHash = metadata.image.replace('ipfs://', '');
+              // Try cloudflare gateway as backup
+              e.target.src = `https://cloudflare-ipfs.com/ipfs/${imageHash}`;
+            } else {
+              e.target.src = 'https://placehold.co/400x400/2B2520/C9C0B0?text=Image+Not+Found';
+            }
+          }}
+        />
       </div>
 
       {audioUrl && (

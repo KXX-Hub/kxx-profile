@@ -114,7 +114,7 @@ const PhotoDashboardPage = () => {
 
     // Editing
     const [editingPhoto, setEditingPhoto] = useState(null);
-    const [editForm, setEditForm] = useState({ location: '', device: '' });
+    const [editForm, setEditForm] = useState({ location: '', device: '', latitude: '', longitude: '' });
     const [saving, setSaving] = useState(false);
 
     // Location search
@@ -374,14 +374,16 @@ const PhotoDashboardPage = () => {
         setEditingPhoto(photo);
         setEditForm({
             location: photo.location || '',
-            device: photo.device || ''
+            device: photo.device || '',
+            latitude: photo.gps?.latitude?.toString() || '',
+            longitude: photo.gps?.longitude?.toString() || ''
         });
     };
 
     // Close edit modal
     const closeEdit = () => {
         setEditingPhoto(null);
-        setEditForm({ location: '', device: '' });
+        setEditForm({ location: '', device: '', latitude: '', longitude: '' });
     };
 
     // Save edit
@@ -389,10 +391,27 @@ const PhotoDashboardPage = () => {
         if (!editingPhoto) return;
         try {
             setSaving(true);
-            await updateDoc(doc(db, 'photos', editingPhoto.id), {
+
+            // Prepare update data
+            const updateData = {
                 location: editForm.location.trim(),
                 device: editForm.device.trim()
-            });
+            };
+
+            // Add GPS if both lat/lng are provided
+            const lat = parseFloat(editForm.latitude);
+            const lng = parseFloat(editForm.longitude);
+            if (!isNaN(lat) && !isNaN(lng)) {
+                updateData.gps = {
+                    latitude: lat,
+                    longitude: lng
+                };
+            } else if (editForm.latitude === '' && editForm.longitude === '') {
+                // If both are empty, remove GPS
+                updateData.gps = null;
+            }
+
+            await updateDoc(doc(db, 'photos', editingPhoto.id), updateData);
             await loadPhotos();
             closeEdit();
         } catch (err) {
@@ -449,9 +468,14 @@ const PhotoDashboardPage = () => {
         return () => clearTimeout(timer);
     }, [locationQuery]);
 
-    // Select location from results
+    // Select location from results (also fills in GPS coordinates)
     const selectLocation = (result) => {
-        setEditForm(f => ({ ...f, location: result.formatted }));
+        setEditForm(f => ({
+            ...f,
+            location: result.formatted,
+            latitude: result.lat || '',
+            longitude: result.lon || ''
+        }));
         setLocationQuery('');
         setLocationResults([]);
     };
@@ -719,6 +743,27 @@ const PhotoDashboardPage = () => {
                                     placeholder="Brand Model"
                                 />
                             </label>
+
+                            <div className="gps-inputs">
+                                <span className="label-text">📍 GPS Coordinates</span>
+                                <div className="gps-row">
+                                    <input
+                                        type="number"
+                                        step="any"
+                                        value={editForm.latitude}
+                                        onChange={e => setEditForm(f => ({ ...f, latitude: e.target.value }))}
+                                        placeholder="Latitude (e.g. 25.0330)"
+                                    />
+                                    <input
+                                        type="number"
+                                        step="any"
+                                        value={editForm.longitude}
+                                        onChange={e => setEditForm(f => ({ ...f, longitude: e.target.value }))}
+                                        placeholder="Longitude (e.g. 121.5654)"
+                                    />
+                                </div>
+                                <small className="gps-hint">Leave empty to remove GPS. Find coordinates on Google Maps.</small>
+                            </div>
                         </div>
 
                         <div className="edit-actions">

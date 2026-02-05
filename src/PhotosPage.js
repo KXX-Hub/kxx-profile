@@ -52,6 +52,7 @@ const PhotosPage = () => {
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(20);
+  const [slideDirection, setSlideDirection] = useState(null); // 'left' or 'right'
 
   // Load photos from Firebase
   const loadPhotos = useCallback(async () => {
@@ -145,8 +146,8 @@ const PhotosPage = () => {
     { value: 'location', label: 'Location' }
   ];
 
-  // Photos with GPS
-  const photosWithGPS = photos.filter(p => p.gps);
+  // Photos with GPS (from filtered photos so filters apply to map too!)
+  const photosWithGPS = sortedPhotos.filter(p => p.gps);
 
   // Group photos by location for map markers
   const locationGroups = photosWithGPS.reduce((acc, photo) => {
@@ -179,6 +180,27 @@ const PhotosPage = () => {
   const totalPages = Math.ceil(sortedPhotos.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedPhotos = sortedPhotos.slice(startIndex, startIndex + itemsPerPage);
+
+  // Navigate with slide animation
+  const goToPrevPage = () => {
+    if (currentPage > 1) {
+      setSlideDirection('right');
+      setTimeout(() => {
+        setCurrentPage(p => p - 1);
+        setSlideDirection(null);
+      }, 150);
+    }
+  };
+
+  const goToNextPage = () => {
+    if (currentPage < totalPages) {
+      setSlideDirection('left');
+      setTimeout(() => {
+        setCurrentPage(p => p + 1);
+        setSlideDirection(null);
+      }, 150);
+    }
+  };
 
   // Reset to page 1 when filter changes
   useEffect(() => {
@@ -385,12 +407,29 @@ const PhotosPage = () => {
 
       {/* Photos content */}
       <div className="photos-container">
+        {/* Left Arrow for previous page */}
+        {viewMode === 'grid' && totalPages > 1 && currentPage > 1 && (
+          <button className="page-arrow page-arrow-left" onClick={goToPrevPage}>
+            <FaChevronLeft />
+          </button>
+        )}
+
+        {/* Right Arrow for next page */}
+        {viewMode === 'grid' && totalPages > 1 && currentPage < totalPages && (
+          <button className="page-arrow page-arrow-right" onClick={goToNextPage}>
+            <FaChevronRight />
+          </button>
+        )}
+
         {loading ? (
           <div className="loading-message">Loading...</div>
         ) : viewMode === 'grid' ? (
           /* Grid View */
           <>
-            <div className="photos-grid" style={{ gridTemplateColumns: `repeat(${gridColumns}, 1fr)` }}>
+            <div
+              className={`photos-grid ${slideDirection ? `slide-${slideDirection}` : ''}`}
+              style={{ gridTemplateColumns: `repeat(${gridColumns}, 1fr)` }}
+            >
               {paginatedPhotos.length > 0 ? (
                 paginatedPhotos.map((photo) => (
                   <div
@@ -453,20 +492,19 @@ const PhotosPage = () => {
               <div className="pagination">
                 <button
                   className="page-btn"
-                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  onClick={goToPrevPage}
                   disabled={currentPage === 1}
                 >
                   <FaChevronLeft />
                 </button>
 
                 <div className="page-info">
-                  <span>Page {currentPage} of {totalPages}</span>
-                  <span className="photo-count">({sortedPhotos.length} photos)</span>
+                  <span>{currentPage} / {totalPages}</span>
                 </div>
 
                 <button
                   className="page-btn"
-                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  onClick={goToNextPage}
                   disabled={currentPage === totalPages}
                 >
                   <FaChevronRight />
@@ -480,10 +518,10 @@ const PhotosPage = () => {
                     setCurrentPage(1);
                   }}
                 >
-                  <option value={12}>12 / page</option>
-                  <option value={20}>20 / page</option>
-                  <option value={40}>40 / page</option>
-                  <option value={60}>60 / page</option>
+                  <option value={12}>12</option>
+                  <option value={20}>20</option>
+                  <option value={40}>40</option>
+                  <option value={60}>60</option>
                 </select>
               </div>
             )}
