@@ -1,9 +1,6 @@
 node_modules
 .env
 
-# Bot directory (contains sensitive credentials)
-bot/
-
 # Firebase service account keys
 firebase-admin-key.json
 *.firebaseadminkey.json
@@ -13,3 +10,7 @@ firebase-admin-key.json
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Bot secrets and dependencies
+bot/.env
+bot/node_modules

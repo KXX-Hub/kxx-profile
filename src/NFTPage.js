@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
-import { Link } from 'react-router-dom';
 import { FaWallet } from 'react-icons/fa';
 import NFTPreviewGrid from './components/NFTPreviewGrid';
 import './css/NFTPage.css';
@@ -307,9 +306,6 @@ const NFTPage = () => {
           </div>
         </div>
 
-        <div className="button-container">
-          <Link to="/" className="back-home-btn">Back to Home</Link>
-        </div>
       </div>
     </div>
   );

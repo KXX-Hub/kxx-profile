@@ -35,11 +35,13 @@ body {
 
 /* Main Page Styling */
 .main-page {
-  min-height: 100vh;
+  min-height: auto;
   background: #2B2520;
   position: relative;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   width: 100%;
+  padding-bottom: 20px;
 }
 
 /* Classic Mac Pixel Art Background - Inspired by Susan Kare */
@@ -128,7 +130,7 @@ body {
 /* Banner Section */
 .banner-section {
   width: 100vw;
-  height: 300px;
+  height: 200px;
   position: relative;
   overflow: hidden;
   margin: 0;
@@ -164,11 +166,11 @@ body {
 .profile-section {
   display: grid;
   grid-template-columns: auto 1.5fr;
-  gap: 3rem;
-  max-width: 1200px;
+  gap: 2rem;
+  max-width: 1100px;
   width: 100%;
-  margin: -100px auto 3rem;
-  padding: 2.5rem;
+  margin: -80px auto 1rem;
+  padding: 2rem;
   background: rgba(61, 53, 48, 0.8);
   backdrop-filter: blur(10px);
   border-radius: 15px;
@@ -195,9 +197,9 @@ body {
 }
 
 .profile-avatar {
-  width: 280px;
-  height: 280px;
-  border-radius: 20px;
+  width: 200px;
+  height: 200px;
+  border-radius: 16px;
   overflow: hidden;
   border: 4px solid #4F4540;
   box-shadow: 6px 6px 0px rgba(26, 26, 26, 0.8);
@@ -267,7 +269,9 @@ body {
   z-index: 1;
   text-shadow: 3px 3px 0px rgba(26, 26, 26, 0.8);
   image-rendering: pixelated;
-  white-space: nowrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
 }
 
 .profile-info h1::after {
@@ -707,11 +711,16 @@ body {
 }
 
 @media (max-width: 992px) {
+  .banner-section {
+    height: 150px;
+  }
+
   .profile-section {
     grid-template-columns: 1fr;
     text-align: center;
-    gap: 2rem;
-    margin-top: -50px;
+    gap: 1.5rem;
+    margin-top: 20px;
+    padding: 1.5rem;
   }
 
   .profile-images {
@@ -719,68 +728,139 @@ body {
   }
 
   .profile-avatar {
-    width: 200px;
-    height: 200px;
+    width: 150px;
+    height: 150px;
     margin-top: 0;
   }
 
   .profile-info {
     align-items: center;
     text-align: center;
+    gap: 1rem;
   }
 
   .profile-info h1 {
-    font-size: 3rem;
-    letter-spacing: 6px;
+    font-size: 2rem;
+    letter-spacing: 4px;
   }
 
   .profile-description {
     max-width: 100%;
     text-align: center;
+    font-size: 0.9rem;
+  }
+
+  .tagline {
+    font-size: 0.8rem !important;
   }
 }
 
 @media (max-width: 768px) {
-  .profile-section {
-    padding: 1.5rem;
-    margin-top: -30px;
+  .banner-section {
+    height: 120px;
   }
 
-  .profile-avatar {
-    width: 180px;
-    height: 180px;
-  }
-
-  .profile-info h1 {
-    font-size: 2.5rem;
-    letter-spacing: 4px;
-  }
-
-  .profile-description {
-    font-size: 0.95rem;
-    line-height: 1.6;
-  }
-}
-
-@media (max-width: 480px) {
   .profile-section {
     padding: 1.2rem;
-    margin-top: -20px;
+    margin-top: 15px;
+    gap: 1rem;
   }
 
   .profile-avatar {
-    width: 160px;
-    height: 160px;
+    width: 130px;
+    height: 130px;
   }
 
   .profile-info h1 {
-    font-size: 2rem;
+    font-size: 1.5rem;
     letter-spacing: 3px;
   }
 
   .profile-description {
-    font-size: 0.9rem;
-    line-height: 1.5;
+    font-size: 0.85rem;
+    line-height: 1.4;
+  }
+
+  .tagline {
+    font-size: 0.75rem !important;
+    line-height: 1.3;
+  }
+}
+
+@media (max-width: 480px) {
+  .banner-section {
+    height: 100px;
+  }
+
+  .profile-section {
+    padding: 1rem;
+    margin-top: 10px;
+    gap: 0.8rem;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+  }
+
+  .profile-avatar {
+    width: 110px;
+    height: 110px;
+  }
+
+  .profile-info {
+    gap: 0.6rem;
+  }
+
+  .profile-info h1 {
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+    word-break: break-word;
+  }
+
+  .profile-description {
+    font-size: 0.8rem;
+    line-height: 1.4;
+    padding: 0.8rem;
+  }
+
+  .tagline {
+    font-size: 0.65rem !important;
+    line-height: 1.3;
+  }
+
+  .social-links {
+    gap: 0.8rem !important;
+  }
+
+  .social-link {
+    font-size: 1.2rem !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .banner-section {
+    height: 80px;
+  }
+
+  .profile-section {
+    margin-top: 8px;
+    padding: 0.8rem;
+  }
+
+  .profile-info h1 {
+    font-size: 1rem;
+    letter-spacing: 1px;
+  }
+
+  .profile-avatar {
+    width: 90px;
+    height: 90px;
+  }
+
+  .tagline {
+    font-size: 0.6rem !important;
+  }
+
+  .profile-description {
+    font-size: 0.75rem;
   }
 }
 

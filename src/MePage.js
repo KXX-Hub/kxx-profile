@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { FaGithub, FaLinkedin, FaGraduationCap, FaBriefcase, FaCode, FaAward, FaChalkboardTeacher, FaLaptopCode, FaUsers, FaStar, FaCertificate, FaTimes, FaList } from 'react-icons/fa';
 import './css/MePage.css';
 
@@ -286,9 +285,6 @@ const MePage = () => {
         ))}
       </div>
 
-      <div className="button-container">
-        <Link to="/" className="back-home-btn">Back to Home</Link>
-      </div>
     </div>
   );
 };

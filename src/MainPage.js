@@ -1,7 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import './css/MainPage.css';
-import { FaCode, FaUser, FaEthereum, FaCamera, FaVideo } from 'react-icons/fa';
 import SocialLinks from './components/common/SocialLinks';
 
 /**
@@ -53,60 +51,6 @@ const ProfileSection = () => (
 );
 
 /**
- * Navigation menu component
- */
-const NavigationMenu = () => {
-  const navItems = [
-    { 
-      title: 'Me', 
-      path: '/me', 
-      icon: <FaUser />
-    },
-    { 
-      title: 'Coding', 
-      path: '/coding', 
-      icon: <FaCode />
-    },
-    { 
-      title: 'Photos', 
-      path: '/photos', 
-      icon: <FaCamera />
-    },
-    { 
-      title: 'Videos', 
-      path: '/videos', 
-      icon: <FaVideo />
-    },
-    { 
-      title: 'NFT', 
-      path: '/nft', 
-      icon: <FaEthereum />
-    }
-  ];
-
-  const navigate = useNavigate();
-
-  return (
-    <div className="navigation-section">
-      <div className="nav-content">
-        {navItems.map((item, index) => (
-          <button 
-            key={index} 
-            className="nav-button"
-            onClick={() => navigate(item.path)}
-          >
-            <div className="nav-button-content">
-              <span className="nav-icon">{item.icon}</span>
-              <span className="nav-title">{item.title}</span>
-            </div>
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-/**
  * Main page component
  */
 const MainPage = () => {
@@ -115,7 +59,6 @@ const MainPage = () => {
       <div className="main-content">
         <Banner />
         <ProfileSection />
-        <NavigationMenu />
       </div>
     </div>
   );

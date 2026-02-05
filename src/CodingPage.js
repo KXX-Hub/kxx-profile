@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { FaGithub, FaLinkedin } from 'react-icons/fa';
 import './css/CodingPage.css';
 
@@ -80,9 +79,6 @@ const CodingPage = () => {
           </div>
         </div>
 
-        <div className="button-container">
-          <Link to="/" className="back-home-btn">Back to Home</Link>
-        </div>
       </div>
     </div>
   );

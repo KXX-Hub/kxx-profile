@@ -1,0 +1,262 @@
+/* ==================== Global Navigation - Pixel Retro Style ==================== */
+@import url('https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap');
+
+.global-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
+  border-top: 4px solid #d4a574;
+  box-shadow: 
+    0 -4px 0 #0a0a0a,
+    inset 0 2px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* ==================== Pixel Progress Bar with Retro Effects ==================== */
+.pixel-progress-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 8px 16px 6px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, transparent 100%);
+}
+
+.pixel-progress-bar {
+  flex: 1;
+  max-width: 300px;
+  height: 16px;
+  background: #0a0a0a;
+  border: 3px solid #4a4a4a;
+  box-shadow: 
+    inset 3px 3px 0 #000,
+    inset -2px -2px 0 #333,
+    0 2px 4px rgba(0,0,0,0.5);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Retro scanline effect on progress bar */
+.pixel-progress-bar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.2) 2px,
+    rgba(0, 0, 0, 0.2) 4px
+  );
+  z-index: 2;
+  pointer-events: none;
+}
+
+.pixel-progress-fill {
+  height: 100%;
+  background: linear-gradient(180deg, 
+    #8bc34a 0%,
+    #7cb342 30%,
+    #558b2f 70%, 
+    #33691e 100%
+  );
+  box-shadow: 
+    inset 0 2px 0 rgba(255,255,255,0.3),
+    inset 0 -2px 0 rgba(0,0,0,0.3);
+  transition: width 0.3s steps(20);
+  position: relative;
+  animation: progressGlow 2s ease-in-out infinite;
+}
+
+/* Glowing pulse effect */
+@keyframes progressGlow {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.2); }
+}
+
+/* Pixel blocks effect inside progress bar */
+.pixel-progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 8px,
+    rgba(0,0,0,0.15) 8px,
+    rgba(0,0,0,0.15) 10px
+  );
+}
+
+.pixel-progress-text {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 12px;
+  color: #8bc34a;
+  min-width: 50px;
+  text-align: right;
+  text-shadow: 
+    0 0 8px rgba(139, 195, 74, 0.8),
+    2px 2px 0 #000;
+  animation: textFlicker 3s ease-in-out infinite;
+}
+
+@keyframes textFlicker {
+  0%, 100% { opacity: 1; }
+  92% { opacity: 1; }
+  93% { opacity: 0.8; }
+  94% { opacity: 1; }
+}
+
+/* ==================== Nav Items Container ==================== */
+.nav-items {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 8px 16px 12px;
+  gap: 10px;
+}
+
+/* ==================== Individual Nav Item - More Visible ==================== */
+.nav-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  text-decoration: none;
+  color: #888;
+  font-size: 20px;
+  transition: all 0.15s ease;
+  border: 3px solid #3a3a3a;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
+  box-shadow: 
+    2px 2px 0 #0a0a0a,
+    inset 1px 1px 0 rgba(255,255,255,0.05);
+}
+
+.nav-item:hover {
+  color: #d4a574;
+  background: linear-gradient(180deg, #3a3530 0%, #2a2520 100%);
+  border-color: #d4a574;
+  transform: translateY(-2px);
+  box-shadow: 
+    2px 4px 0 #0a0a0a,
+    0 0 12px rgba(212, 165, 116, 0.3);
+}
+
+.nav-item.active {
+  color: #d4a574;
+  background: linear-gradient(180deg, #3a3530 0%, #2a2520 100%);
+  border: 3px solid #d4a574;
+  box-shadow: 
+    2px 2px 0 #0a0a0a,
+    0 0 16px rgba(212, 165, 116, 0.5),
+    inset 0 0 10px rgba(212, 165, 116, 0.1);
+  animation: activeGlow 2s ease-in-out infinite;
+}
+
+@keyframes activeGlow {
+  0%, 100% { box-shadow: 2px 2px 0 #0a0a0a, 0 0 16px rgba(212, 165, 116, 0.5); }
+  50% { box-shadow: 2px 2px 0 #0a0a0a, 0 0 24px rgba(212, 165, 116, 0.7); }
+}
+
+.nav-item.past {
+  color: #7cb342;
+  border-color: #558b2f;
+}
+
+/* ==================== Responsive ==================== */
+@media (max-width: 600px) {
+  .global-nav {
+    border-top-width: 3px;
+  }
+
+  .pixel-progress-container {
+    padding: 6px 12px 4px;
+    gap: 8px;
+  }
+
+  .pixel-progress-bar {
+    max-width: 180px;
+    height: 12px;
+    border-width: 2px;
+  }
+
+  .pixel-progress-text {
+    font-size: 10px;
+    min-width: 42px;
+  }
+
+  .nav-items {
+    padding: 6px 12px 10px;
+    gap: 8px;
+  }
+
+  .nav-item {
+    width: 42px;
+    height: 42px;
+    font-size: 18px;
+    border-width: 2px;
+  }
+
+  .nav-item.active {
+    border-width: 2px;
+  }
+}
+
+@media (max-width: 400px) {
+  .pixel-progress-container {
+    padding: 4px 8px 3px;
+    gap: 6px;
+  }
+
+  .pixel-progress-bar {
+    max-width: 140px;
+    height: 10px;
+  }
+
+  .pixel-progress-text {
+    font-size: 9px;
+    min-width: 38px;
+  }
+
+  .nav-items {
+    padding: 5px 8px 8px;
+    gap: 6px;
+  }
+
+  .nav-item {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+    border-radius: 8px;
+  }
+}
+
+/* ==================== Body Padding ==================== */
+body {
+  padding-bottom: 100px;
+}
+
+@media (max-width: 600px) {
+  body {
+    padding-bottom: 85px;
+  }
+}
+
+@media (max-width: 400px) {
+  body {
+    padding-bottom: 75px;
+  }
+}

@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import ReactDOM from 'react-dom';
 import { Link } from 'react-router-dom';
-import { FaCamera, FaMapMarkerAlt, FaCalendar, FaCameraRetro, FaCog, FaTimes, FaSortAmountDown, FaGlobeAsia } from 'react-icons/fa';
+import { FaCamera, FaMapMarkerAlt, FaCalendar, FaCameraRetro, FaCog, FaTimes, FaSortAmountDown, FaGlobeAsia, FaTh, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { db } from './firebase';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
@@ -24,7 +25,7 @@ const PhotosPage = () => {
   const [error, setError] = useState(null);
   const [selectedPhoto, setSelectedPhoto] = useState(null);
   const [viewMode, setViewMode] = useState('grid'); // grid, map
-  
+
   // Filter states
   const [filterType, setFilterType] = useState('all');
   const [filterValue, setFilterValue] = useState('');
@@ -33,15 +34,24 @@ const PhotosPage = () => {
     dates: [],
     devices: []
   });
-  
+
+  // Dropdown visibility
+  const [openDropdown, setOpenDropdown] = useState(null); // 'location' | 'date' | 'device' | 'sort' | 'grid' | null
+
   // Sort state
   const [sortBy, setSortBy] = useState('uploadedAt');
   const [sortOrder, setSortOrder] = useState('desc');
-  const [showSortMenu, setShowSortMenu] = useState(false);
-  
+
   // Map state
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [locationPhotos, setLocationPhotos] = useState([]);
+
+  // Grid columns state
+  const [gridColumns, setGridColumns] = useState(4);
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(20);
 
   // Load photos from Firebase
   const loadPhotos = useCallback(async () => {
@@ -50,19 +60,19 @@ const PhotosPage = () => {
       const photosRef = collection(db, 'photos');
       const q = query(photosRef, orderBy('uploadedAt', 'desc'));
       const snapshot = await getDocs(q);
-      
+
       const photoList = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }));
-      
+
       setPhotos(photoList);
-      
+
       // Build filter options
       const locations = [...new Set(photoList.map(p => p.location).filter(Boolean))];
       const dates = [...new Set(photoList.map(p => p.date?.split(' ')[0]).filter(Boolean))];
       const devices = [...new Set(photoList.map(p => p.device).filter(Boolean))];
-      
+
       setAvailableFilters({ locations, dates, devices });
     } catch (err) {
       console.error('Error loading photos:', err);
@@ -79,7 +89,7 @@ const PhotosPage = () => {
   // Filter photos
   const filteredPhotos = photos.filter(photo => {
     if (filterType === 'all' || !filterValue) return true;
-    
+
     switch (filterType) {
       case 'location':
         return photo.location === filterValue;
@@ -95,7 +105,7 @@ const PhotosPage = () => {
   // Sort photos
   const sortedPhotos = [...filteredPhotos].sort((a, b) => {
     let aVal, bVal;
-    
+
     switch (sortBy) {
       case 'date':
         aVal = a.date || '';
@@ -113,7 +123,7 @@ const PhotosPage = () => {
         aVal = a.uploadedAt || '';
         bVal = b.uploadedAt || '';
     }
-    
+
     if (sortOrder === 'asc') {
       return aVal.localeCompare(bVal);
     } else {
@@ -165,15 +175,49 @@ const PhotosPage = () => {
     setLocationPhotos([]);
   };
 
+  // Pagination logic
+  const totalPages = Math.ceil(sortedPhotos.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedPhotos = sortedPhotos.slice(startIndex, startIndex + itemsPerPage);
+
+  // Reset to page 1 when filter changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filterValue, filterType, sortBy, sortOrder]);
+
+  // Grid column options
+  const gridOptions = [
+    { value: 2, label: '2' },
+    { value: 3, label: '3' },
+    { value: 4, label: '4' },
+    { value: 6, label: '6' },
+    { value: 8, label: '8' }
+  ];
+
+  // Close dropdown when clicking outside
+  const filterRef = useRef(null);
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (filterRef.current && !filterRef.current.contains(e.target)) {
+        setOpenDropdown(null);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   return (
     <div className="photos-page">
+      <Link to="/photos/dashboard" className="subtle-dashboard-link" title="Dashboard">
+        <FaCog />
+      </Link>
       <div className="page-header">
         <h1><FaCamera /> Photos</h1>
         <p className="subtitle">Photography Collection</p>
       </div>
 
       {/* View Toggle & Filter Section */}
-      <div className="filter-section">
+      <div className="filter-section" ref={filterRef}>
         <div className="filter-buttons">
           {/* View Toggle */}
           <div className="view-toggle">
@@ -201,21 +245,21 @@ const PhotosPage = () => {
           >
             All
           </button>
-          
+
           <div className="filter-dropdown">
             <button
-              className={`filter-btn ${filterType === 'location' ? 'active' : ''}`}
-              onClick={() => setFilterType('location')}
+              className={`filter-btn ${filterType === 'location' && filterValue ? 'active' : ''}`}
+              onClick={() => setOpenDropdown(openDropdown === 'location' ? null : 'location')}
             >
-              <FaMapMarkerAlt /> Location
+              <FaMapMarkerAlt />
             </button>
-            {filterType === 'location' && availableFilters.locations.length > 0 && (
+            {openDropdown === 'location' && availableFilters.locations.length > 0 && (
               <div className="dropdown-menu">
                 {availableFilters.locations.map(loc => (
                   <button
                     key={loc}
                     className={filterValue === loc ? 'active' : ''}
-                    onClick={() => setFilterValue(loc)}
+                    onClick={() => { setFilterType('location'); setFilterValue(loc); setOpenDropdown(null); }}
                   >
                     {loc}
                   </button>
@@ -226,18 +270,18 @@ const PhotosPage = () => {
 
           <div className="filter-dropdown">
             <button
-              className={`filter-btn ${filterType === 'date' ? 'active' : ''}`}
-              onClick={() => setFilterType('date')}
+              className={`filter-btn ${filterType === 'date' && filterValue ? 'active' : ''}`}
+              onClick={() => setOpenDropdown(openDropdown === 'date' ? null : 'date')}
             >
-              <FaCalendar /> Date
+              <FaCalendar />
             </button>
-            {filterType === 'date' && availableFilters.dates.length > 0 && (
+            {openDropdown === 'date' && availableFilters.dates.length > 0 && (
               <div className="dropdown-menu">
                 {availableFilters.dates.map(date => (
                   <button
                     key={date}
                     className={filterValue === date ? 'active' : ''}
-                    onClick={() => setFilterValue(date)}
+                    onClick={() => { setFilterType('date'); setFilterValue(date); setOpenDropdown(null); }}
                   >
                     {date}
                   </button>
@@ -248,18 +292,18 @@ const PhotosPage = () => {
 
           <div className="filter-dropdown">
             <button
-              className={`filter-btn ${filterType === 'device' ? 'active' : ''}`}
-              onClick={() => setFilterType('device')}
+              className={`filter-btn ${filterType === 'device' && filterValue ? 'active' : ''}`}
+              onClick={() => setOpenDropdown(openDropdown === 'device' ? null : 'device')}
             >
-              <FaCameraRetro /> Device
+              <FaCameraRetro />
             </button>
-            {filterType === 'device' && availableFilters.devices.length > 0 && (
+            {openDropdown === 'device' && availableFilters.devices.length > 0 && (
               <div className="dropdown-menu">
                 {availableFilters.devices.map(device => (
                   <button
                     key={device}
                     className={filterValue === device ? 'active' : ''}
-                    onClick={() => setFilterValue(device)}
+                    onClick={() => { setFilterType('device'); setFilterValue(device); setOpenDropdown(null); }}
                   >
                     {device}
                   </button>
@@ -271,12 +315,12 @@ const PhotosPage = () => {
           {/* Sort Button */}
           <div className="filter-dropdown">
             <button
-              className={`filter-btn sort-btn`}
-              onClick={() => setShowSortMenu(!showSortMenu)}
+              className="filter-btn"
+              onClick={() => setOpenDropdown(openDropdown === 'sort' ? null : 'sort')}
             >
-              <FaSortAmountDown /> Sort
+              <FaSortAmountDown />
             </button>
-            {showSortMenu && (
+            {openDropdown === 'sort' && (
               <div className="dropdown-menu sort-menu">
                 {sortOptions.map(opt => (
                   <button
@@ -289,9 +333,33 @@ const PhotosPage = () => {
                         setSortBy(opt.value);
                         setSortOrder('desc');
                       }
+                      setOpenDropdown(null);
                     }}
                   >
                     {opt.label} {sortBy === opt.value && (sortOrder === 'asc' ? '↑' : '↓')}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Grid Columns Selector */}
+          <div className="filter-dropdown">
+            <button
+              className="filter-btn"
+              onClick={() => setOpenDropdown(openDropdown === 'grid' ? null : 'grid')}
+            >
+              <FaTh /> {gridColumns}
+            </button>
+            {openDropdown === 'grid' && (
+              <div className="dropdown-menu grid-menu">
+                {gridOptions.map(opt => (
+                  <button
+                    key={opt.value}
+                    className={gridColumns === opt.value ? 'active' : ''}
+                    onClick={() => { setGridColumns(opt.value); setOpenDropdown(null); }}
+                  >
+                    {opt.label}
                   </button>
                 ))}
               </div>
@@ -304,7 +372,7 @@ const PhotosPage = () => {
             </button>
           )}
         </div>
-        
+
         {filterValue && (
           <div className="active-filter">
             Filtering: <strong>{filterValue}</strong>
@@ -321,71 +389,105 @@ const PhotosPage = () => {
           <div className="loading-message">Loading...</div>
         ) : viewMode === 'grid' ? (
           /* Grid View */
-          <div className="photos-grid">
-            {sortedPhotos.length > 0 ? (
-              sortedPhotos.map((photo) => (
-                <div
-                  key={photo.id}
-                  className="photo-card"
-                  onClick={() => setSelectedPhoto(photo)}
-                >
-                  <div className="photo-thumbnail">
-                    <img src={photo.thumbnail || photo.url} alt={photo.filename} />
-                  </div>
-                  <div className="photo-meta">
-                    {/* Device */}
-                    {photo.device && (
+          <>
+            <div className="photos-grid" style={{ gridTemplateColumns: `repeat(${gridColumns}, 1fr)` }}>
+              {paginatedPhotos.length > 0 ? (
+                paginatedPhotos.map((photo) => (
+                  <div
+                    key={photo.id}
+                    className="photo-card"
+                    onClick={() => setSelectedPhoto(photo)}
+                  >
+                    <div className="photo-thumbnail">
+                      <img src={photo.thumbnail || photo.url} alt={photo.filename} />
+                    </div>
+                    <div className="photo-meta">
+                      {/* Device */}
                       <div className="meta-row device">
                         <FaCameraRetro className="meta-icon" />
-                        <span>{photo.device}</span>
+                        <span>{photo.device || 'N/A'}</span>
                       </div>
-                    )}
-                    
-                    {/* Date */}
-                    {photo.date && (
+
+                      {/* Date */}
                       <div className="meta-row date">
                         <FaCalendar className="meta-icon" />
-                        <span>{photo.date.split(' ')[0]}</span>
+                        <span>{photo.date ? photo.date.split(' ')[0] : 'N/A'}</span>
                       </div>
-                    )}
-                    
-                    {/* Camera Settings */}
-                    {(photo.settings?.aperture || photo.settings?.shutter || photo.settings?.iso) && (
+
+                      {/* Camera Settings */}
                       <div className="meta-row settings">
                         <FaCog className="meta-icon" />
                         <span>
-                          {[
-                            photo.settings?.aperture,
-                            photo.settings?.shutter,
-                            photo.settings?.iso
-                          ].filter(Boolean).join(' · ')}
+                          {(photo.settings?.aperture || photo.settings?.shutter || photo.settings?.iso)
+                            ? [
+                              photo.settings?.aperture,
+                              photo.settings?.shutter,
+                              photo.settings?.iso
+                            ].filter(Boolean).join(' · ')
+                            : 'N/A'}
                         </span>
                       </div>
-                    )}
-                    
-                    {/* Focal Length */}
-                    {photo.settings?.focalLength && (
+
+                      {/* Focal Length */}
                       <div className="meta-row focal">
-                        <span className="focal-badge">{photo.settings.focalLength}</span>
+                        <span className="focal-badge">{photo.settings?.focalLength || 'N/A'}</span>
                       </div>
-                    )}
-                    
-                    {/* Location */}
-                    {photo.location && (
+
+                      {/* Location */}
                       <div className="meta-row location">
                         <FaMapMarkerAlt className="meta-icon" />
-                        <span>{photo.location}</span>
+                        <span>{photo.location || 'N/A'}</span>
                       </div>
-                    )}
+                    </div>
                   </div>
+                ))
+              ) : (
+                <div className="no-items">
+                  <p>{photos.length === 0 ? 'No photos yet' : 'No photos match the filter'}</p>
                 </div>
-              ))
-            ) : (
-              <div className="no-items">
-                <p>{photos.length === 0 ? 'No photos yet' : 'No photos match the filter'}</p>
+              )}
+            </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="pagination">
+                <button
+                  className="page-btn"
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                >
+                  <FaChevronLeft />
+                </button>
+
+                <div className="page-info">
+                  <span>Page {currentPage} of {totalPages}</span>
+                  <span className="photo-count">({sortedPhotos.length} photos)</span>
+                </div>
+
+                <button
+                  className="page-btn"
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                >
+                  <FaChevronRight />
+                </button>
+
+                <select
+                  className="items-per-page"
+                  value={itemsPerPage}
+                  onChange={(e) => {
+                    setItemsPerPage(Number(e.target.value));
+                    setCurrentPage(1);
+                  }}
+                >
+                  <option value={12}>12 / page</option>
+                  <option value={20}>20 / page</option>
+                  <option value={40}>40 / page</option>
+                  <option value={60}>60 / page</option>
+                </select>
               </div>
             )}
-          </div>
+          </>
         ) : (
           /* Map View */
           <div className="map-view">
@@ -425,75 +527,87 @@ const PhotosPage = () => {
               </div>
             )}
 
-            {/* Location Photos Overlay */}
-            {selectedLocation && (
-              <div className="location-overlay" onClick={closeLocationOverlay}>
-                <div className="location-content" onClick={e => e.stopPropagation()}>
-                  <div className="location-header">
-                    <h2><FaMapMarkerAlt /> {selectedLocation}</h2>
-                    <button className="close-btn" onClick={closeLocationOverlay}>
-                      <FaTimes />
-                    </button>
-                  </div>
-                  <div className="location-photos-grid">
-                    {locationPhotos.map((photo) => (
-                      <div
-                        key={photo.id}
-                        className="location-photo-card"
-                        onClick={() => setSelectedPhoto(photo)}
-                      >
-                        <img src={photo.thumbnail || photo.url} alt={photo.filename} />
-                        <div className="location-photo-info">
-                          {photo.date && <span><FaCalendar /> {photo.date.split(' ')[0]}</span>}
-                          {photo.device && <span><FaCameraRetro /> {photo.device}</span>}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
         )}
       </div>
 
-      {/* Photo Detail Modal */}
-      {selectedPhoto && (
+      {/* Location Photos Overlay - Portal to body */}
+      {selectedLocation && ReactDOM.createPortal(
+        <div className="location-overlay" onClick={closeLocationOverlay}>
+          <div className="location-content" onClick={e => e.stopPropagation()}>
+            <div className="location-header">
+              <h2><FaMapMarkerAlt /> {selectedLocation}</h2>
+              <button className="close-btn" onClick={closeLocationOverlay}>
+                <FaTimes />
+              </button>
+            </div>
+            <div className="location-photos-grid">
+              {locationPhotos.map((photo) => (
+                <div
+                  key={photo.id}
+                  className="location-photo-card"
+                  onClick={() => setSelectedPhoto(photo)}
+                >
+                  <img src={photo.thumbnail || photo.url} alt={photo.filename} />
+                  <div className="location-photo-info">
+                    {photo.date && <span><FaCalendar /> {photo.date.split(' ')[0]}</span>}
+                    {photo.device && <span><FaCameraRetro /> {photo.device}</span>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* Photo Detail Modal - Portal to body */}
+      {selectedPhoto && ReactDOM.createPortal(
         <div className="photo-modal" onClick={() => setSelectedPhoto(null)}>
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
+          <div className="modal-content modal-horizontal" onClick={e => e.stopPropagation()}>
             <button className="modal-close" onClick={() => setSelectedPhoto(null)}>
               <FaTimes />
             </button>
-            <img src={selectedPhoto.url} alt={selectedPhoto.filename} />
+            <div className="modal-image-wrapper">
+              <img src={selectedPhoto.url} alt={selectedPhoto.filename} />
+            </div>
             <div className="modal-info">
-              <h3>{selectedPhoto.filename}</h3>
-              
-              {selectedPhoto.date && (
-                <p><FaCalendar /> {selectedPhoto.date}</p>
-              )}
-              
-              {selectedPhoto.location && (
-                <p><FaMapMarkerAlt /> {selectedPhoto.location}</p>
-              )}
-              
-              {selectedPhoto.device && (
-                <p><FaCameraRetro /> {selectedPhoto.device}</p>
-              )}
-              
-              {Object.keys(selectedPhoto.settings || {}).length > 0 && (
-                <div className="settings-info">
-                  <FaCog /> 
-                  {Object.values(selectedPhoto.settings).join(' | ')}
+              <h3>{selectedPhoto.filename || 'Untitled'}</h3>
+
+              <div className="info-row">
+                <FaCalendar />
+                <span>{selectedPhoto.date || 'N/A'}</span>
+              </div>
+              <div className="info-row">
+                <FaMapMarkerAlt />
+                <span>{selectedPhoto.location || 'N/A'}</span>
+              </div>
+              <div className="info-row">
+                <FaCameraRetro />
+                <span>{selectedPhoto.device || 'N/A'}</span>
+              </div>
+
+              <div className="info-row settings">
+                <FaCog />
+                <span>
+                  {Object.keys(selectedPhoto.settings || {}).length > 0
+                    ? Object.values(selectedPhoto.settings).filter(Boolean).join(' · ') || 'N/A'
+                    : 'N/A'}
+                </span>
+              </div>
+
+              {selectedPhoto.gps && (
+                <div className="info-row gps">
+                  <FaGlobeAsia />
+                  <span>{selectedPhoto.gps.latitude.toFixed(4)}, {selectedPhoto.gps.longitude.toFixed(4)}</span>
                 </div>
               )}
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
-      <div className="button-container">
-        <Link to="/" className="back-home-btn">Back to Home</Link>
-      </div>
     </div>
   );
 };
