@@ -5,7 +5,7 @@ import '../css/NFTPreviewGrid.css';
 const NFTPreviewGrid = ({ tokenData, onPurchase, isConnected }) => {
   const [metadata, setMetadata] = useState(null);
   const [audioUrl, setAudioUrl] = useState('');
-  const [imageUrl, setImageUrl] = useState('/api/placeholder/400/400');
+  const [imageUrl, setImageUrl] = useState('https://placehold.co/400x400/2B2520/C9C0B0?text=Loading...');
   const [customPrice, setCustomPrice] = useState('');
   const [priceError, setPriceError] = useState('');
   const [audioKey, setAudioKey] = useState(0); // Add key to force re-render audio element
@@ -15,7 +15,7 @@ const NFTPreviewGrid = ({ tokenData, onPurchase, isConnected }) => {
       // Reset audio URL and state
       setAudioUrl('');
       setAudioKey(prev => prev + 1);
-      setImageUrl('/api/placeholder/400/400');
+      setImageUrl('https://placehold.co/400x400/2B2520/C9C0B0?text=Loading...');
 
       if (!tokenData?.uri) return;
 
