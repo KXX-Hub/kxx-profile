@@ -326,11 +326,17 @@
 /* ==================== Responsive ==================== */
 @media (max-width: 600px) {
   .global-nav {
-    border-top-width: 3px;
+    top: 0;
+    bottom: auto;
+    border-top-width: 0;
+    border-bottom: 3px solid #d4a574;
+    box-shadow: 
+      0 4px 0 #0a0a0a,
+      inset 0 -2px 0 rgba(255, 255, 255, 0.05);
   }
 
   .pixel-progress-container {
-    padding: 6px 12px 4px;
+    padding: 6px 12px 8px;
     gap: 8px;
   }
 
@@ -346,7 +352,7 @@
   }
 
   .nav-items {
-    padding: 6px 12px 10px;
+    padding: 6px 12px 8px;
     gap: 8px;
   }
 
@@ -398,12 +404,13 @@ body {
 
 @media (max-width: 600px) {
   body {
-    padding-bottom: 85px;
+    padding-bottom: 0;
+    padding-top: 60px;
   }
 }
 
 @media (max-width: 400px) {
   body {
-    padding-bottom: 75px;
+    padding-top: 52px;
   }
 }

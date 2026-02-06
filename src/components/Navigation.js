@@ -16,6 +16,8 @@ const Navigation = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const isHome = location.pathname === '/';
+  const isPhotos = location.pathname === '/photos';
+  const isMobileView = typeof window !== 'undefined' && window.matchMedia('(max-width: 600px)').matches;
   
   // Don't show on dashboard
   if (location.pathname.includes('/dashboard')) {
@@ -48,6 +50,7 @@ const Navigation = () => {
 
   useEffect(() => {
     if (!isHome || !nextPage) return;
+    if (typeof window !== 'undefined' && window.matchMedia('(max-width: 600px)').matches) return;
     const handleStart = () => navigate(nextPage.path);
     document.addEventListener('pointerdown', handleStart);
     return () => document.removeEventListener('pointerdown', handleStart);
@@ -56,7 +59,7 @@ const Navigation = () => {
   return (
     <>
       {/* Left Arrow - Previous Page */}
-      {prevPage && (
+      {prevPage && !(isMobileView && isPhotos) && (
         <button className="page-nav-arrow page-nav-left" onClick={goToPrev}>
           <span className="arrow-icon">◀</span>
           <span className="arrow-label">{prevPage.label}</span>
@@ -64,7 +67,7 @@ const Navigation = () => {
       )}
 
       {/* Right Arrow - Next Page */}
-      {nextPage && (
+      {nextPage && !(isMobileView && isPhotos) && (
         isHome ? (
           <div className="page-nav-arrow page-nav-right start-prompt">
             <span className="arrow-label">Touch anywhere to start</span>

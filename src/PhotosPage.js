@@ -7,6 +7,7 @@ import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import DatePickerCalendar from './components/DatePickerCalendar';
 import './css/PhotosPage.css';
 
 // Custom marker icon for the map
@@ -38,10 +39,12 @@ const PhotosPage = () => {
   const [error, setError] = useState(null);
   const [selectedPhoto, setSelectedPhoto] = useState(null);
   const [viewMode, setViewMode] = useState('grid'); // grid, map
-
+  
   // Filter states
   const [filterType, setFilterType] = useState('all');
   const [filterValue, setFilterValue] = useState('');
+  const [monthFilter, setMonthFilter] = useState(''); // Format: YYYY-MM
+  const [yearFilter, setYearFilter] = useState(''); // Format: YYYY
   const [availableFilters, setAvailableFilters] = useState({
     locations: [],
     dates: [],
@@ -50,11 +53,11 @@ const PhotosPage = () => {
 
   // Dropdown visibility
   const [openDropdown, setOpenDropdown] = useState(null); // 'location' | 'date' | 'device' | 'sort' | 'grid' | null
-
+  
   // Sort state
-  const [sortBy, setSortBy] = useState('uploadedAt');
+  const [sortBy, setSortBy] = useState('date');
   const [sortOrder, setSortOrder] = useState('desc');
-
+  
   // Map state
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [locationPhotos, setLocationPhotos] = useState([]);
@@ -74,7 +77,7 @@ const PhotosPage = () => {
       const photosRef = collection(db, 'photos');
       const q = query(photosRef, orderBy('uploadedAt', 'desc'));
       const snapshot = await getDocs(q);
-
+      
       const photoList = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
@@ -91,14 +94,14 @@ const PhotosPage = () => {
           storageProvider: photoList[0].storageProvider
         });
       }
-
+      
       setPhotos(photoList);
-
+      
       // Build filter options
       const locations = [...new Set(photoList.map(p => p.location).filter(Boolean))];
       const dates = [...new Set(photoList.map(p => p.date?.split(' ')[0]).filter(Boolean))];
       const devices = [...new Set(photoList.map(p => p.device).filter(Boolean))];
-
+      
       setAvailableFilters({ locations, dates, devices });
     } catch (err) {
       console.error('Error loading photos:', err);
@@ -114,8 +117,25 @@ const PhotosPage = () => {
 
   // Filter photos
   const filteredPhotos = photos.filter(photo => {
-    if (filterType === 'all' || !filterValue) return true;
+    // Month filter (YYYY-MM format)
+    if (monthFilter) {
+      const photoDate = photo.date?.split(' ')[0] || '';
+      if (!photoDate.startsWith(monthFilter)) {
+        return false;
+      }
+    }
 
+    // Year filter (YYYY format)
+    if (yearFilter) {
+      const photoDate = photo.date?.split(' ')[0] || '';
+      if (!photoDate.startsWith(yearFilter)) {
+        return false;
+      }
+    }
+
+    // Other filters
+    if (filterType === 'all' || !filterValue) return true;
+    
     switch (filterType) {
       case 'location':
         return photo.location === filterValue;
@@ -131,7 +151,7 @@ const PhotosPage = () => {
   // Sort photos
   const sortedPhotos = [...filteredPhotos].sort((a, b) => {
     let aVal, bVal;
-
+    
     switch (sortBy) {
       case 'date':
         aVal = a.date || '';
@@ -146,14 +166,33 @@ const PhotosPage = () => {
         bVal = b.location || '';
         break;
       default:
-        aVal = a.uploadedAt || '';
-        bVal = b.uploadedAt || '';
+        // Handle Firestore Timestamp objects
+        if (a.uploadedAt && typeof a.uploadedAt.toDate === 'function') {
+          aVal = a.uploadedAt.toDate().toISOString();
+        } else if (a.uploadedAt && typeof a.uploadedAt.toMillis === 'function') {
+          aVal = a.uploadedAt.toMillis().toString();
+        } else {
+          aVal = a.uploadedAt ? String(a.uploadedAt) : '';
+        }
+        
+        if (b.uploadedAt && typeof b.uploadedAt.toDate === 'function') {
+          bVal = b.uploadedAt.toDate().toISOString();
+        } else if (b.uploadedAt && typeof b.uploadedAt.toMillis === 'function') {
+          bVal = b.uploadedAt.toMillis().toString();
+        } else {
+          bVal = b.uploadedAt ? String(b.uploadedAt) : '';
+        }
+        break;
     }
 
+    // Ensure both values are strings for localeCompare
+    const aStr = String(aVal || '');
+    const bStr = String(bVal || '');
+    
     if (sortOrder === 'asc') {
-      return aVal.localeCompare(bVal);
+      return aStr.localeCompare(bStr);
     } else {
-      return bVal.localeCompare(aVal);
+      return bStr.localeCompare(aStr);
     }
   });
 
@@ -161,6 +200,8 @@ const PhotosPage = () => {
   const clearFilter = () => {
     setFilterType('all');
     setFilterValue('');
+    setMonthFilter('');
+    setYearFilter('');
   };
 
   // Sort options
@@ -176,11 +217,20 @@ const PhotosPage = () => {
 
   // Group photos by location for map markers
   const locationGroups = photosWithGPS.reduce((acc, photo) => {
-    const key = `${photo.gps.latitude.toFixed(4)},${photo.gps.longitude.toFixed(4)}`;
+    // Ensure latitude and longitude are numbers
+    const lat = typeof photo.gps.latitude === 'number' ? photo.gps.latitude : parseFloat(photo.gps.latitude);
+    const lng = typeof photo.gps.longitude === 'number' ? photo.gps.longitude : parseFloat(photo.gps.longitude);
+    
+    // Skip if invalid coordinates
+    if (isNaN(lat) || isNaN(lng)) {
+      return acc;
+    }
+    
+    const key = `${lat.toFixed(4)},${lng.toFixed(4)}`;
     if (!acc[key]) {
       acc[key] = {
-        lat: photo.gps.latitude,
-        lng: photo.gps.longitude,
+        lat: lat,
+        lng: lng,
         location: photo.location,
         photos: []
       };
@@ -253,6 +303,13 @@ const PhotosPage = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (window.matchMedia('(max-width: 640px)').matches && viewMode === 'map') {
+      setViewMode('grid');
+    }
+  }, [viewMode]);
+
   return (
     <div className="photos-page">
       <Link to="/photos/dashboard" className="subtle-dashboard-link" title="Dashboard">
@@ -292,7 +349,7 @@ const PhotosPage = () => {
           >
             All
           </button>
-
+          
           <div className="filter-dropdown">
             <button
               className={`filter-btn ${filterType === 'location' && filterValue ? 'active' : ''}`}
@@ -317,22 +374,136 @@ const PhotosPage = () => {
 
           <div className="filter-dropdown">
             <button
-              className={`filter-btn ${filterType === 'date' && filterValue ? 'active' : ''}`}
+              className={`filter-btn ${(filterType === 'date' && filterValue) || monthFilter || yearFilter ? 'active' : ''}`}
               onClick={() => setOpenDropdown(openDropdown === 'date' ? null : 'date')}
             >
               <FaCalendar />
             </button>
-            {openDropdown === 'date' && availableFilters.dates.length > 0 && (
-              <div className="dropdown-menu">
-                {availableFilters.dates.map(date => (
-                  <button
-                    key={date}
-                    className={filterValue === date ? 'active' : ''}
-                    onClick={() => { setFilterType('date'); setFilterValue(date); setOpenDropdown(null); }}
-                  >
-                    {date}
-                  </button>
-                ))}
+            {openDropdown === 'date' && (
+              <div className="dropdown-menu date-picker-menu">
+                <div className="date-filter-options">
+                  {(monthFilter || yearFilter) && (
+                    <div className="active-filter-badge">
+                      {monthFilter ? (
+                        <>
+                          <span className="filter-badge-label">Month:</span>
+                          <span className="filter-badge-value">{monthFilter}</span>
+                          <button
+                            className="filter-badge-clear"
+                            onClick={() => {
+                              setMonthFilter('');
+                              setOpenDropdown(null);
+                            }}
+                            title="Clear month filter"
+                          >
+                            ✕
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <span className="filter-badge-label">Year:</span>
+                          <span className="filter-badge-value">{yearFilter}</span>
+                          <button
+                            className="filter-badge-clear"
+                            onClick={() => {
+                              setYearFilter('');
+                              setOpenDropdown(null);
+                            }}
+                            title="Clear year filter"
+                          >
+                            ✕
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  )}
+                  
+                  <div className="filter-mode-tabs">
+                    <button
+                      className={`filter-mode-tab ${!monthFilter && !yearFilter && filterType !== 'date' ? 'active' : ''}`}
+                      onClick={() => {
+                        setMonthFilter('');
+                        setYearFilter('');
+                        setFilterType('all');
+                        setFilterValue('');
+                      }}
+                    >
+                      All
+                    </button>
+                    <button
+                      className={`filter-mode-tab ${monthFilter ? 'active' : ''}`}
+                      onClick={() => {
+                        if (!monthFilter) {
+                          const now = new Date();
+                          setMonthFilter(`${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`);
+                        }
+                        setYearFilter('');
+                        setFilterType('all');
+                        setFilterValue('');
+                      }}
+                    >
+                      Month
+                    </button>
+                    <button
+                      className={`filter-mode-tab ${yearFilter ? 'active' : ''}`}
+                      onClick={() => {
+                        if (!yearFilter) {
+                          setYearFilter(String(new Date().getFullYear()));
+                        }
+                        setMonthFilter('');
+                        setFilterType('all');
+                        setFilterValue('');
+                      }}
+                    >
+                      Year
+                    </button>
+                    <button
+                      className={`filter-mode-tab ${filterType === 'date' && filterValue ? 'active' : ''}`}
+                      onClick={() => {
+                        setMonthFilter('');
+                        setYearFilter('');
+                      }}
+                    >
+                      Date
+                    </button>
+                  </div>
+                  
+                  <DatePickerCalendar
+                    availableDates={availableFilters.dates}
+                    selectedDate={filterType === 'date' ? filterValue : ''}
+                    currentMonthFilter={monthFilter}
+                    currentYearFilter={yearFilter}
+                    onDateSelect={(date) => {
+                      setFilterType('date');
+                      setFilterValue(date);
+                      setMonthFilter('');
+                      setYearFilter('');
+                      setOpenDropdown(null);
+                    }}
+                    onClear={() => {
+                      setFilterType('all');
+                      setFilterValue('');
+                      setMonthFilter('');
+                      setYearFilter('');
+                      setOpenDropdown(null);
+                    }}
+                    onMonthSelect={(year, month) => {
+                      const monthStr = `${year}-${String(month + 1).padStart(2, '0')}`;
+                      setMonthFilter(monthStr);
+                      setYearFilter('');
+                      setFilterType('all');
+                      setFilterValue('');
+                      setOpenDropdown(null);
+                    }}
+                    onYearSelect={(year) => {
+                      setYearFilter(String(year));
+                      setMonthFilter('');
+                      setFilterType('all');
+                      setFilterValue('');
+                      setOpenDropdown(null);
+                    }}
+                  />
+                </div>
               </div>
             )}
           </div>
@@ -419,10 +590,15 @@ const PhotosPage = () => {
             </button>
           )}
         </div>
-
-        {filterValue && (
+        
+          {(filterValue || monthFilter || yearFilter) && (
           <div className="active-filter">
-            Filtering: <strong>{filterValue}</strong>
+              Filtering: <strong>
+                {monthFilter ? `Month: ${monthFilter}` : 
+                 yearFilter ? `Year: ${yearFilter}` : 
+                 filterValue}
+              </strong>
+              <button className="clear-filter-btn" onClick={clearFilter}>✕</button>
           </div>
         )}
       </div>
@@ -452,17 +628,16 @@ const PhotosPage = () => {
           /* Grid View */
           <>
             <div
-              className={`photos-grid ${slideDirection ? `slide-${slideDirection}` : ''}`}
-              style={{ gridTemplateColumns: `repeat(${gridColumns}, 1fr)` }}
+              className={`photos-grid cols-${gridColumns} ${slideDirection ? `slide-${slideDirection}` : ''}`}
             >
               {paginatedPhotos.length > 0 ? (
                 paginatedPhotos.map((photo) => (
-                  <div
-                    key={photo.id}
-                    className="photo-card"
-                    onClick={() => setSelectedPhoto(photo)}
-                  >
-                    <div className="photo-thumbnail">
+                <div
+                  key={photo.id}
+                  className="photo-card"
+                  onClick={() => setSelectedPhoto(photo)}
+                >
+                  <div className="photo-thumbnail">
                       <img 
                         src={ensureAbsoluteUrl(photo.thumbnail || photo.url)} 
                         alt={photo.filename}
@@ -494,53 +669,81 @@ const PhotosPage = () => {
                           }
                         }}
                       />
-                    </div>
-                    <div className="photo-meta">
-                      {/* Device */}
+                  </div>
+                  <div className="photo-meta">
+                    {/* Device */}
                       <div className="meta-row device">
                         <FaCameraRetro className="meta-icon" />
                         <span>{photo.device || 'N/A'}</span>
                       </div>
-
-                      {/* Date */}
+                    
+                    {/* Date */}
                       <div className="meta-row date">
                         <FaCalendar className="meta-icon" />
                         <span>{photo.date ? photo.date.split(' ')[0] : 'N/A'}</span>
                       </div>
-
+                    
                       {/* Camera Settings */}
                       <div className="meta-row settings">
                         <FaCog className="meta-icon" />
                         <span>
                           {(photo.settings?.aperture || photo.settings?.shutter || photo.settings?.iso)
                             ? [
-                              photo.settings?.aperture,
+                              // Format aperture if it's a long decimal
+                              photo.settings?.aperture 
+                                ? (() => {
+                                    const aperture = photo.settings.aperture;
+                                    if (typeof aperture === 'string' && aperture.startsWith('f/')) {
+                                      const num = parseFloat(aperture.replace('f/', ''));
+                                      if (!isNaN(num) && num.toString().length > 4) {
+                                        return `f/${num.toFixed(1)}`;
+                                      }
+                                    }
+                                    return aperture;
+                                  })()
+                                : null,
                               photo.settings?.shutter,
                               photo.settings?.iso
                             ].filter(Boolean).join(' · ')
                             : 'N/A'}
                         </span>
                       </div>
-
-                      {/* Focal Length */}
+                    
+                    {/* Focal Length */}
                       <div className="meta-row focal">
-                        <span className="focal-badge">{photo.settings?.focalLength || 'N/A'}</span>
+                        <span className="focal-badge">
+                          {photo.settings?.focalLength 
+                            ? (() => {
+                                const focal = photo.settings.focalLength;
+                                // If it's a string with "mm", extract number and round
+                                if (typeof focal === 'string' && focal.includes('mm')) {
+                                  const num = parseFloat(focal.replace('mm', ''));
+                                  return isNaN(num) ? focal : `${Math.round(num)}mm`;
+                                }
+                                // If it's a number, round it
+                                if (typeof focal === 'number') {
+                                  return `${Math.round(focal)}mm`;
+                                }
+                                return focal;
+                              })()
+                            : 'N/A'}
+                        </span>
                       </div>
-
-                      {/* Location */}
+                    
+                    {/* Location */}
                       <div className="meta-row location">
                         <FaMapMarkerAlt className="meta-icon" />
                         <span>{photo.location || 'N/A'}</span>
                       </div>
                     </div>
-                  </div>
-                ))
-              ) : (
-                <div className="no-items">
-                  <p>{photos.length === 0 ? 'No photos yet' : 'No photos match the filter'}</p>
                 </div>
-              )}
-            </div>
+              ))
+            ) : (
+              <div className="no-items">
+                <p>{photos.length === 0 ? 'No photos yet' : 'No photos match the filter'}</p>
+              </div>
+            )}
+          </div>
 
             {/* Pagination */}
             {totalPages > 1 && (
@@ -626,21 +829,21 @@ const PhotosPage = () => {
 
       {/* Location Photos Overlay - Portal to body */}
       {selectedLocation && ReactDOM.createPortal(
-        <div className="location-overlay" onClick={closeLocationOverlay}>
-          <div className="location-content" onClick={e => e.stopPropagation()}>
-            <div className="location-header">
-              <h2><FaMapMarkerAlt /> {selectedLocation}</h2>
-              <button className="close-btn" onClick={closeLocationOverlay}>
-                <FaTimes />
-              </button>
-            </div>
-            <div className="location-photos-grid">
-              {locationPhotos.map((photo) => (
-                <div
-                  key={photo.id}
-                  className="location-photo-card"
-                  onClick={() => setSelectedPhoto(photo)}
-                >
+              <div className="location-overlay" onClick={closeLocationOverlay}>
+                <div className="location-content" onClick={e => e.stopPropagation()}>
+                  <div className="location-header">
+                    <h2><FaMapMarkerAlt /> {selectedLocation}</h2>
+                    <button className="close-btn" onClick={closeLocationOverlay}>
+                      <FaTimes />
+                    </button>
+                  </div>
+                  <div className="location-photos-grid">
+                    {locationPhotos.map((photo) => (
+                      <div
+                        key={photo.id}
+                        className="location-photo-card"
+                        onClick={() => setSelectedPhoto(photo)}
+                      >
                   <img 
                     src={ensureAbsoluteUrl(photo.thumbnail || photo.url)} 
                     alt={photo.filename}
@@ -656,17 +859,17 @@ const PhotosPage = () => {
                       }
                     }}
                   />
-                  <div className="location-photo-info">
-                    {photo.date && <span><FaCalendar /> {photo.date.split(' ')[0]}</span>}
-                    {photo.device && <span><FaCameraRetro /> {photo.device}</span>}
+                        <div className="location-photo-info">
+                          {photo.date && <span><FaCalendar /> {photo.date.split(' ')[0]}</span>}
+                          {photo.device && <span><FaCameraRetro /> {photo.device}</span>}
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
-              ))}
-            </div>
-          </div>
         </div>,
         document.body
-      )}
+        )}
 
       {/* Photo Detail Modal - Portal to body */}
       {selectedPhoto && ReactDOM.createPortal(
@@ -712,7 +915,27 @@ const PhotosPage = () => {
                 <FaCog />
                 <span>
                   {Object.keys(selectedPhoto.settings || {}).length > 0
-                    ? Object.values(selectedPhoto.settings).filter(Boolean).join(' · ') || 'N/A'
+                    ? (() => {
+                        const settings = selectedPhoto.settings;
+                        const formatted = [];
+                        if (settings.aperture) {
+                          // Format aperture if it's a long decimal
+                          const aperture = settings.aperture;
+                          if (typeof aperture === 'string' && aperture.startsWith('f/')) {
+                            const num = parseFloat(aperture.replace('f/', ''));
+                            if (!isNaN(num) && num.toString().length > 4) {
+                              formatted.push(`f/${num.toFixed(1)}`);
+                            } else {
+                              formatted.push(aperture);
+                            }
+                          } else {
+                            formatted.push(aperture);
+                          }
+                        }
+                        if (settings.shutter) formatted.push(settings.shutter);
+                        if (settings.iso) formatted.push(settings.iso);
+                        return formatted.filter(Boolean).join(' · ') || 'N/A';
+                      })()
                     : 'N/A'}
                 </span>
               </div>
@@ -720,7 +943,18 @@ const PhotosPage = () => {
               {selectedPhoto.gps && (
                 <div className="info-row gps">
                   <FaGlobeAsia />
-                  <span>{selectedPhoto.gps.latitude.toFixed(4)}, {selectedPhoto.gps.longitude.toFixed(4)}</span>
+                  <span>
+                    {(() => {
+                      const lat = typeof selectedPhoto.gps.latitude === 'number' 
+                        ? selectedPhoto.gps.latitude 
+                        : parseFloat(selectedPhoto.gps.latitude);
+                      const lng = typeof selectedPhoto.gps.longitude === 'number' 
+                        ? selectedPhoto.gps.longitude 
+                        : parseFloat(selectedPhoto.gps.longitude);
+                      if (isNaN(lat) || isNaN(lng)) return 'N/A';
+                      return `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+                    })()}
+                  </span>
                 </div>
               )}
             </div>

@@ -37,14 +37,14 @@ const NFTPage = () => {
       // Try to use user's MetaMask provider first (read-only)
       if (window.ethereum) {
         try {
-          const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
           // Test connection with a timeout
           const networkPromise = provider.getNetwork();
           const timeoutPromise = new Promise((_, reject) => 
             setTimeout(() => reject(new Error('Connection timeout')), 5000)
           );
           await Promise.race([networkPromise, timeoutPromise]);
-          return new ethers.Contract(CONTRACT_CONFIG.address, CONTRACT_CONFIG.abi, provider);
+        return new ethers.Contract(CONTRACT_CONFIG.address, CONTRACT_CONFIG.abi, provider);
         } catch (err) {
           console.log('MetaMask provider failed, trying public providers...', err.message);
         }
@@ -112,13 +112,13 @@ const NFTPage = () => {
         );
         const album = await Promise.race([albumPromise, timeoutPromise]);
         
-        setAlbumInfo({
-          name: album.name,
-          totalTracks: album.totalTracks.toString(),
-          maxSupply: album.maxSupply.toString(),
-          currentSupply: album.currentSupply.toString(),
-          uri: album.uri
-        });
+      setAlbumInfo({
+        name: album.name,
+        totalTracks: album.totalTracks.toString(),
+        maxSupply: album.maxSupply.toString(),
+        currentSupply: album.currentSupply.toString(),
+        uri: album.uri
+      });
         console.log('Album info loaded:', album.name);
       } catch (err) {
         console.error('Failed to load album info:', err);
@@ -133,25 +133,25 @@ const NFTPage = () => {
         );
         const tracks = await Promise.race([tracksPromise, timeoutPromise]);
         
-        const nftData = tracks.map((track, index) => ({
-          id: index + 1,
-          name: track.name,
-          uri: track.uri,
-          minPrice: track.minPrice.toString(),
-          isForSale: track.isForSale,
-          creator: track.creator,
-          albumId: track.albumId.toString(),
-          trackNumber: track.trackNumber.toString(),
-          maxSupply: track.maxSupply.toString(),
-          currentSupply: track.currentSupply.toString()
-        }));
+      const nftData = tracks.map((track, index) => ({
+        id: index + 1,
+        name: track.name,
+        uri: track.uri,
+        minPrice: track.minPrice.toString(),
+        isForSale: track.isForSale,
+        creator: track.creator,
+        albumId: track.albumId.toString(),
+        trackNumber: track.trackNumber.toString(),
+        maxSupply: track.maxSupply.toString(),
+        currentSupply: track.currentSupply.toString()
+      }));
 
         console.log('Loaded', nftData.length, 'tracks');
-        setNfts(nftData);
-        if (nftData.length > 0 && !selectedNft) {
-          setSelectedNft(nftData[0]);
-        }
-      } catch (err) {
+      setNfts(nftData);
+      if (nftData.length > 0 && !selectedNft) {
+        setSelectedNft(nftData[0]);
+      }
+    } catch (err) {
         console.error('Failed to load tracks:', err);
         throw new Error(`Failed to load tracks: ${err.message}`);
       }
@@ -178,8 +178,8 @@ const NFTPage = () => {
       });
 
       if (accounts && accounts.length > 0) {
-        setAccount(accounts[0]);
-        return accounts[0];
+      setAccount(accounts[0]);
+      return accounts[0];
       } else {
         throw new Error('No accounts found');
       }
@@ -263,12 +263,12 @@ const NFTPage = () => {
           console.warn('Failed to check accounts:', err);
         });
 
-      return () => {
-        if (window.ethereum) {
+    return () => {
+      if (window.ethereum) {
           window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
           window.ethereum.removeListener('chainChanged', handleChainChanged);
-        }
-      };
+      }
+    };
     }
   }, []);
 
@@ -327,11 +327,6 @@ const NFTPage = () => {
           </div>
         )}
 
-        {error && (
-          <div className="error-message">
-            {error}
-          </div>
-        )}
 
         {loading && !nfts.length && (
           <div className="loading-state">

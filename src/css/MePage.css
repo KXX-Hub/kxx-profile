@@ -804,6 +804,12 @@
     .filter-btn svg {
         font-size: 1.1rem;
     }
+
+    /* Simplify mobile experience */
+    .overview-section,
+    .filter-section {
+        display: none;
+    }
 }
 
 @media (max-width: 480px) {
@@ -891,5 +897,111 @@
 
     .overview-item h2 {
         font-size: 1.6rem;
+    }
+
+    /* Extra simplification on small phones */
+    .profile-links {
+        gap: 1rem;
+    }
+}
+
+/* ==================== Navigation Cards Section ==================== */
+.me-page-navigation {
+    margin-bottom: 3rem;
+    padding: 2rem 0;
+}
+
+.navigation-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.navigation-card {
+    background: rgba(61, 53, 48, 0.8);
+    border: 2px solid #4F4540;
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 4px 4px 0px rgba(26, 26, 26, 0.8);
+}
+
+.navigation-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 6px 6px 0px rgba(26, 26, 26, 0.9);
+    border-color: #C9C0B0;
+    background: rgba(79, 69, 64, 0.9);
+}
+
+.navigation-card .card-icon {
+    font-size: 2.5rem;
+    color: #C9C0B0;
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.navigation-card .card-title {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 1rem;
+    color: #C9C0B0;
+    margin-bottom: 0.8rem;
+    text-shadow: 2px 2px 0px rgba(26, 26, 26, 0.8);
+}
+
+.navigation-card .navigation-description {
+    font-family: 'VT323', monospace;
+    font-size: 1.2rem;
+    color: rgba(236, 236, 236, 0.8);
+    line-height: 1.5;
+    margin: 0;
+}
+
+.navigation-card.compact {
+    padding: 1rem;
+}
+
+.navigation-card.compact .card-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.navigation-card.compact .card-title {
+    font-size: 0.8rem;
+    margin-bottom: 0.5rem;
+}
+
+.navigation-card.compact .navigation-description {
+    font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+    .navigation-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+    }
+
+    .navigation-card {
+        padding: 1rem;
+    }
+
+    .navigation-card .card-icon {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .navigation-card .card-title {
+        font-size: 0.8rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .navigation-card .navigation-description {
+        font-size: 1rem;
     }
 }

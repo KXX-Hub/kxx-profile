@@ -253,7 +253,8 @@
   box-shadow: 6px 6px 0px var(--mac-black);
   min-width: 160px;
   max-height: 300px;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
   z-index: 100;
 }
 
@@ -284,6 +285,97 @@
 .dropdown-menu button.active {
   background: var(--mac-accent);
   color: var(--mac-black);
+}
+
+/* Date picker menu */
+.date-picker-menu {
+  padding: 16px;
+  min-width: auto;
+  overflow: visible;
+}
+
+.date-filter-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.active-filter-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--mac-bg-dark);
+  border: 2px solid var(--mac-accent);
+  border-radius: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+}
+
+.filter-badge-label {
+  color: var(--mac-gray-light);
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.5px;
+}
+
+.filter-badge-value {
+  color: var(--mac-accent);
+  font-weight: 600;
+  flex: 1;
+}
+
+.filter-badge-clear {
+  background: rgba(150, 80, 80, 0.2);
+  border: 1px solid rgba(150, 80, 80, 0.4);
+  color: rgba(255, 150, 150, 0.8);
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  line-height: 1;
+}
+
+.filter-badge-clear:hover {
+  background: rgba(150, 80, 80, 0.3);
+  color: rgba(255, 150, 150, 1);
+}
+
+.filter-mode-tabs {
+  display: flex;
+  gap: 4px;
+  background: var(--mac-bg-dark);
+  padding: 4px;
+  border-radius: 8px;
+  border: 2px solid var(--mac-black);
+}
+
+.filter-mode-tab {
+  flex: 1;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  color: var(--mac-gray-light);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.filter-mode-tab:hover {
+  background: var(--mac-bg-medium);
+  color: var(--mac-white);
+}
+
+.filter-mode-tab.active {
+  background: var(--mac-accent);
+  color: var(--mac-black);
+  font-weight: 700;
+  box-shadow: 2px 2px 0px var(--mac-black);
 }
 
 .photos-page .clear-filter {
@@ -337,6 +429,26 @@
   grid-template-columns: repeat(4, 1fr);
   gap: var(--spacing-md);
   transition: transform 0.15s ease-out, opacity 0.15s ease-out;
+}
+
+.photos-grid.cols-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.photos-grid.cols-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.photos-grid.cols-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.photos-grid.cols-6 {
+  grid-template-columns: repeat(6, 1fr);
+}
+
+.photos-grid.cols-8 {
+  grid-template-columns: repeat(8, 1fr);
 }
 
 /* Slide animations */
@@ -642,12 +754,17 @@
   align-items: center;
   justify-content: center;
   background: #0a0a0a;
+  max-width: 100%;
   max-height: 85vh;
+  width: auto;
+  height: auto;
 }
 
 .modal-image-wrapper img {
   max-width: 100%;
   max-height: 85vh;
+  width: auto;
+  height: auto;
   object-fit: contain;
   display: block;
 }
@@ -1117,6 +1234,25 @@
   border-radius: 4px;
 }
 
+/* Scrollbar styling for dropdown menus */
+.dropdown-menu::-webkit-scrollbar {
+  width: 8px;
+}
+
+.dropdown-menu::-webkit-scrollbar-track {
+  background: var(--mac-bg-dark);
+  border-radius: 0 12px 12px 0;
+}
+
+.dropdown-menu::-webkit-scrollbar-thumb {
+  background: var(--mac-accent);
+  border-radius: 4px;
+}
+
+.dropdown-menu::-webkit-scrollbar-thumb:hover {
+  background: var(--mac-accent-light);
+}
+
 /* Mobile responsive for map */
 @media (max-width: 900px) {
   .map-view {
@@ -1496,12 +1632,26 @@
 
 @media (max-width: 640px) {
   .photos-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, 1fr) !important;
     gap: var(--spacing-xs);
   }
   
   .photos-page {
     padding: var(--spacing-md) var(--spacing-sm);
+  }
+
+  .photos-page .page-header {
+    margin-bottom: var(--spacing-md);
+    padding: var(--spacing-md) var(--spacing-sm) 0;
+  }
+
+  .photos-page .filter-section,
+  .subtle-dashboard-link {
+    display: none;
+  }
+
+  .page-arrow {
+    display: none;
   }
   
   .photos-page .page-header h1 {
@@ -1540,5 +1690,11 @@
   
   .modal-info p {
     font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .photos-grid {
+    grid-template-columns: 1fr !important;
   }
 }
