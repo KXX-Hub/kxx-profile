@@ -1,9 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import Card from '../components/common/Card';
 import SocialLinks from '../components/common/SocialLinks';
-import useWindowSize from '../hooks/useWindowSize';
-import { NAVIGATION_ITEMS } from '../config/constants';
 import '../css/MainPage.css';
 
 const Banner = () => (
@@ -13,54 +9,36 @@ const Banner = () => (
   </div>
 );
 
-const ProfileInfo = () => (
-  <div className="profile-info">
-    <h1 data-text="KXX">KXX</h1>
-    <p className="tagline">Software Engineer | Blockchain | Cybersecurity | Content Creator</p>
-    <div className="profile-description">
-      <p>
-        💻 Fullstack Developer: Dedicated to exploring and implementing blockchain and cybersecurity solutions. 
-        Continuously learning and growing in software development while contributing to the tech community through knowledge sharing.
-      </p>
-    </div>
-    <SocialLinks />
-  </div>
-);
-
-const NavigationMenu = () => {
-  const navigate = useNavigate();
-  const { isTablet } = useWindowSize();
-
-  return (
-    <div className="navigation-grid">
-      {NAVIGATION_ITEMS.map((item, index) => (
-        <Card
-          key={index}
-          title={item.title}
-          icon={<item.icon />}
-          onClick={() => navigate(item.path)}
-          className={`navigation-card ${isTablet ? 'compact' : ''}`}
-        >
-          <p className="navigation-description">{item.description}</p>
-        </Card>
-      ))}
-    </div>
-  );
-};
-
 const MainPage = () => {
   return (
     <div className="main-page">
       <Banner />
-      <div className="profile-section">
-        <div className="profile-avatar">
-          <img src="/img/1.jpg" alt="Profile" className="avatar-image" />
+      <section className="billboard">
+        <div className="billboard-frame">
+          <span className="billboard-pin pin-tl" />
+          <span className="billboard-pin pin-tr" />
+          <span className="billboard-pin pin-bl" />
+          <span className="billboard-pin pin-br" />
+          <div className="billboard-body">
+            <div className="billboard-avatar">
+              <img src="/img/1.jpg" alt="Profile" className="avatar-image" />
+            </div>
+            <div className="billboard-info">
+              <h1 data-text="Chih-Kai, Hung">Chih-Kai, Hung</h1>
+              <p className="tagline">Software Engineer | Fullstack Developer | Blockchain | Cybersecurity | Content Creator</p>
+              <div className="profile-description">
+                <p>
+                  Dedicated to exploring and implementing blockchain and cybersecurity solutions.
+                  Continuously learning and growing in software development while contributing to the tech community through knowledge sharing.
+                </p>
+              </div>
+              <SocialLinks />
+            </div>
+          </div>
         </div>
-        <ProfileInfo />
-      </div>
-      <NavigationMenu />
+      </section>
     </div>
   );
 };
 
-export default MainPage; 
+export default MainPage;

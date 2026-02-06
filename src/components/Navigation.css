@@ -61,6 +61,34 @@
   padding-right: 8px;
 }
 
+.start-prompt {
+  left: 50%;
+  right: auto;
+  top: calc(62% + 104px);
+  transform: translate(-50%, -50%);
+  padding: 23px 29px;
+  border-radius: 12px;
+  font-size: 17px;
+  letter-spacing: 2px;
+  animation: startBlink 1.1s steps(2, end) infinite;
+  border: none;
+  box-shadow: none;
+  background: transparent;
+}
+
+.start-prompt .arrow-label {
+  text-transform: uppercase;
+}
+
+.start-prompt:hover {
+  transform: translate(-50%, -50%) scale(1.02);
+}
+
+@keyframes startBlink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0.35; }
+}
+
 .arrow-icon {
   font-size: 14px;
   line-height: 1;

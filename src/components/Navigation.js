@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { FaCode, FaUser, FaGem, FaVideo, FaCamera, FaGraduationCap } from 'react-icons/fa';
 import './Navigation.css';
 
 const navItems = [
-  { path: '/', icon: FaUser, label: 'Me' },
+  { path: '/', icon: FaUser, label: 'Home' },
+  { path: '/me', icon: FaGraduationCap, label: 'Me' },
   { path: '/coding', icon: FaCode, label: 'Coding' },
   { path: '/photos', icon: FaCamera, label: 'Photos' },
   { path: '/videos', icon: FaVideo, label: 'Videos' },
@@ -14,6 +15,7 @@ const navItems = [
 const Navigation = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const isHome = location.pathname === '/';
   
   // Don't show on dashboard
   if (location.pathname.includes('/dashboard')) {
@@ -22,7 +24,11 @@ const Navigation = () => {
 
   // Find current page index for progress indicator
   const currentIndex = navItems.findIndex(item => item.path === location.pathname);
-  const progress = currentIndex >= 0 ? Math.round(((currentIndex + 1) / navItems.length) * 100) : 0;
+  const progress = isHome
+    ? 0
+    : currentIndex >= 0
+    ? Math.round(((currentIndex + 1) / navItems.length) * 100)
+    : 0;
 
   // Navigate to previous/next page
   const goToPrev = () => {
@@ -40,6 +46,13 @@ const Navigation = () => {
   const prevPage = currentIndex > 0 ? navItems[currentIndex - 1] : null;
   const nextPage = currentIndex < navItems.length - 1 ? navItems[currentIndex + 1] : null;
 
+  useEffect(() => {
+    if (!isHome || !nextPage) return;
+    const handleStart = () => navigate(nextPage.path);
+    document.addEventListener('pointerdown', handleStart);
+    return () => document.removeEventListener('pointerdown', handleStart);
+  }, [isHome, nextPage, navigate]);
+
   return (
     <>
       {/* Left Arrow - Previous Page */}
@@ -52,10 +65,16 @@ const Navigation = () => {
 
       {/* Right Arrow - Next Page */}
       {nextPage && (
-        <button className="page-nav-arrow page-nav-right" onClick={goToNext}>
-          <span className="arrow-label">{nextPage.label}</span>
-          <span className="arrow-icon">▶</span>
-        </button>
+        isHome ? (
+          <div className="page-nav-arrow page-nav-right start-prompt">
+            <span className="arrow-label">Touch anywhere to start</span>
+          </div>
+        ) : (
+          <button className="page-nav-arrow page-nav-right" onClick={goToNext}>
+            <span className="arrow-label">{nextPage.label}</span>
+            <span className="arrow-icon">▶</span>
+          </button>
+        )
       )}
 
       <nav className="global-nav">

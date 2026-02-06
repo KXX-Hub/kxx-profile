@@ -3,8 +3,10 @@
   /* Warm Retro Color Palette (from Me Page) */
   --primary-color: #2B2520;
   --secondary-color: #3D3530;
-  --accent-color: #C9C0B0; /* Cream - primary accent */
-  --accent-amber: #D4A574; /* Amber - secondary accent for highlights */
+  --accent-color: #C9C0B0;
+  /* Cream - primary accent */
+  --accent-amber: #D4A574;
+  /* Amber - secondary accent for highlights */
   --accent-color-2: #4F4540;
   --accent-color-3: #C9C0B0;
   --text-color: #ECECEC;
@@ -41,7 +43,7 @@ body {
   overflow-x: hidden;
   overflow-y: auto;
   width: 100%;
-  padding-bottom: 20px;
+  padding-bottom: 48px;
 }
 
 /* Classic Mac Pixel Art Background - Inspired by Susan Kare */
@@ -55,7 +57,7 @@ body {
   z-index: 0;
   pointer-events: none;
   opacity: 0.4;
-  
+
   /* Pixel grid pattern with alternating dots - classic Mac look */
   background-image:
     /* Amber pixel dots - warm accent */
@@ -65,26 +67,24 @@ body {
     /* Gray pixel dots */
     radial-gradient(circle at center, rgba(175, 175, 175, 0.15) 1px, transparent 1px),
     /* Subtle scanline effect */
-    repeating-linear-gradient(
-      0deg,
+    repeating-linear-gradient(0deg,
       transparent,
       transparent 2px,
       rgba(79, 69, 64, 0.1) 2px,
-      rgba(79, 69, 64, 0.1) 4px
-    );
-  
-  background-size: 
+      rgba(79, 69, 64, 0.1) 4px);
+
+  background-size:
     24px 24px,
     16px 16px,
     32px 32px,
     100% 4px;
-  
+
   background-position:
     12px 12px,
     0 0,
     8px 8px,
     0 0;
-  
+
   image-rendering: pixelated;
   image-rendering: -moz-crisp-edges;
   image-rendering: crisp-edges;
@@ -101,7 +101,7 @@ body {
   z-index: 0;
   pointer-events: none;
   opacity: 0.15;
-  
+
   /* Larger pixel blocks creating a retro pattern */
   background-image:
     /* Checkerboard pattern - classic Mac */
@@ -109,10 +109,10 @@ body {
     linear-gradient(-45deg, rgba(79, 69, 64, 0.2) 25%, transparent 25%),
     linear-gradient(45deg, transparent 75%, rgba(79, 69, 64, 0.2) 75%),
     linear-gradient(-45deg, transparent 75%, rgba(79, 69, 64, 0.2) 75%);
-  
+
   background-size: 40px 40px;
   background-position: 0 0, 0 20px, 20px -20px, -20px 0px;
-  
+
   image-rendering: pixelated;
   animation: pixelDrift 60s linear infinite;
 }
@@ -122,6 +122,7 @@ body {
   0% {
     background-position: 0 0, 0 20px, 20px -20px, -20px 0px;
   }
+
   100% {
     background-position: 40px 40px, 40px 60px, 60px 20px, 20px 40px;
   }
@@ -130,7 +131,7 @@ body {
 /* Banner Section */
 .banner-section {
   width: 100vw;
-  height: 200px;
+  height: 160px;
   position: relative;
   overflow: hidden;
   margin: 0;
@@ -144,8 +145,8 @@ body {
   height: 100%;
   object-fit: cover;
   object-position: center;
-  opacity: 0.6;
-  filter: saturate(0.8) contrast(1.1);
+  opacity: 0.55;
+  filter: saturate(0.75) contrast(1.05);
 }
 
 .banner-overlay {
@@ -154,117 +155,149 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(
-    180deg,
-    rgba(43, 37, 32, 0.7) 0%,
-    rgba(43, 37, 32, 0.5) 50%,
-    rgba(43, 37, 32, 0.8) 100%
-  );
+  background: linear-gradient(180deg,
+      rgba(24, 23, 23, 0.65) 0%,
+      rgba(43, 37, 32, 0.55) 50%,
+      rgba(24, 23, 23, 0.8) 100%);
 }
 
-/* Profile Section */
-.profile-section {
-  display: grid;
-  grid-template-columns: auto 1.5fr;
-  gap: 2rem;
-  max-width: 1100px;
+/* Billboard Section */
+.billboard {
   width: 100%;
-  margin: -80px auto 1rem;
-  padding: 2rem;
-  background: rgba(61, 53, 48, 0.8);
-  backdrop-filter: blur(10px);
-  border-radius: 15px;
-  border: 4px solid #4F4540;
-  position: relative;
-  z-index: 2;
-  box-sizing: border-box;
-  justify-content: center;
-  align-items: center;
-  box-shadow: 6px 6px 0px rgba(26, 26, 26, 0.8);
-  transition: all 0.2s ease;
-}
-
-.profile-section:hover {
-  transform: translateY(-5px);
-  box-shadow: 8px 8px 0px rgba(26, 26, 26, 0.9);
-}
-
-.profile-images {
   display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  align-items: center;
+  justify-content: center;
+  margin-top: -40px;
+  padding: 0 1.2rem;
 }
 
-.profile-avatar {
-  width: 200px;
-  height: 200px;
-  border-radius: 16px;
-  overflow: hidden;
-  border: 4px solid #4F4540;
-  box-shadow: 6px 6px 0px rgba(26, 26, 26, 0.8);
-  transition: all 0.2s ease;
-  margin-top: -50px;
+.billboard-frame {
+  width: min(1240px, calc(100% - 2rem));
+  background: linear-gradient(180deg, #8B6A45 0%, #6F5237 100%);
+  border: 6px solid #5E442D;
+  border-radius: 8px;
+  box-shadow: 10px 10px 0px rgba(26, 26, 26, 0.85);
   position: relative;
-  image-rendering: auto;
-  background: var(--secondary-color);
+  min-height: 140%;
+  padding: 3.6rem 1.9rem;
+  z-index: 2;
 }
 
-.profile-avatar::before {
+.billboard-frame::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: repeating-linear-gradient(
-    0deg,
-    rgba(79, 69, 64, 0.05) 0px,
-    rgba(79, 69, 64, 0.05) 2px,
-    transparent 2px,
-    transparent 4px
-  );
-  z-index: 1;
-  opacity: 0.3;
+  inset: 10px;
+  border-radius: 6px;
+  border: 2px solid rgba(0, 0, 0, 0.3);
   pointer-events: none;
-  transition: opacity 0.2s ease;
 }
 
-.profile-avatar:hover {
-  transform: translateY(-5px);
-  box-shadow: 8px 8px 0px rgba(26, 26, 26, 0.9);
+.billboard-frame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 6px;
+  background:
+    repeating-linear-gradient(90deg,
+      rgba(255, 255, 255, 0.06) 0px,
+      rgba(255, 255, 255, 0.06) 2px,
+      transparent 2px,
+      transparent 6px),
+    repeating-linear-gradient(0deg,
+      rgba(0, 0, 0, 0.08) 0px,
+      rgba(0, 0, 0, 0.08) 2px,
+      transparent 2px,
+      transparent 8px);
+  mix-blend-mode: multiply;
+  opacity: 0.6;
+  pointer-events: none;
 }
 
-.profile-avatar:hover::before {
-  opacity: 0.5;
+.billboard-post {
+  width: 260px;
+  height: 22px;
+  margin-top: 16px;
+  background: linear-gradient(180deg, #7B5A3C 0%, #5E442D 100%);
+  border: 4px solid #4A3523;
+  border-radius: 6px;
+  box-shadow: 6px 6px 0px rgba(26, 26, 26, 0.75);
+  transform: rotate(-12deg);
+  transform-origin: left center;
+}
+
+.billboard-pin {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  background: #D2B48C;
+  border: 2px solid #6F5237;
+  border-radius: 50%;
+  box-shadow: inset 2px 2px 0px rgba(255, 255, 255, 0.35);
+}
+
+.pin-tl {
+  top: 8px;
+  left: 8px;
+}
+
+.pin-tr {
+  top: 8px;
+  right: 8px;
+}
+
+.pin-bl {
+  bottom: 8px;
+  left: 8px;
+}
+
+.pin-br {
+  bottom: 8px;
+  right: 8px;
+}
+
+.billboard-body {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  gap: 2.8rem;
+  align-items: center;
+}
+
+.billboard-avatar {
+  width: 250px;
+  height: 250px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 3px solid #5E442D;
+  background: #7B89A9;
+  box-shadow: 5px 5px 0px rgba(26, 26, 26, 0.75);
+  position: relative;
 }
 
 .avatar-image {
-  width: 130%;
-  height: 130%;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  object-position: center top;
+  object-position: 50% 5%;
   transition: transform 0.3s ease;
-  margin: -15% 0 0 -15%;
-  filter: saturate(1.1) contrast(1.05);
+  filter: saturate(1.05) contrast(1.05);
+  transform: scale(1.15);
 }
 
-.profile-info {
+.billboard-info {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-  padding-top: 1.5rem;
+  gap: 0.9rem;
+  padding-top: 0.4rem;
   align-items: flex-start;
   justify-content: center;
 }
 
-.profile-info h1 {
+.billboard-info h1 {
   font-family: 'Press Start 2P', cursive;
-  font-size: 2.2rem;
+  font-size: 2.3rem;
   font-weight: 900;
-  color: #C9C0B0;
-  margin-bottom: 1rem;
-  letter-spacing: 4px;
+  color: #E2D6C5;
+  margin-bottom: 0.6rem;
+  letter-spacing: 2px;
   position: relative;
   z-index: 1;
   text-shadow: 3px 3px 0px rgba(26, 26, 26, 0.8);
@@ -274,14 +307,14 @@ body {
   max-width: 100%;
 }
 
-.profile-info h1::after {
+.billboard-info h1::after {
   content: '';
   position: absolute;
   left: 0;
   bottom: -12px;
   width: 100%;
-  height: 4px;
-  background: #3D3530;
+  height: 3px;
+  background: #4F3A26;
   box-shadow: 2px 2px 0px rgba(26, 26, 26, 0.8);
   border-radius: 2px;
 }
@@ -290,9 +323,11 @@ body {
   0% {
     background-position: 0% 50%;
   }
+
   50% {
     background-position: 100% 50%;
   }
+
   100% {
     background-position: 0% 50%;
   }
@@ -301,7 +336,7 @@ body {
 .tagline {
   font-family: 'VT323', monospace;
   font-size: 1.6rem;
-  color: #AFAFAF;
+  color: #E7D8C2;
   opacity: 1;
   font-weight: 400;
   margin-top: 0.5rem;
@@ -312,16 +347,16 @@ body {
 .profile-description {
   font-family: 'VT323', monospace;
   font-size: 1.4rem;
-  line-height: 1.8;
-  color: rgba(236, 236, 236, 0.9);
+  line-height: 1.65;
+  color: rgba(236, 236, 236, 0.92);
   opacity: 1;
-  max-width: 90%;
+  max-width: 100%;
   text-align: left;
-  background: rgba(79, 69, 64, 0.4);
-  padding: 1.5rem;
-  border: 2px solid #4F4540;
-  border-radius: 12px;
-  box-shadow: inset 1px 1px 5px rgba(0, 0, 0, 0.3);
+  background: rgba(92, 70, 48, 0.45);
+  padding: 1rem 1.1rem;
+  border: 2px solid #5E442D;
+  border-radius: 6px;
+  box-shadow: inset 1px 1px 6px rgba(0, 0, 0, 0.35);
 }
 
 /* Social Links */
@@ -357,7 +392,84 @@ body {
 .navigation-section {
   width: 100%;
   margin: 2rem auto;
-  max-width: 1400px;
+  max-width: 1000px;
+}
+
+/* Navigation Grid for Cards */
+.navigation-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1.2rem;
+  max-width: 900px;
+  margin: 4rem auto;
+  padding: 0 1rem;
+  min-height: calc(100vh - 200px);
+  align-content: center;
+}
+
+/* Card Styles */
+.card {
+  background: rgba(61, 53, 48, 0.8);
+  border: 2px solid #4F4540;
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 4px 4px 0px rgba(26, 26, 26, 0.8);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 6px 6px 0px rgba(26, 26, 26, 0.9);
+  border-color: #C9C0B0;
+  background: rgba(79, 69, 64, 0.9);
+}
+
+.card-icon {
+  font-size: 2.5rem;
+  color: #C9C0B0;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.card-title {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.9rem;
+  color: #C9C0B0;
+  margin-bottom: 0.8rem;
+  text-shadow: 2px 2px 0px rgba(26, 26, 26, 0.8);
+}
+
+.card-content {
+  font-family: 'VT323', monospace;
+  font-size: 1.1rem;
+  color: rgba(236, 236, 236, 0.8);
+  line-height: 1.5;
+}
+
+.card-content p {
+  margin: 0;
+}
+
+.navigation-card.compact {
+  padding: 1rem;
+}
+
+.navigation-card.compact .card-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.navigation-card.compact .card-title {
+  font-size: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.navigation-card.compact .card-content {
+  font-size: 1rem;
 }
 
 .nav-content {
@@ -458,48 +570,64 @@ body {
 
 /* Pixel-style animations */
 @keyframes pixelFloat {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-4px);
   }
 }
 
 @keyframes pixelPulse {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow: 8px 8px 0px rgba(26, 26, 26, 0.9);
   }
+
   50% {
     box-shadow: 10px 10px 0px rgba(26, 26, 26, 0.9), 0 0 0 2px #ECECEC;
   }
 }
 
 @keyframes pixelShake {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: scale(1.1) translate(0, 0);
   }
+
   25% {
     transform: scale(1.1) translate(-1px, 0);
   }
+
   75% {
     transform: scale(1.1) translate(1px, 0);
   }
 }
 
 @keyframes pixelGlitch {
-  0%, 90%, 100% {
+
+  0%,
+  90%,
+  100% {
     transform: translate(0);
     opacity: 1;
   }
+
   92% {
     transform: translate(-1px, 0);
     opacity: 0.9;
   }
+
   94% {
     transform: translate(1px, 0);
     opacity: 1;
   }
+
   96% {
     transform: translate(-1px, 0);
     opacity: 0.95;
@@ -507,10 +635,13 @@ body {
 }
 
 @keyframes breathe {
-  0%, 100% {
+
+  0%,
+  100% {
     border-color: #C9C0B0;
     box-shadow: 6px 6px 0px rgba(26, 26, 26, 0.8);
   }
+
   50% {
     border-color: #AFAFAF;
     box-shadow: 8px 8px 0px rgba(26, 26, 26, 0.9);
@@ -524,24 +655,28 @@ body {
     border-bottom-color: transparent;
     border-left-color: transparent;
   }
+
   25% {
     border-top-color: #C9C0B0;
     border-right-color: #C9C0B0;
     border-bottom-color: transparent;
     border-left-color: transparent;
   }
+
   50% {
     border-top-color: #C9C0B0;
     border-right-color: #C9C0B0;
     border-bottom-color: #C9C0B0;
     border-left-color: transparent;
   }
+
   75% {
     border-top-color: #C9C0B0;
     border-right-color: #C9C0B0;
     border-bottom-color: #C9C0B0;
     border-left-color: #C9C0B0;
   }
+
   100% {
     border-top-color: #C9C0B0;
     border-right-color: transparent;
@@ -551,18 +686,24 @@ body {
 }
 
 @keyframes activeGlow {
-  0%, 100% {
+
+  0%,
+  100% {
     background: rgba(201, 192, 176, 0.2);
   }
+
   50% {
     background: rgba(201, 192, 176, 0.3);
   }
 }
 
 @keyframes hoverGlow {
-  0%, 100% {
+
+  0%,
+  100% {
     background: rgba(201, 192, 176, 0.15);
   }
+
   50% {
     background: rgba(201, 192, 176, 0.25);
   }
@@ -644,25 +785,21 @@ body {
 }
 
 /* Reset all margins and paddings for containers */
-.profile-section,
 .navigation-section,
 .box-container,
 .nav-button {
   box-sizing: border-box;
-  max-width: 100%;
 }
 
 /* Remove any extra spacing */
-.profile-section,
 .navigation-section {
   margin-left: auto;
   margin-right: auto;
 }
 
 /* Ensure content fills container width */
-.profile-section > *,
-.navigation-section > *,
-.box-container > * {
+.navigation-section>*,
+.box-container>* {
   width: 100%;
   margin-left: 0;
   margin-right: 0;
@@ -671,42 +808,18 @@ body {
 
 /* Responsive Design */
 @media (max-width: 1400px) {
-  .profile-section {
-    max-width: 1200px;
-    padding: 2rem;
-    gap: 2rem;
-  }
-
-  .profile-avatar {
-    width: 250px;
-    height: 250px;
-  }
-
-  .profile-info h1 {
-    font-size: 4rem;
+  .billboard-frame {
+    width: min(1040px, calc(100% - 2rem));
   }
 }
 
 @media (max-width: 1200px) {
-  .profile-section {
-    max-width: 1000px;
-    padding: 1.8rem;
-    gap: 1.8rem;
+  .billboard-frame {
+    width: min(980px, calc(100% - 2rem));
   }
 
-  .profile-avatar {
-    width: 220px;
-    height: 220px;
-  }
-
-  .profile-info h1 {
-    font-size: 3.5rem;
-    letter-spacing: 8px;
-  }
-
-  .profile-description {
-    font-size: 1rem;
-    max-width: 95%;
+  .billboard-info h1 {
+    font-size: 2.1rem;
   }
 }
 
@@ -715,39 +828,48 @@ body {
     height: 150px;
   }
 
-  .profile-section {
-    grid-template-columns: 1fr;
-    text-align: center;
-    gap: 1.5rem;
-    margin-top: 20px;
-    padding: 1.5rem;
+  .billboard {
+    margin-top: 12px;
   }
 
-  .profile-images {
+  .billboard-post {
+    width: 220px;
+    height: 20px;
+  }
+
+  .billboard-body {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .billboard-info {
+    align-items: center;
+    text-align: center;
+  }
+
+  .profile-description {
+    text-align: center;
+  }
+
+  .navigation-grid {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1rem;
+    max-width: 700px;
+  }
+
+  .billboard-avatar {
+    width: 210px;
+    height: 210px;
     margin: 0 auto;
   }
 
-  .profile-avatar {
-    width: 150px;
-    height: 150px;
-    margin-top: 0;
-  }
-
-  .profile-info {
-    align-items: center;
-    text-align: center;
-    gap: 1rem;
-  }
-
-  .profile-info h1 {
+  .billboard-info h1 {
     font-size: 2rem;
-    letter-spacing: 4px;
   }
 
   .profile-description {
     max-width: 100%;
-    text-align: center;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
   }
 
   .tagline {
@@ -760,24 +882,45 @@ body {
     height: 120px;
   }
 
-  .profile-section {
-    padding: 1.2rem;
-    margin-top: 15px;
-    gap: 1rem;
+  .billboard-frame {
+    padding: 1.1rem;
   }
 
-  .profile-avatar {
-    width: 130px;
-    height: 130px;
+  .navigation-grid {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 0.8rem;
+    max-width: 600px;
   }
 
-  .profile-info h1 {
-    font-size: 1.5rem;
-    letter-spacing: 3px;
+  .card {
+    padding: 1rem;
+  }
+
+  .card-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .card-title {
+    font-size: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .card-content {
+    font-size: 1rem;
+  }
+
+  .billboard-avatar {
+    width: 190px;
+    height: 190px;
+  }
+
+  .billboard-info h1 {
+    font-size: 1.85rem;
   }
 
   .profile-description {
-    font-size: 1.1rem;
+    font-size: 1rem;
     line-height: 1.5;
   }
 
@@ -792,31 +935,32 @@ body {
     height: 100px;
   }
 
-  .profile-section {
+  .billboard-frame {
     padding: 1rem;
-    margin-top: 10px;
-    gap: 0.8rem;
-    margin-left: 0.5rem;
-    margin-right: 0.5rem;
   }
 
-  .profile-avatar {
-    width: 110px;
-    height: 110px;
+  .billboard-post {
+    width: 180px;
+    height: 18px;
   }
 
-  .profile-info {
+  .billboard-avatar {
+    width: 170px;
+    height: 170px;
+  }
+
+  .billboard-info {
     gap: 0.6rem;
   }
 
-  .profile-info h1 {
-    font-size: 1.2rem;
-    letter-spacing: 2px;
+  .billboard-info h1 {
+    font-size: 1.65rem;
+    letter-spacing: 1px;
     word-break: break-word;
   }
 
   .profile-description {
-    font-size: 1rem;
+    font-size: 1.2rem;
     line-height: 1.5;
     padding: 0.8rem;
   }
@@ -840,19 +984,23 @@ body {
     height: 80px;
   }
 
-  .profile-section {
-    margin-top: 8px;
+  .billboard-frame {
     padding: 0.8rem;
   }
 
-  .profile-info h1 {
+  .billboard-post {
+    width: 150px;
+    height: 16px;
+  }
+
+  .billboard-info h1 {
     font-size: 1rem;
     letter-spacing: 1px;
   }
 
-  .profile-avatar {
-    width: 90px;
-    height: 90px;
+  .billboard-avatar {
+    width: 150px;
+    height: 150px;
   }
 
   .tagline {
@@ -870,6 +1018,7 @@ body {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -881,6 +1030,7 @@ body {
     opacity: 0;
     transform: translateX(-50px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -891,19 +1041,19 @@ body {
   .nav-content {
     gap: 1rem;
   }
-  
+
   .nav-button {
     min-height: 150px;
   }
-  
+
   .nav-icon {
     font-size: 2.2rem;
   }
-  
+
   .nav-title {
     font-size: 1.1rem;
   }
-  
+
   .nav-description {
     font-size: 0.8rem;
   }
@@ -914,20 +1064,20 @@ body {
     flex-wrap: wrap;
     gap: 1rem;
   }
-  
+
   .nav-button {
     flex: 1 1 calc(50% - 0.5rem);
     min-height: 140px;
   }
-  
+
   .nav-icon {
     font-size: 2rem;
   }
-  
+
   .nav-title {
     font-size: 1rem;
   }
-  
+
   .nav-description {
     font-size: 0.75rem;
   }
@@ -937,26 +1087,26 @@ body {
   .nav-content {
     flex-direction: column;
   }
-  
+
   .nav-button {
     width: 100%;
     min-height: 120px;
   }
-  
+
   .nav-button-content {
     flex-direction: row;
     gap: 1rem;
     padding: 1.5rem;
   }
-  
+
   .nav-icon {
     font-size: 1.8rem;
   }
-  
+
   .nav-title {
     font-size: 0.9rem;
   }
-  
+
   .nav-description {
     font-size: 0.7rem;
     margin-top: 0.3rem;
@@ -968,23 +1118,19 @@ body {
   animation: fadeIn 1s ease-out;
 }
 
-.profile-section {
+.billboard-frame {
   animation: fadeIn 1s ease-out 0.3s backwards;
 }
 
-.profile-avatar {
+.billboard-avatar {
   animation: slideInFromLeft 1s ease-out 0.5s backwards;
 }
 
-.profile-avatar:hover {
-  transform: scale(1.02) rotate(2deg);
-}
-
-.profile-info {
+.billboard-info {
   animation: slideInFromRight 1s ease-out 0.5s backwards;
 }
 
-.profile-info h1 {
+.billboard-info h1 {
   background: none;
   animation: none;
 }
@@ -1076,75 +1222,75 @@ body {
 }
 
 .overview {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 3rem;
-    gap: 0.8rem;
-    flex-wrap: wrap;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 3rem;
+  gap: 0.8rem;
+  flex-wrap: wrap;
 }
 
 .overview-item {
-    flex: 1;
-    min-width: 120px;
-    text-align: center;
-    padding: 1rem;
-    background: rgba(255, 255, 255, 0.03);
-    border-radius: 15px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    transition: all 0.3s ease;
-    animation: fadeIn 0.5s ease-out;
+  flex: 1;
+  min-width: 120px;
+  text-align: center;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+  animation: fadeIn 0.5s ease-out;
 }
 
 .overview-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 4px 4px 0px rgba(26, 26, 26, 0.8);
-    border-color: #D4A574;
+  transform: translateY(-5px);
+  box-shadow: 4px 4px 0px rgba(26, 26, 26, 0.8);
+  border-color: #D4A574;
 }
 
 .overview-item h3 {
-    color: #D4A574;
-    font-size: 1rem;
-    margin-bottom: 0.4rem;
+  color: #D4A574;
+  font-size: 1rem;
+  margin-bottom: 0.4rem;
 }
 
 .overview-item p {
-    color: var(--accent-color-3);
-    font-size: 0.9rem;
-    margin: 0;
+  color: var(--accent-color-3);
+  font-size: 0.9rem;
+  margin: 0;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    .overview {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 0.6rem;
-    }
+  .overview {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.6rem;
+  }
 
-    .overview-item {
-        width: 100%;
-        min-width: unset;
-        padding: 0.8rem;
-    }
+  .overview-item {
+    width: 100%;
+    min-width: unset;
+    padding: 0.8rem;
+  }
 
-    .overview-item h3 {
-        font-size: 0.95rem;
-    }
+  .overview-item h3 {
+    font-size: 0.95rem;
+  }
 
-    .overview-item p {
-        font-size: 0.85rem;
-    }
+  .overview-item p {
+    font-size: 0.85rem;
+  }
 }
 
 @media (max-width: 480px) {
-    .overview {
-        gap: 0.5rem;
-    }
+  .overview {
+    gap: 0.5rem;
+  }
 
-    .overview-item {
-        padding: 0.7rem;
-    }
+  .overview-item {
+    padding: 0.7rem;
+  }
 }
 
 .nav-icons {
@@ -1184,12 +1330,12 @@ body {
   .nav-icons {
     display: flex;
   }
-  
+
   /* Adjust position based on content layout */
   .nav-icons.left-side {
     left: 1.5rem;
   }
-  
+
   .nav-icons.right-side {
     left: auto;
     right: 1.5rem;
@@ -1274,10 +1420,15 @@ body {
   color: rgba(255, 255, 255, 0.9);
   transform: translateY(-2px);
 }
-
-
-
-
-
-
-
+  .billboard-post {
+    height: 160px;
+    width: 32px;
+  }
+  .billboard-post {
+    height: 140px;
+    width: 28px;
+  }
+  .billboard-post {
+    height: 120px;
+    width: 24px;
+  }
