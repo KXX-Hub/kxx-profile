@@ -379,11 +379,11 @@
 }
 
 .page-arrow-left {
-  left: 80px; /* Far enough from Navigation arrows (left: 0) */
+  left: 20px; /* Navigation arrows are hidden on Photos page, so can be closer to edge */
 }
 
 .page-arrow-right {
-  right: 80px; /* Far enough from Navigation arrows (right: 0) */
+  right: 20px; /* Navigation arrows are hidden on Photos page, so can be closer to edge */
 }
 
 @media (max-width: 900px) {
@@ -392,13 +392,13 @@
     height: 60px;
     font-size: 1.2rem;
   }
-  .page-arrow-left { left: 70px; }
-  .page-arrow-right { right: 70px; }
+  .page-arrow-left { left: 15px; }
+  .page-arrow-right { right: 15px; }
 }
 
 @media (max-width: 768px) {
-  .page-arrow-left { left: 60px; }
-  .page-arrow-right { right: 60px; }
+  .page-arrow-left { left: 10px; }
+  .page-arrow-right { right: 10px; }
 }
 
 @media (max-width: 640px) {
@@ -408,8 +408,8 @@
     font-size: 1rem;
     opacity: 0.7;
   }
-  .page-arrow-left { left: 50px; }
-  .page-arrow-right { right: 50px; }
+  .page-arrow-left { left: 8px; }
+  .page-arrow-right { right: 8px; }
 }
 
 /* ==================== Photo Card ==================== */
