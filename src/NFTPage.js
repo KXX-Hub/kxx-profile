@@ -29,10 +29,25 @@ const NFTPage = () => {
   // Get read-only contract (no wallet needed)
   const getReadOnlyContract = async () => {
     try {
+      // Check if we're in browser environment
+      if (typeof window === 'undefined') {
+        throw new Error('Not in browser environment');
+      }
+
       // Try to use user's MetaMask provider first (read-only)
       if (window.ethereum) {
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-        return new ethers.Contract(CONTRACT_CONFIG.address, CONTRACT_CONFIG.abi, provider);
+        try {
+          const provider = new ethers.providers.Web3Provider(window.ethereum);
+          // Test connection with a timeout
+          const networkPromise = provider.getNetwork();
+          const timeoutPromise = new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Connection timeout')), 5000)
+          );
+          await Promise.race([networkPromise, timeoutPromise]);
+          return new ethers.Contract(CONTRACT_CONFIG.address, CONTRACT_CONFIG.abi, provider);
+        } catch (err) {
+          console.log('MetaMask provider failed, trying public providers...', err.message);
+        }
       }
       
       // Fallback to public providers
@@ -40,29 +55,40 @@ const NFTPage = () => {
         'https://eth.llamarpc.com',
         'https://rpc.ankr.com/eth',
         'https://eth-mainnet.public.blastapi.io',
-        'https://ethereum.publicnode.com'
+        'https://ethereum.publicnode.com',
+        'https://1rpc.io/eth'
       ];
       
       // Try each provider until one works
       for (const rpcUrl of providers) {
         try {
           const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
-          await provider.getNetwork(); // Test connection
+          // Test connection with timeout
+          const networkPromise = provider.getNetwork();
+          const timeoutPromise = new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Connection timeout')), 5000)
+          );
+          await Promise.race([networkPromise, timeoutPromise]);
+          console.log('Connected to RPC:', rpcUrl);
           return new ethers.Contract(CONTRACT_CONFIG.address, CONTRACT_CONFIG.abi, provider);
         } catch (err) {
+          console.log(`RPC ${rpcUrl} failed:`, err.message);
           continue; // Try next provider
         }
       }
       
       throw new Error('Unable to connect to Ethereum network. Please install MetaMask or try again later.');
     } catch (err) {
+      console.error('getReadOnlyContract error:', err);
       throw err;
     }
   };
 
   // Get contract with signer (wallet needed for transactions)
   const getSignerContract = async () => {
-    if (!window.ethereum) throw new Error('Please install MetaMask');
+    if (typeof window === 'undefined' || !window.ethereum) {
+      throw new Error('Please install MetaMask');
+    }
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
     return new ethers.Contract(CONTRACT_CONFIG.address, CONTRACT_CONFIG.abi, signer);
@@ -73,38 +99,64 @@ const NFTPage = () => {
     try {
       setLoading(true);
       setError(null);
+      
+      console.log('Loading NFTs...');
       const contract = await getReadOnlyContract();
+      console.log('Contract connected');
 
-      // Get album info
-      const album = await contract.albums(1);
-      setAlbumInfo({
-        name: album.name,
-        totalTracks: album.totalTracks.toString(),
-        maxSupply: album.maxSupply.toString(),
-        currentSupply: album.currentSupply.toString(),
-        uri: album.uri
-      });
+      // Get album info with timeout
+      try {
+        const albumPromise = contract.albums(1);
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Request timeout')), 10000)
+        );
+        const album = await Promise.race([albumPromise, timeoutPromise]);
+        
+        setAlbumInfo({
+          name: album.name,
+          totalTracks: album.totalTracks.toString(),
+          maxSupply: album.maxSupply.toString(),
+          currentSupply: album.currentSupply.toString(),
+          uri: album.uri
+        });
+        console.log('Album info loaded:', album.name);
+      } catch (err) {
+        console.error('Failed to load album info:', err);
+        throw new Error(`Failed to load album: ${err.message}`);
+      }
 
-      // Get tracks info
-      const tracks = await contract.getAlbumTracks(1);
-      const nftData = tracks.map((track, index) => ({
-        id: index + 1,
-        name: track.name,
-        uri: track.uri,
-        minPrice: track.minPrice.toString(),
-        isForSale: track.isForSale,
-        creator: track.creator,
-        albumId: track.albumId.toString(),
-        trackNumber: track.trackNumber.toString(),
-        maxSupply: track.maxSupply.toString(),
-        currentSupply: track.currentSupply.toString()
-      }));
+      // Get tracks info with timeout
+      try {
+        const tracksPromise = contract.getAlbumTracks(1);
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Request timeout')), 15000)
+        );
+        const tracks = await Promise.race([tracksPromise, timeoutPromise]);
+        
+        const nftData = tracks.map((track, index) => ({
+          id: index + 1,
+          name: track.name,
+          uri: track.uri,
+          minPrice: track.minPrice.toString(),
+          isForSale: track.isForSale,
+          creator: track.creator,
+          albumId: track.albumId.toString(),
+          trackNumber: track.trackNumber.toString(),
+          maxSupply: track.maxSupply.toString(),
+          currentSupply: track.currentSupply.toString()
+        }));
 
-      setNfts(nftData);
-      if (nftData.length > 0 && !selectedNft) {
-        setSelectedNft(nftData[0]);
+        console.log('Loaded', nftData.length, 'tracks');
+        setNfts(nftData);
+        if (nftData.length > 0 && !selectedNft) {
+          setSelectedNft(nftData[0]);
+        }
+      } catch (err) {
+        console.error('Failed to load tracks:', err);
+        throw new Error(`Failed to load tracks: ${err.message}`);
       }
     } catch (err) {
+      console.error('loadNFTs error:', err);
       setError(`Failed to load NFTs: ${err.message}`);
     } finally {
       setLoading(false);
@@ -117,7 +169,7 @@ const NFTPage = () => {
       setLoading(true);
       setError(null);
 
-      if (!window.ethereum) {
+      if (typeof window === 'undefined' || !window.ethereum) {
         throw new Error('Please install MetaMask');
       }
 
@@ -125,8 +177,12 @@ const NFTPage = () => {
         method: 'eth_requestAccounts'
       });
 
-      setAccount(accounts[0]);
-      return accounts[0];
+      if (accounts && accounts.length > 0) {
+        setAccount(accounts[0]);
+        return accounts[0];
+      } else {
+        throw new Error('No accounts found');
+      }
     } catch (err) {
       setError(`Wallet connection failed: ${err.message}`);
       throw err;
@@ -167,21 +223,34 @@ const NFTPage = () => {
 
   // Load NFTs on page load (no wallet required)
   useEffect(() => {
-    loadNFTs();
+    // Add error boundary for deployment
+    const initNFTs = async () => {
+      try {
+        await loadNFTs();
+      } catch (err) {
+        console.error('Failed to initialize NFTs:', err);
+        setError(`Failed to initialize: ${err.message}`);
+      }
+    };
+    
+    initNFTs();
 
-    // Listen for wallet changes
-    if (window.ethereum) {
-      window.ethereum.on('accountsChanged', (accounts) => {
+    // Listen for wallet changes (only in browser environment)
+    if (typeof window !== 'undefined' && window.ethereum) {
+      const handleAccountsChanged = (accounts) => {
         if (accounts.length > 0) {
           setAccount(accounts[0]);
         } else {
           setAccount('');
         }
-      });
+      };
 
-      window.ethereum.on('chainChanged', () => {
+      const handleChainChanged = () => {
         window.location.reload();
-      });
+      };
+
+      window.ethereum.on('accountsChanged', handleAccountsChanged);
+      window.ethereum.on('chainChanged', handleChainChanged);
 
       // Check if already connected
       window.ethereum.request({ method: 'eth_accounts' })
@@ -189,15 +258,18 @@ const NFTPage = () => {
           if (accounts.length > 0) {
             setAccount(accounts[0]);
           }
+        })
+        .catch(err => {
+          console.warn('Failed to check accounts:', err);
         });
-    }
 
-    return () => {
-      if (window.ethereum) {
-        window.ethereum.removeListener('accountsChanged', () => {});
-        window.ethereum.removeListener('chainChanged', () => {});
-      }
-    };
+      return () => {
+        if (window.ethereum) {
+          window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
+          window.ethereum.removeListener('chainChanged', handleChainChanged);
+        }
+      };
+    }
   }, []);
 
   return (

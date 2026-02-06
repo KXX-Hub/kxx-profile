@@ -12,8 +12,23 @@ import Navigation from './components/Navigation';
 import './App.css';
 
 function App() {
+  // Get basename for GitHub Pages deployment
+  // If homepage is ".", use undefined (root domain, no basename needed)
+  // If homepage is "/repo-name", use "/repo-name"
+  // PUBLIC_URL is set by react-scripts based on homepage in package.json
+  const getBasename = () => {
+    const publicUrl = process.env.PUBLIC_URL;
+    if (!publicUrl || publicUrl === '.') {
+      return undefined; // Root domain, no basename needed
+    }
+    // Remove trailing slash if present
+    return publicUrl.replace(/\/$/, '');
+  };
+  
+  const basename = getBasename();
+  
   return (
-    <Router>
+    <Router basename={basename}>
       <ClickExplosion />
       <Navigation />
       <Routes>

@@ -19,6 +19,19 @@ const customIcon = new L.Icon({
   shadowSize: [41, 41]
 });
 
+// Helper function to ensure URL is absolute
+const ensureAbsoluteUrl = (url) => {
+  if (!url) return null;
+  // If already absolute URL (starts with http:// or https://), return as is
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    return url;
+  }
+  // If relative URL, try to construct absolute URL
+  // For R2, this might need the full domain
+  console.warn('Relative URL detected:', url);
+  return url;
+};
+
 const PhotosPage = () => {
   const [photos, setPhotos] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -66,6 +79,18 @@ const PhotosPage = () => {
         id: doc.id,
         ...doc.data()
       }));
+
+      // Debug: Log photo URLs to help diagnose image loading issues
+      console.log('Loaded photos:', photoList.length);
+      if (photoList.length > 0) {
+        console.log('Sample photo data:', {
+          id: photoList[0].id,
+          url: photoList[0].url,
+          thumbnail: photoList[0].thumbnail,
+          filename: photoList[0].filename,
+          storageProvider: photoList[0].storageProvider
+        });
+      }
 
       setPhotos(photoList);
 
@@ -438,7 +463,37 @@ const PhotosPage = () => {
                     onClick={() => setSelectedPhoto(photo)}
                   >
                     <div className="photo-thumbnail">
-                      <img src={photo.thumbnail || photo.url} alt={photo.filename} />
+                      <img 
+                        src={ensureAbsoluteUrl(photo.thumbnail || photo.url)} 
+                        alt={photo.filename}
+                        onError={(e) => {
+                          const failedUrl = e.target.src;
+                          console.error('Failed to load image:', {
+                            failedUrl,
+                            photoId: photo.id,
+                            thumbnail: photo.thumbnail,
+                            url: photo.url,
+                            storageProvider: photo.storageProvider
+                          });
+                          // Try fallback to full URL if thumbnail fails
+                          const thumbnailUrl = ensureAbsoluteUrl(photo.thumbnail);
+                          const fullUrl = ensureAbsoluteUrl(photo.url);
+                          if (failedUrl === thumbnailUrl && fullUrl && fullUrl !== thumbnailUrl) {
+                            console.log('Trying fallback URL:', fullUrl);
+                            e.target.src = fullUrl;
+                          } else {
+                            // Show placeholder if all attempts fail
+                            e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0iIzJCMjUyMCIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9IiNDOUMwQjAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5JbWFnZSBub3QgYXZhaWxhYmxlPC90ZXh0Pjwvc3ZnPg==';
+                            e.target.style.opacity = '0.5';
+                          }
+                        }}
+                        onLoad={() => {
+                          // Reset opacity on successful load
+                          if (this && this.style) {
+                            this.style.opacity = '1';
+                          }
+                        }}
+                      />
                     </div>
                     <div className="photo-meta">
                       {/* Device */}
@@ -586,7 +641,21 @@ const PhotosPage = () => {
                   className="location-photo-card"
                   onClick={() => setSelectedPhoto(photo)}
                 >
-                  <img src={photo.thumbnail || photo.url} alt={photo.filename} />
+                  <img 
+                    src={ensureAbsoluteUrl(photo.thumbnail || photo.url)} 
+                    alt={photo.filename}
+                    onError={(e) => {
+                      console.error('Failed to load location image:', photo.thumbnail || photo.url, photo);
+                      const thumbnailUrl = ensureAbsoluteUrl(photo.thumbnail);
+                      const fullUrl = ensureAbsoluteUrl(photo.url);
+                      if (e.target.src === thumbnailUrl && fullUrl && fullUrl !== thumbnailUrl) {
+                        e.target.src = fullUrl;
+                      } else {
+                        e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0iIzJCMjUyMCIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9IiNDOUMwQjAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5JbWFnZSBub3QgYXZhaWxhYmxlPC90ZXh0Pjwvc3ZnPg==';
+                        e.target.style.opacity = '0.5';
+                      }
+                    }}
+                  />
                   <div className="location-photo-info">
                     {photo.date && <span><FaCalendar /> {photo.date.split(' ')[0]}</span>}
                     {photo.device && <span><FaCameraRetro /> {photo.device}</span>}
@@ -607,7 +676,21 @@ const PhotosPage = () => {
               <FaTimes />
             </button>
             <div className="modal-image-wrapper">
-              <img src={selectedPhoto.url} alt={selectedPhoto.filename} />
+              <img 
+                src={ensureAbsoluteUrl(selectedPhoto.url)} 
+                alt={selectedPhoto.filename}
+                onError={(e) => {
+                  console.error('Failed to load modal image:', selectedPhoto.url, selectedPhoto);
+                  // Try thumbnail as fallback
+                  const thumbnailUrl = ensureAbsoluteUrl(selectedPhoto.thumbnail);
+                  if (thumbnailUrl && thumbnailUrl !== ensureAbsoluteUrl(selectedPhoto.url)) {
+                    e.target.src = thumbnailUrl;
+                  } else {
+                    e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iIzJCMjUyMCIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IiNDOUMwQjAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5JbWFnZSBub3QgYXZhaWxhYmxlPC90ZXh0Pjwvc3ZnPg==';
+                    e.target.style.opacity = '0.5';
+                  }
+                }}
+              />
             </div>
             <div className="modal-info">
               <h3>{selectedPhoto.filename || 'Untitled'}</h3>

@@ -14,23 +14,62 @@ const NFTPreviewGrid = ({ tokenData, onPurchase, isConnected }) => {
   const [metadata, setMetadata] = useState(null);
   const [audioUrl, setAudioUrl] = useState('');
   const [imageUrl, setImageUrl] = useState('https://placehold.co/400x400/2B2520/C9C0B0?text=Loading...');
+  const [imagePath, setImagePath] = useState('');
+  const [imageGatewayIndex, setImageGatewayIndex] = useState(0);
   const [customPrice, setCustomPrice] = useState('');
   const [priceError, setPriceError] = useState('');
   const [audioKey, setAudioKey] = useState(0);
   const [imageError, setImageError] = useState(false);
 
+  const normalizeIpfsPath = (uri) => {
+    if (!uri) return '';
+    if (uri.startsWith('ipfs://')) {
+      return uri.replace('ipfs://', '').replace(/^ipfs\//, '');
+    }
+    return uri;
+  };
+
+  const isHttpUrl = (uri) => /^https?:\/\//i.test(uri);
+
+  // Helper to create timeout signal (compatible with older browsers)
+  const createTimeoutSignal = (timeoutMs) => {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+    // Clear timeout if request completes
+    return { signal: controller.signal, cleanup: () => clearTimeout(timeoutId) };
+  };
+
   // Try to fetch from multiple gateways
-  const fetchFromIPFS = async (hash) => {
-    for (const gateway of IPFS_GATEWAYS) {
+  const fetchFromIPFS = async (uriOrHash) => {
+    if (!uriOrHash) throw new Error('Missing IPFS URI');
+    
+    // Try HTTP URL first
+    if (isHttpUrl(uriOrHash)) {
       try {
-        const response = await fetch(`${gateway}${hash}`, { 
-          signal: AbortSignal.timeout(5000) // 5 second timeout
-        });
+        const { signal, cleanup } = createTimeoutSignal(5000);
+        const response = await fetch(uriOrHash, { signal });
+        cleanup();
         if (response.ok) {
-          return response;
+          return { response, gateway: null };
         }
       } catch (err) {
-        console.log(`Gateway ${gateway} failed, trying next...`);
+        console.log('HTTP URL fetch failed:', err.message);
+      }
+    }
+
+    // Try IPFS gateways
+    const hash = normalizeIpfsPath(uriOrHash);
+    for (const gateway of IPFS_GATEWAYS) {
+      try {
+        const { signal, cleanup } = createTimeoutSignal(5000);
+        const response = await fetch(`${gateway}${hash}`, { signal });
+        cleanup();
+        if (response.ok) {
+          return { response, gateway };
+        }
+      } catch (err) {
+        console.log(`Gateway ${gateway} failed:`, err.message);
+        // Continue to next gateway
       }
     }
     throw new Error('All gateways failed');
@@ -41,36 +80,74 @@ const NFTPreviewGrid = ({ tokenData, onPurchase, isConnected }) => {
       setAudioUrl('');
       setAudioKey(prev => prev + 1);
       setImageUrl('https://placehold.co/400x400/2B2520/C9C0B0?text=Loading...');
+      setImagePath('');
+      setImageGatewayIndex(0);
       setImageError(false);
 
-      if (!tokenData?.uri) return;
+      if (!tokenData?.uri) {
+        console.warn('No URI provided for token:', tokenData);
+        setImageUrl('https://placehold.co/400x400/2B2520/C9C0B0?text=No+URI');
+        return;
+      }
 
       try {
-        const ipfsHash = tokenData.uri.replace('ipfs://', '');
-        const response = await fetchFromIPFS(ipfsHash);
+        console.log('Loading metadata from:', tokenData.uri);
+        const { response, gateway } = await fetchFromIPFS(tokenData.uri);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
         const data = await response.json();
+        console.log('Metadata loaded:', data);
         setMetadata(data);
 
         // Update audio URL (use first gateway that works for metadata)
         if (data.animation_url) {
-          const audioHash = data.animation_url.replace('ipfs://', '');
-          setAudioUrl(`${IPFS_GATEWAYS[0]}${audioHash}`);
+          const audioPath = normalizeIpfsPath(data.animation_url);
+          if (isHttpUrl(data.animation_url)) {
+            setAudioUrl(data.animation_url);
+          } else {
+            const audioGateway = gateway || IPFS_GATEWAYS[0];
+            setAudioUrl(`${audioGateway}${audioPath}`);
+          }
         }
 
         // Update image URL
         if (data.image) {
-          const imageHash = data.image.replace('ipfs://', '');
-          setImageUrl(`${IPFS_GATEWAYS[0]}${imageHash}`);
+          const normalizedPath = normalizeIpfsPath(data.image);
+          setImagePath(normalizedPath);
+          if (isHttpUrl(data.image)) {
+            setImageUrl(data.image);
+          } else {
+            const imageGateway = gateway || IPFS_GATEWAYS[0];
+            const gatewayIndex = IPFS_GATEWAYS.indexOf(imageGateway);
+            setImageGatewayIndex(gatewayIndex >= 0 ? gatewayIndex : 0);
+            setImageUrl(`${imageGateway}${normalizedPath}`);
+          }
+        } else {
+          console.warn('No image in metadata');
+          setImageUrl('https://placehold.co/400x400/2B2520/C9C0B0?text=No+Image');
         }
       } catch (err) {
         console.error('Error loading metadata:', err);
         setImageUrl('https://placehold.co/400x400/2B2520/C9C0B0?text=Failed+to+load');
+        setMetadata(null);
       }
     };
 
     loadMetadata();
     // Reset price input
-    setCustomPrice(ethers.utils.formatEther(tokenData?.minPrice || '0'));
+    try {
+      if (tokenData?.minPrice) {
+        setCustomPrice(ethers.utils.formatEther(tokenData.minPrice));
+      } else {
+        setCustomPrice('0');
+      }
+    } catch (err) {
+      console.error('Error formatting price:', err);
+      setCustomPrice('0');
+    }
   }, [tokenData]);
 
   const handlePriceChange = (e) => {
@@ -113,12 +190,16 @@ const NFTPreviewGrid = ({ tokenData, onPurchase, isConnected }) => {
           alt="NFT Preview" 
           className="preview-image"
           onError={(e) => {
-            // Try next gateway on error
-            if (!imageError && metadata?.image) {
+            if (!imagePath || isHttpUrl(metadata?.image || '')) {
+              e.target.src = 'https://placehold.co/400x400/2B2520/C9C0B0?text=Image+Not+Found';
+              return;
+            }
+
+            const nextIndex = imageGatewayIndex + 1;
+            if (nextIndex < IPFS_GATEWAYS.length) {
               setImageError(true);
-              const imageHash = metadata.image.replace('ipfs://', '');
-              // Try cloudflare gateway as backup
-              e.target.src = `https://cloudflare-ipfs.com/ipfs/${imageHash}`;
+              setImageGatewayIndex(nextIndex);
+              e.target.src = `${IPFS_GATEWAYS[nextIndex]}${imagePath}`;
             } else {
               e.target.src = 'https://placehold.co/400x400/2B2520/C9C0B0?text=Image+Not+Found';
             }
