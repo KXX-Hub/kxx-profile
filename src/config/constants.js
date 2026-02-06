@@ -1,6 +1,12 @@
-import { FaCode, FaUser, FaEthereum, FaYoutube } from 'react-icons/fa';
+import { FaCode, FaUser, FaEthereum, FaYoutube, FaCamera, FaVideo, FaGraduationCap } from 'react-icons/fa';
 
 export const NAVIGATION_ITEMS = [
+  { 
+    title: 'Me',
+    path: '/me',
+    icon: FaGraduationCap,
+    description: 'Learn more about my journey'
+  },
   { 
     title: 'Coding',
     path: '/coding',
@@ -8,22 +14,22 @@ export const NAVIGATION_ITEMS = [
     description: 'View my coding projects and contributions'
   },
   { 
-    title: 'Me',
-    path: '/me',
-    icon: FaUser,
-    description: 'Learn more about my journey'
+    title: 'Photos',
+    path: '/photos',
+    icon: FaCamera,
+    description: 'Browse my photography collection'
+  },
+  { 
+    title: 'Videos',
+    path: '/videos',
+    icon: FaVideo,
+    description: 'Watch my coding and life vlogs'
   },
   { 
     title: 'NFT',
     path: '/nft',
     icon: FaEthereum,
     description: 'Explore my NFT collections'
-  },
-  { 
-    title: 'Vlog',
-    path: '/vlog',
-    icon: FaYoutube,
-    description: 'Watch my coding and life vlogs'
   }
 ];
 

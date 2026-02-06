@@ -259,9 +259,10 @@ const NFTPreviewGrid = ({ tokenData, onPurchase, isConnected }) => {
 
       {tokenData.isForSale && (
         <button
-          onClick={handlePurchase}
+          onClick={isConnected ? handlePurchase : undefined}
           className="purchase-button"
-          disabled={!isConnected && false} // Never disable, just change text
+          disabled={!isConnected}
+          title={!isConnected ? 'Connect wallet to purchase' : ''}
         >
           {isConnected ? 'Purchase NFT' : 'Connect Wallet to Purchase'}
         </button>

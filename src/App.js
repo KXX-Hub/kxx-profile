@@ -6,6 +6,7 @@ import NFTPage from './NFTPage';
 import VideosPage from './VideosPage';
 import PhotosPage from './PhotosPage';
 import PhotoDashboardPage from './PhotoDashboardPage';
+import MainPage from './pages/MainPage';
 import ClickExplosion from './components/ClickExplosion';
 import Navigation from './components/Navigation';
 import './App.css';
@@ -42,16 +43,15 @@ function App() {
       <ClickExplosion />
       <Navigation />
       <Routes>
-        <Route path="/" element={<MePage />} />
+        <Route path="/" element={<MainPage />} />
+        <Route path="/me" element={<MePage />} />
         <Route path="/coding" element={<CodingPage />} />
-        <Route path="/me" element={<Navigate to="/" replace />} />
-        <Route path="/nft" element={<NFTPage />} />
-        <Route path="/videos" element={<VideosPage />} />
         <Route path="/photos" element={<PhotosPage />} />
+        <Route path="/videos" element={<VideosPage />} />
+        <Route path="/nft" element={<NFTPage />} />
         <Route path="/photos/dashboard" element={<PhotoDashboardPage />} />
         {/* Legacy redirects */}
-        {/* <Route path="/portfolio" element={<Navigate to="/photos" replace />} /> */}
-        <Route path="/portfolio" element={<Navigate to="/" replace />} />
+        <Route path="/portfolio" element={<Navigate to="/photos" replace />} />
         <Route path="/vlog" element={<Navigate to="/videos" replace />} />
       </Routes>
     </Router>

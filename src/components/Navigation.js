@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { FaCode, FaUser, FaGem, FaVideo, FaCamera, FaGraduationCap } from 'react-icons/fa';
 import './Navigation.css';
@@ -18,6 +18,8 @@ const Navigation = () => {
   const isHome = location.pathname === '/';
   const isPhotos = location.pathname === '/photos';
   const isMobileView = typeof window !== 'undefined' && window.matchMedia('(max-width: 600px)').matches;
+  const startPromptText = isMobileView ? 'Touch me to start' : 'Touch anywhere to start';
+  const [showStartPrompt, setShowStartPrompt] = useState(false);
   
   // Don't show on dashboard
   if (location.pathname.includes('/dashboard')) {
@@ -49,8 +51,17 @@ const Navigation = () => {
   const nextPage = currentIndex < navItems.length - 1 ? navItems[currentIndex + 1] : null;
 
   useEffect(() => {
-    if (!isHome || !nextPage) return;
-    if (typeof window !== 'undefined' && window.matchMedia('(max-width: 600px)').matches) return;
+    if (!isHome || !nextPage) {
+      setShowStartPrompt(false);
+      return;
+    }
+    if (typeof window === 'undefined') return;
+    const isMobile = window.matchMedia('(max-width: 600px)').matches;
+    if (isMobile) {
+      setShowStartPrompt(false);
+      return;
+    }
+    setShowStartPrompt(true);
     const handleStart = () => navigate(nextPage.path);
     document.addEventListener('pointerdown', handleStart);
     return () => document.removeEventListener('pointerdown', handleStart);
@@ -69,9 +80,13 @@ const Navigation = () => {
       {/* Right Arrow - Next Page */}
       {nextPage && !(isMobileView && isPhotos) && (
         isHome ? (
-          <div className="page-nav-arrow page-nav-right start-prompt">
-            <span className="arrow-label">Touch anywhere to start</span>
-          </div>
+          isMobileView ? null : (
+          showStartPrompt ? (
+              <div className="page-nav-arrow page-nav-right start-prompt start-prompt-desktop">
+                <span className="arrow-label">{startPromptText}</span>
+              </div>
+          ) : null
+          )
         ) : (
           <button className="page-nav-arrow page-nav-right" onClick={goToNext}>
             <span className="arrow-label">{nextPage.label}</span>

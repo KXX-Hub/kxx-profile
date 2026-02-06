@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { db, auth } from './firebase';
-import { collection, deleteDoc, doc, getDocs, getDoc, orderBy, query, addDoc, updateDoc } from 'firebase/firestore';
+import { collection, deleteDoc, doc, getDocs, getDoc, orderBy, query, updateDoc } from 'firebase/firestore';
 import { signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from 'firebase/auth';
 import { deleteObject, getStorage, ref } from 'firebase/storage';
 import './css/PhotoDashboardPage.css';
@@ -15,76 +15,6 @@ const deleteFromR2 = async (storagePath, thumbnailPath) => {
     console.log('R2 files to delete via Telegram bot:', { storagePath, thumbnailPath });
     return { storagePath, thumbnailPath };
 };
-
-// 測試用假照片數據
-const testPhotos = [
-    {
-        filename: 'tokyo_tower.jpg',
-        url: 'https://picsum.photos/seed/tokyo/1920/1280',
-        thumbnail: 'https://picsum.photos/seed/tokyo/480/320',
-        device: 'Fujifilm X-T5',
-        date: '2024-12-15 14:30',
-        location: 'Tokyo, Japan',
-        gps: { latitude: 35.6586, longitude: 139.7454 },
-        settings: { aperture: 'f/2.8', shutter: '1/500s', iso: 'ISO 400', focalLength: '35mm' },
-        storageProvider: 'test'
-    },
-    {
-        filename: 'taipei_101.jpg',
-        url: 'https://picsum.photos/seed/taipei/1920/1280',
-        thumbnail: 'https://picsum.photos/seed/taipei/480/320',
-        device: 'Sony A7IV',
-        date: '2024-11-20 18:45',
-        location: 'Taipei, Taiwan',
-        gps: { latitude: 25.0330, longitude: 121.5654 },
-        settings: { aperture: 'f/4.0', shutter: '1/250s', iso: 'ISO 800', focalLength: '24mm' },
-        storageProvider: 'test'
-    },
-    {
-        filename: 'paris_eiffel.jpg',
-        url: 'https://picsum.photos/seed/paris/1920/1280',
-        thumbnail: 'https://picsum.photos/seed/paris/480/320',
-        device: 'Canon R6',
-        date: '2024-10-05 09:15',
-        location: 'Paris, France',
-        gps: { latitude: 48.8584, longitude: 2.2945 },
-        settings: { aperture: 'f/5.6', shutter: '1/1000s', iso: 'ISO 200', focalLength: '70mm' },
-        storageProvider: 'test'
-    },
-    {
-        filename: 'newyork_skyline.jpg',
-        url: 'https://picsum.photos/seed/nyc/1920/1280',
-        thumbnail: 'https://picsum.photos/seed/nyc/480/320',
-        device: 'Nikon Z8',
-        date: '2024-09-12 20:00',
-        location: 'New York, USA',
-        gps: { latitude: 40.7128, longitude: -74.0060 },
-        settings: { aperture: 'f/8.0', shutter: '1/60s', iso: 'ISO 1600', focalLength: '50mm' },
-        storageProvider: 'test'
-    },
-    {
-        filename: 'sydney_opera.jpg',
-        url: 'https://picsum.photos/seed/sydney/1920/1280',
-        thumbnail: 'https://picsum.photos/seed/sydney/480/320',
-        device: 'Fujifilm X-T5',
-        date: '2024-08-28 11:30',
-        location: 'Sydney, Australia',
-        gps: { latitude: -33.8568, longitude: 151.2153 },
-        settings: { aperture: 'f/2.0', shutter: '1/2000s', iso: 'ISO 100', focalLength: '23mm' },
-        storageProvider: 'test'
-    },
-    {
-        filename: 'london_bigben.jpg',
-        url: 'https://picsum.photos/seed/london/1920/1280',
-        thumbnail: 'https://picsum.photos/seed/london/480/320',
-        device: 'Sony A7IV',
-        date: '2024-07-14 16:20',
-        location: 'London, UK',
-        gps: { latitude: 51.5007, longitude: -0.1246 },
-        settings: { aperture: 'f/4.5', shutter: '1/320s', iso: 'ISO 320', focalLength: '85mm' },
-        storageProvider: 'test'
-    }
-];
 
 const PhotoDashboardPage = () => {
     // Auth state
@@ -109,18 +39,22 @@ const PhotoDashboardPage = () => {
     // R2 cleanup tracking
     const [r2CleanupPaths, setR2CleanupPaths] = useState([]);
 
-    // Adding test data
-    const [addingTest, setAddingTest] = useState(false);
-
     // Editing
     const [editingPhoto, setEditingPhoto] = useState(null);
     const [editForm, setEditForm] = useState({ location: '', device: '', latitude: '', longitude: '' });
     const [saving, setSaving] = useState(false);
 
+    // Confirmation dialog
+    const [confirmDialog, setConfirmDialog] = useState(null);
+
     // Location search
     const [locationQuery, setLocationQuery] = useState('');
     const [locationResults, setLocationResults] = useState([]);
     const [searchingLocation, setSearchingLocation] = useState(false);
+
+    // Date filters
+    const [uploadDateFilter, setUploadDateFilter] = useState('');
+    const [photoDateFilter, setPhotoDateFilter] = useState('');
 
     // Listen to auth state
     useEffect(() => {
@@ -222,69 +156,152 @@ const PhotoDashboardPage = () => {
     }, [loadPhotos, isLoggedIn]);
 
     // 添加測試照片
-    const addTestData = async () => {
-        if (!window.confirm('🧪 Add 6 test photos with GPS data?')) return;
-        try {
-            setAddingTest(true);
-            const photosRef = collection(db, 'photos');
-            for (const photo of testPhotos) {
-                await addDoc(photosRef, {
-                    ...photo,
-                    uploadedAt: new Date().toISOString()
-                });
+    // Filter photos by date
+    const filteredPhotos = photos.filter(photo => {
+        // Filter by upload date
+        if (uploadDateFilter) {
+            const uploadDate = photo.uploadedAt;
+            let uploadDateStr = '';
+            if (uploadDate && typeof uploadDate.toDate === 'function') {
+                uploadDateStr = uploadDate.toDate().toISOString().split('T')[0];
+            } else if (uploadDate && typeof uploadDate.toMillis === 'function') {
+                uploadDateStr = new Date(uploadDate.toMillis()).toISOString().split('T')[0];
+            } else if (uploadDate) {
+                uploadDateStr = new Date(uploadDate).toISOString().split('T')[0];
             }
-            await loadPhotos();
-            alert('✅ Added 6 test photos!');
-        } catch (err) {
-            console.error(err);
-            setError('❌ Failed to add test data');
-        } finally {
-            setAddingTest(false);
+            if (uploadDateStr !== uploadDateFilter) {
+                return false;
+            }
         }
-    };
+
+        // Filter by photo date
+        if (photoDateFilter) {
+            const photoDate = photo.date?.split(' ')[0] || '';
+            if (photoDate !== photoDateFilter) {
+                return false;
+            }
+        }
+
+        return true;
+    });
 
     // Pagination logic
-    const totalPages = Math.ceil(photos.length / itemsPerPage);
+    const totalPages = Math.ceil(filteredPhotos.length / itemsPerPage);
     const startIndex = (currentPage - 1) * itemsPerPage;
-    const paginatedPhotos = photos.slice(startIndex, startIndex + itemsPerPage);
+    const paginatedPhotos = filteredPhotos.slice(startIndex, startIndex + itemsPerPage);
 
     const handleDelete = async (photo) => {
-        if (!window.confirm(`Delete ${photo.filename || photo.id}?\n\nThis will delete:\n- Firebase metadata\n- Storage files (if applicable)`)) return;
+        console.log('🔴 handleDelete called for photo:', photo.id, photo);
+        const confirmMsg = `Delete ${photo.filename || photo.id}?\n\nThis will delete:\n- Firebase metadata\n- Storage files (if applicable)`;
+        
+        // Use custom confirmation dialog instead of window.confirm
+        return new Promise((resolve) => {
+            setConfirmDialog({
+                message: confirmMsg,
+                onConfirm: async () => {
+                    setConfirmDialog(null);
+                    await performDelete(photo);
+                    resolve(true);
+                },
+                onCancel: () => {
+                    setConfirmDialog(null);
+                    console.log('🔴 User cancelled deletion');
+                    resolve(false);
+                }
+            });
+        });
+    };
 
+    const performDelete = async (photo) => {
         try {
             setDeletingIds(prev => [...prev, photo.id]);
+            setError(''); // Clear previous errors
+
+            console.log('Deleting photo:', photo.id, photo);
+
+            // Delete metadata from Firebase first (this is the most important)
+            try {
+                await deleteDoc(doc(db, 'photos', photo.id));
+                console.log('✅ Deleted from Firestore:', photo.id);
+            } catch (firestoreErr) {
+                console.error('❌ Firestore delete error:', firestoreErr);
+                throw new Error(`Failed to delete from Firestore: ${firestoreErr.message}`);
+            }
 
             // Delete from storage based on provider
-            if (photo.storageProvider === 'firebase') {
+            // Check if it's Firebase Storage
+            const isFirebaseStorage = photo.storageProvider === 'firebase' || 
+                                     (photo.storagePath && !photo.url?.includes('r2.dev') && !photo.url?.includes('cloudflarestorage'));
+            
+            if (isFirebaseStorage) {
                 // Firebase Storage - delete files
                 if (photo.storagePath) {
                     try {
                         await deleteObject(ref(storage, photo.storagePath));
+                        console.log('✅ Deleted from Firebase Storage:', photo.storagePath);
                     } catch (err) {
-                        console.warn('Failed to delete main file:', err.message);
+                        console.warn('⚠️ Failed to delete main file from Firebase Storage:', err.message);
+                        // Don't throw - metadata is already deleted
                     }
                 }
                 if (photo.thumbnailPath && photo.thumbnailPath !== photo.storagePath) {
                     try {
                         await deleteObject(ref(storage, photo.thumbnailPath));
+                        console.log('✅ Deleted thumbnail from Firebase Storage:', photo.thumbnailPath);
                     } catch (err) {
-                        console.warn('Failed to delete thumbnail:', err.message);
+                        console.warn('⚠️ Failed to delete thumbnail from Firebase Storage:', err.message);
+                        // Don't throw - metadata is already deleted
                     }
                 }
-            } else if (photo.storagePath) {
-                // R2 Storage - track for manual cleanup
-                const paths = await deleteFromR2(photo.storagePath, photo.thumbnailPath);
-                setR2CleanupPaths(prev => [...prev, paths]);
+            } else {
+                // R2 Storage - extract paths from URL if not already stored
+                let storagePath = photo.storagePath;
+                let thumbnailPath = photo.thumbnailPath;
+                
+                if (!storagePath && photo.url) {
+                    try {
+                        const urlObj = new URL(photo.url);
+                        storagePath = urlObj.pathname.substring(1); // Remove leading /
+                    } catch (e) {
+                        // If URL parsing fails, try to extract path
+                        const match = photo.url.match(/\/photos\/([^\/]+)$/);
+                        if (match) {
+                            storagePath = `photos/${match[1]}`;
+                        }
+                    }
+                }
+                
+                if (!thumbnailPath && photo.thumbnail) {
+                    try {
+                        const urlObj = new URL(photo.thumbnail);
+                        thumbnailPath = urlObj.pathname.substring(1);
+                    } catch (e) {
+                        const match = photo.thumbnail.match(/\/photos\/([^\/]+)$/);
+                        if (match) {
+                            thumbnailPath = `photos/${match[1]}`;
+                        }
+                    }
+                }
+                
+                // Track for manual cleanup (R2 deletion requires backend)
+                if (storagePath || thumbnailPath) {
+                    const paths = await deleteFromR2(storagePath, thumbnailPath);
+                    setR2CleanupPaths(prev => [...prev, paths]);
+                    console.log('📝 R2 files tracked for cleanup:', paths);
+                }
             }
 
-            // Delete metadata from Firebase
-            await deleteDoc(doc(db, 'photos', photo.id));
+            // Reload photos to reflect changes
             await loadPhotos();
+            console.log('✅ Photo deleted successfully');
 
         } catch (err) {
-            console.error('Failed to delete photo:', err);
-            setError(`Failed to delete photo: ${err.message}`);
+            console.error('❌ Failed to delete photo:', err);
+            const errorMsg = err.message || 'Unknown error occurred';
+            setError(`❌ Failed to delete photo: ${errorMsg}`);
+            alert(`Failed to delete photo: ${errorMsg}\n\nCheck console for details.`);
         } finally {
+            // Always clear deleting state
             setDeletingIds(prev => prev.filter(id => id !== photo.id));
         }
     };
@@ -300,36 +317,105 @@ const PhotoDashboardPage = () => {
             confirmMsg += `\n\n⚠️ ${r2Photos.length} photo(s) are stored in R2.\nR2 files will need to be deleted via Telegram bot.`;
         }
 
-        if (!window.confirm(confirmMsg)) return;
+        // Use custom confirmation dialog instead of window.confirm
+        return new Promise((resolve) => {
+            setConfirmDialog({
+                message: confirmMsg,
+                onConfirm: async () => {
+                    setConfirmDialog(null);
+                    await performBatchDelete(selectedPhotos, selectedIds);
+                    resolve(true);
+                },
+                onCancel: () => {
+                    setConfirmDialog(null);
+                    resolve(false);
+                }
+            });
+        });
+    };
+
+    const performBatchDelete = async (selectedPhotos, selectedIds) => {
 
         try {
             setDeletingIds(selectedIds);
+            setError(''); // Clear previous errors
 
             for (const photo of selectedPhotos) {
-                // Delete from storage based on provider
-                if (photo.storageProvider === 'firebase') {
-                    if (photo.storagePath) {
-                        try {
-                            await deleteObject(ref(storage, photo.storagePath));
-                        } catch (err) {
-                            console.warn('Failed to delete main file:', err.message);
-                        }
+                try {
+                    // Delete metadata from Firebase first (this is the most important)
+                    try {
+                        await deleteDoc(doc(db, 'photos', photo.id));
+                        console.log('✅ Deleted from Firestore:', photo.id);
+                    } catch (firestoreErr) {
+                        console.error(`❌ Firestore delete error for ${photo.id}:`, firestoreErr);
+                        // Continue with other photos even if one fails
+                        continue;
                     }
-                    if (photo.thumbnailPath && photo.thumbnailPath !== photo.storagePath) {
-                        try {
-                            await deleteObject(ref(storage, photo.thumbnailPath));
-                        } catch (err) {
-                            console.warn('Failed to delete thumbnail:', err.message);
-                        }
-                    }
-                } else if (photo.storagePath) {
-                    // R2 Storage - track for manual cleanup
-                    const paths = await deleteFromR2(photo.storagePath, photo.thumbnailPath);
-                    setR2CleanupPaths(prev => [...prev, paths]);
-                }
 
-                // Delete metadata
-                await deleteDoc(doc(db, 'photos', photo.id));
+                    // Delete from storage based on provider
+                    // Check if it's Firebase Storage
+                    const isFirebaseStorage = photo.storageProvider === 'firebase' || 
+                                             (photo.storagePath && !photo.url?.includes('r2.dev') && !photo.url?.includes('cloudflarestorage'));
+                    
+                    if (isFirebaseStorage) {
+                        if (photo.storagePath) {
+                            try {
+                                await deleteObject(ref(storage, photo.storagePath));
+                                console.log('✅ Deleted from Firebase Storage:', photo.storagePath);
+                            } catch (err) {
+                                console.warn('⚠️ Failed to delete main file from Firebase Storage:', err.message);
+                                // Don't throw - metadata is already deleted
+                            }
+                        }
+                        if (photo.thumbnailPath && photo.thumbnailPath !== photo.storagePath) {
+                            try {
+                                await deleteObject(ref(storage, photo.thumbnailPath));
+                                console.log('✅ Deleted thumbnail from Firebase Storage:', photo.thumbnailPath);
+                            } catch (err) {
+                                console.warn('⚠️ Failed to delete thumbnail from Firebase Storage:', err.message);
+                                // Don't throw - metadata is already deleted
+                            }
+                        }
+                    } else {
+                        // R2 Storage - extract paths from URL if not already stored
+                        let storagePath = photo.storagePath;
+                        let thumbnailPath = photo.thumbnailPath;
+                        
+                        if (!storagePath && photo.url) {
+                            try {
+                                const urlObj = new URL(photo.url);
+                                storagePath = urlObj.pathname.substring(1);
+                            } catch (e) {
+                                const match = photo.url.match(/\/photos\/([^\/]+)$/);
+                                if (match) {
+                                    storagePath = `photos/${match[1]}`;
+                                }
+                            }
+                        }
+                        
+                        if (!thumbnailPath && photo.thumbnail) {
+                            try {
+                                const urlObj = new URL(photo.thumbnail);
+                                thumbnailPath = urlObj.pathname.substring(1);
+                            } catch (e) {
+                                const match = photo.thumbnail.match(/\/photos\/([^\/]+)$/);
+                                if (match) {
+                                    thumbnailPath = `photos/${match[1]}`;
+                                }
+                            }
+                        }
+                        
+                        // Track for manual cleanup (R2 deletion requires backend)
+                        if (storagePath || thumbnailPath) {
+                            const paths = await deleteFromR2(storagePath, thumbnailPath);
+                            setR2CleanupPaths(prev => [...prev, paths]);
+                            console.log('📝 R2 files tracked for cleanup:', paths);
+                        }
+                    }
+                } catch (photoErr) {
+                    console.error(`Failed to delete photo ${photo.id}:`, photoErr);
+                    // Continue with other photos even if one fails
+                }
             }
 
             setSelectedIds([]);
@@ -338,7 +424,9 @@ const PhotoDashboardPage = () => {
 
         } catch (err) {
             console.error('Failed to delete photos:', err);
-            setError(`Failed to delete photos: ${err.message}`);
+            const errorMsg = err.message || 'Unknown error occurred';
+            setError(`❌ Failed to delete photos: ${errorMsg}`);
+            alert(`Failed to delete photos: ${errorMsg}`);
         } finally {
             setDeletingIds([]);
         }
@@ -516,7 +604,7 @@ const PhotoDashboardPage = () => {
         <div className="photo-dashboard-page">
             <div className="page-header">
                 <h1>Dashboard</h1>
-                <p className="subtitle">{photos.length} photos</p>
+                <p className="subtitle">{filteredPhotos.length} photos {photos.length !== filteredPhotos.length ? `(filtered from ${photos.length})` : ''}</p>
                 <button className="logout-btn" onClick={handleLogout}>Logout</button>
             </div>
 
@@ -524,16 +612,58 @@ const PhotoDashboardPage = () => {
                 ◎ Telegram → File → <code>loc: Place</code>
             </div>
 
+            {/* Date Filters */}
+            <div className="date-filters">
+                <div className="date-filter-item">
+                    <label>上傳日期 (Upload Date):</label>
+                    <input
+                        type="date"
+                        value={uploadDateFilter}
+                        onChange={(e) => {
+                            setUploadDateFilter(e.target.value);
+                            setCurrentPage(1);
+                        }}
+                        className="date-input"
+                    />
+                    {uploadDateFilter && (
+                        <button
+                            className="clear-date-btn"
+                            onClick={() => {
+                                setUploadDateFilter('');
+                                setCurrentPage(1);
+                            }}
+                        >
+                            ✕
+                        </button>
+                    )}
+                </div>
+                <div className="date-filter-item">
+                    <label>照片日期 (Photo Date):</label>
+                    <input
+                        type="date"
+                        value={photoDateFilter}
+                        onChange={(e) => {
+                            setPhotoDateFilter(e.target.value);
+                            setCurrentPage(1);
+                        }}
+                        className="date-input"
+                    />
+                    {photoDateFilter && (
+                        <button
+                            className="clear-date-btn"
+                            onClick={() => {
+                                setPhotoDateFilter('');
+                                setCurrentPage(1);
+                            }}
+                        >
+                            ✕
+                        </button>
+                    )}
+                </div>
+            </div>
+
             {/* Batch Actions */}
             <div className="batch-actions">
-                <button
-                    className="action-btn test-btn"
-                    onClick={addTestData}
-                    disabled={addingTest}
-                >
-                    {addingTest ? '◌' : '✦'} Test
-                </button>
-
                 <button
                     className={`action-btn ${selectMode ? 'active' : ''}`}
                     onClick={() => {
@@ -555,8 +685,13 @@ const PhotoDashboardPage = () => {
                                 <span className="selected-count">{selectedIds.length}</span>
                                 <button
                                     className="action-btn danger"
-                                    onClick={handleBatchDelete}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        e.preventDefault();
+                                        handleBatchDelete();
+                                    }}
                                     disabled={deletingIds.length > 0}
+                                    type="button"
                                 >
                                     {deletingIds.length > 0 ? '◌' : '✕'} Delete
                                 </button>
@@ -576,6 +711,32 @@ const PhotoDashboardPage = () => {
             )}
 
             {error && <div className="error-message">{error}</div>}
+
+            {/* Custom Confirmation Dialog */}
+            {confirmDialog && (
+                <div className="confirm-dialog-overlay" onClick={() => setConfirmDialog(null)}>
+                    <div className="confirm-dialog" onClick={(e) => e.stopPropagation()}>
+                        <div className="confirm-dialog-content">
+                            <h3>Confirm Delete</h3>
+                            <p style={{ whiteSpace: 'pre-line', margin: '16px 0' }}>{confirmDialog.message}</p>
+                        </div>
+                        <div className="confirm-dialog-actions">
+                            <button
+                                className="confirm-btn cancel"
+                                onClick={confirmDialog.onCancel}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                className="confirm-btn confirm"
+                                onClick={confirmDialog.onConfirm}
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {loading ? (
                 <div className="loading-message">Loading...</div>
@@ -614,17 +775,28 @@ const PhotoDashboardPage = () => {
                                 </div>
 
                                 {!selectMode && (
-                                    <div className="card-actions">
+                                    <div className="card-actions" onClick={(e) => e.stopPropagation()}>
                                         <button
                                             className="edit-btn"
-                                            onClick={() => openEdit(photo)}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                openEdit(photo);
+                                            }}
                                         >
                                             ⋯
                                         </button>
                                         <button
                                             className="danger-btn"
-                                            onClick={() => handleDelete(photo)}
+                                            onClick={(e) => {
+                                                console.log('🔴 Delete button clicked for photo:', photo.id);
+                                                e.stopPropagation();
+                                                e.preventDefault();
+                                                console.log('🔴 Calling handleDelete...');
+                                                handleDelete(photo);
+                                            }}
                                             disabled={deletingIds.includes(photo.id)}
+                                            type="button"
+                                            style={{ cursor: deletingIds.includes(photo.id) ? 'not-allowed' : 'pointer' }}
                                         >
                                             {deletingIds.includes(photo.id) ? '◌' : '✕'}
                                         </button>

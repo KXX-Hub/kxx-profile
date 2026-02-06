@@ -331,8 +331,14 @@
 
 @media (max-width: 480px) {
     .profile-header h1 {
-        font-size: 1.4rem;
+        font-size: 1rem;
         letter-spacing: 1px;
+        line-height: 1.3;
+        max-width: 100%;
+        white-space: normal;
+        word-break: break-word;
+        margin-bottom: 1rem;
+        padding: 0 0.25rem;
     }
     
     .profile-links {

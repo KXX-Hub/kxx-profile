@@ -17,6 +17,7 @@ const NFTPage = () => {
     address: "0x7B248aD1948148367AA1235c54E0873933C78300",
     abi: [
       "function totalSupply() view returns (uint256)",
+      "function tokenURI(uint256 tokenId) view returns (string)",
       "function tracks(uint256) view returns (string name, string uri, uint256 albumId, uint256 trackNumber, uint256 minPrice, uint256 maxSupply, uint256 currentSupply, bool isForSale, address creator)",
       "function albums(uint256) view returns (string name, string uri, uint256 totalTracks, uint256 maxSupply, uint256 currentSupply, bool exists)",
       "function purchaseTrack(uint256 tokenId) public payable",
@@ -34,50 +35,72 @@ const NFTPage = () => {
         throw new Error('Not in browser environment');
       }
 
+      const withTimeout = (promise, timeoutMs) => {
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Connection timeout')), timeoutMs)
+        );
+        return Promise.race([promise, timeoutPromise]);
+      };
+
+      const hasContractCode = async (provider) => {
+        try {
+          const code = await withTimeout(provider.getCode(CONTRACT_CONFIG.address), 6000);
+          return code && code !== '0x';
+        } catch {
+          return false;
+        }
+      };
+
       // Try to use user's MetaMask provider first (read-only)
       if (window.ethereum) {
         try {
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-          // Test connection with a timeout
-          const networkPromise = provider.getNetwork();
-          const timeoutPromise = new Promise((_, reject) => 
-            setTimeout(() => reject(new Error('Connection timeout')), 5000)
-          );
-          await Promise.race([networkPromise, timeoutPromise]);
-        return new ethers.Contract(CONTRACT_CONFIG.address, CONTRACT_CONFIG.abi, provider);
+          const provider = new ethers.providers.Web3Provider(window.ethereum);
+          await withTimeout(provider.getNetwork(), 5000);
+          if (await hasContractCode(provider)) {
+            return new ethers.Contract(CONTRACT_CONFIG.address, CONTRACT_CONFIG.abi, provider);
+          }
+          console.log('MetaMask network does not have contract, trying public providers...');
         } catch (err) {
           console.log('MetaMask provider failed, trying public providers...', err.message);
         }
       }
-      
-      // Fallback to public providers
-      const providers = [
-        'https://eth.llamarpc.com',
-        'https://rpc.ankr.com/eth',
-        'https://eth-mainnet.public.blastapi.io',
-        'https://ethereum.publicnode.com',
-        'https://1rpc.io/eth'
+
+      // Force Sepolia (user confirmed network)
+      const sepoliaProviders = [
+        'https://rpc.sepolia.org',
+        'https://eth-sepolia.public.blastapi.io',
+        'https://sepolia.drpc.org',
+        'https://sepolia.gateway.tenderly.co',
+        'https://rpc2.sepolia.org'
       ];
-      
-      // Try each provider until one works
-      for (const rpcUrl of providers) {
+
+      // Try default provider (may work without API keys)
+      try {
+        const defaultProvider = ethers.getDefaultProvider('sepolia');
+        await withTimeout(defaultProvider.getNetwork(), 5000);
+        if (await hasContractCode(defaultProvider)) {
+          console.log('Connected to default Sepolia provider');
+          return new ethers.Contract(CONTRACT_CONFIG.address, CONTRACT_CONFIG.abi, defaultProvider);
+        }
+      } catch (err) {
+        console.log('Default Sepolia provider failed:', err.message);
+      }
+
+      for (const rpcUrl of sepoliaProviders) {
         try {
           const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
-          // Test connection with timeout
-          const networkPromise = provider.getNetwork();
-          const timeoutPromise = new Promise((_, reject) => 
-            setTimeout(() => reject(new Error('Connection timeout')), 5000)
-          );
-          await Promise.race([networkPromise, timeoutPromise]);
-          console.log('Connected to RPC:', rpcUrl);
-          return new ethers.Contract(CONTRACT_CONFIG.address, CONTRACT_CONFIG.abi, provider);
+          await withTimeout(provider.getNetwork(), 5000);
+          const hasCode = await hasContractCode(provider);
+          if (hasCode) {
+            console.log('Connected to Sepolia RPC:', rpcUrl);
+            return new ethers.Contract(CONTRACT_CONFIG.address, CONTRACT_CONFIG.abi, provider);
+          }
         } catch (err) {
-          console.log(`RPC ${rpcUrl} failed:`, err.message);
-          continue; // Try next provider
+          console.log(`Sepolia RPC ${rpcUrl} failed:`, err.message);
         }
       }
-      
-      throw new Error('Unable to connect to Ethereum network. Please install MetaMask or try again later.');
+
+      throw new Error('Unable to find contract on Sepolia RPCs. Please install MetaMask or try again later.');
     } catch (err) {
       console.error('getReadOnlyContract error:', err);
       throw err;
@@ -104,60 +127,124 @@ const NFTPage = () => {
       const contract = await getReadOnlyContract();
       console.log('Contract connected');
 
-      // Get album info with timeout
-      try {
-        const albumPromise = contract.albums(1);
-        const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Request timeout')), 10000)
+      const withTimeout = (promise, timeoutMs) => {
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Request timeout')), timeoutMs)
         );
-        const album = await Promise.race([albumPromise, timeoutPromise]);
-        
-      setAlbumInfo({
-        name: album.name,
-        totalTracks: album.totalTracks.toString(),
-        maxSupply: album.maxSupply.toString(),
-        currentSupply: album.currentSupply.toString(),
-        uri: album.uri
-      });
+        return Promise.race([promise, timeoutPromise]);
+      };
+
+      const tryAlbumId = async (albumId) => {
+        const album = await withTimeout(contract.albums(albumId), 10000);
+        if (!album || !album.exists) {
+          throw new Error('Album not found');
+        }
+        return album;
+      };
+
+      // Get album info with timeout (non-blocking)
+      try {
+        let album;
+        try {
+          album = await tryAlbumId(1);
+        } catch {
+          album = await tryAlbumId(0);
+        }
+
+        setAlbumInfo({
+          name: album.name,
+          totalTracks: album.totalTracks.toString(),
+          maxSupply: album.maxSupply.toString(),
+          currentSupply: album.currentSupply.toString(),
+          uri: album.uri
+        });
         console.log('Album info loaded:', album.name);
       } catch (err) {
-        console.error('Failed to load album info:', err);
-        throw new Error(`Failed to load album: ${err.message}`);
+        console.warn('Album info unavailable, continuing in read-only mode:', err.message);
+        setAlbumInfo(null);
       }
 
       // Get tracks info with timeout
       try {
-        const tracksPromise = contract.getAlbumTracks(1);
-        const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Request timeout')), 15000)
-        );
-        const tracks = await Promise.race([tracksPromise, timeoutPromise]);
-        
-      const nftData = tracks.map((track, index) => ({
-        id: index + 1,
-        name: track.name,
-        uri: track.uri,
-        minPrice: track.minPrice.toString(),
-        isForSale: track.isForSale,
-        creator: track.creator,
-        albumId: track.albumId.toString(),
-        trackNumber: track.trackNumber.toString(),
-        maxSupply: track.maxSupply.toString(),
-        currentSupply: track.currentSupply.toString()
-      }));
+        let tracks;
+        try {
+          tracks = await withTimeout(contract.getAlbumTracks(1), 15000);
+        } catch {
+          tracks = await withTimeout(contract.getAlbumTracks(0), 15000);
+        }
+
+        const nftData = tracks.map((track, index) => ({
+          id: index + 1,
+          name: track.name,
+          uri: track.uri,
+          minPrice: track.minPrice.toString(),
+          isForSale: track.isForSale,
+          creator: track.creator,
+          albumId: track.albumId.toString(),
+          trackNumber: track.trackNumber.toString(),
+          maxSupply: track.maxSupply.toString(),
+          currentSupply: track.currentSupply.toString()
+        }));
 
         console.log('Loaded', nftData.length, 'tracks');
-      setNfts(nftData);
-      if (nftData.length > 0 && !selectedNft) {
-        setSelectedNft(nftData[0]);
-      }
-    } catch (err) {
-        console.error('Failed to load tracks:', err);
-        throw new Error(`Failed to load tracks: ${err.message}`);
+        setNfts(nftData);
+        if (nftData.length > 0 && !selectedNft) {
+          setSelectedNft(nftData[0]);
+        }
+      } catch (err) {
+        console.warn('getAlbumTracks failed, trying totalSupply/tokenURI fallback:', err.message);
+        try {
+          const totalSupply = await withTimeout(contract.totalSupply(), 8000);
+          const count = Number(totalSupply?.toString?.() ?? 0);
+          if (!Number.isFinite(count) || count <= 0) {
+            setNfts([]);
+          } else {
+            const tryTokenIds = async (startAtZero) => {
+              const tokenIds = Array.from({ length: count }, (_, i) => (startAtZero ? i : i + 1));
+              const uriResults = await Promise.all(
+                tokenIds.map(async (tokenId) => {
+                  try {
+                    const uri = await withTimeout(contract.tokenURI(tokenId), 8000);
+                    return { tokenId, uri };
+                  } catch {
+                    return { tokenId, uri: null };
+                  }
+                })
+              );
+              return uriResults.filter(item => item.uri);
+            };
+
+            let uriResults = await tryTokenIds(false);
+            if (!uriResults.length) {
+              uriResults = await tryTokenIds(true);
+            }
+
+            const nftData = uriResults.map((item) => ({
+              id: item.tokenId,
+              name: `Track #${item.tokenId}`,
+              uri: item.uri,
+              minPrice: '0',
+              isForSale: false,
+              creator: '',
+              albumId: '0',
+              trackNumber: String(item.tokenId),
+              maxSupply: '0',
+              currentSupply: '0'
+            }));
+
+            setNfts(nftData);
+            if (nftData.length > 0 && !selectedNft) {
+              setSelectedNft(nftData[0]);
+            }
+          }
+        } catch (fallbackErr) {
+          console.warn('Fallback tokenURI failed:', fallbackErr.message);
+          setNfts([]);
+        }
       }
     } catch (err) {
       console.error('loadNFTs error:', err);
-      setError(`Failed to load NFTs: ${err.message}`);
+      setError(null);
     } finally {
       setLoading(false);
     }
@@ -170,7 +257,8 @@ const NFTPage = () => {
       setError(null);
 
       if (typeof window === 'undefined' || !window.ethereum) {
-        throw new Error('Please install MetaMask');
+        setError(null);
+        return null;
       }
 
       const accounts = await window.ethereum.request({
@@ -181,11 +269,12 @@ const NFTPage = () => {
       setAccount(accounts[0]);
       return accounts[0];
       } else {
-        throw new Error('No accounts found');
+        setError(null);
+        return null;
       }
     } catch (err) {
-      setError(`Wallet connection failed: ${err.message}`);
-      throw err;
+      setError(null);
+      return null;
     } finally {
       setLoading(false);
     }
@@ -200,6 +289,7 @@ const NFTPage = () => {
       let walletAddress = account;
       if (!walletAddress) {
         walletAddress = await connectWallet();
+        if (!walletAddress) return;
       }
 
       const contract = await getSignerContract();
@@ -294,11 +384,11 @@ const NFTPage = () => {
         ) : (
           <button
             onClick={connectWallet}
-            disabled={loading}
+            disabled={loading || typeof window === 'undefined' || !window.ethereum}
             className="connect-button-corner"
           >
             <FaWallet style={{ marginRight: '0.5rem' }} />
-            {loading ? 'Connecting...' : 'Connect Wallet'}
+            {loading ? 'Connecting...' : (typeof window === 'undefined' || !window.ethereum ? 'Wallet Unavailable' : 'Connect Wallet')}
           </button>
         )}
       </div>

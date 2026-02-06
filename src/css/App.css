@@ -85,6 +85,10 @@ h1, h2, h3, h4, h5, h6 {
     .content-wrapper {
         padding: 1rem 0;
     }
+
+    .app {
+        padding-top: 110px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -94,5 +98,9 @@ h1, h2, h3, h4, h5, h6 {
 
     .content-wrapper {
         padding: 0.5rem 0;
+    }
+
+    .app {
+        padding-top: 120px;
     }
 }

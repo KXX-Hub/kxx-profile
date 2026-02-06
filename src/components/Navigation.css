@@ -64,16 +64,49 @@
 .start-prompt {
   left: 50%;
   right: auto;
-  top: calc(62% + 104px);
+  top: calc(62% + 170px);
   transform: translate(-50%, -50%);
-  padding: 23px 29px;
-  border-radius: 12px;
+  padding: 0;
+  border-radius: 0;
   font-size: 17px;
   letter-spacing: 2px;
   animation: startBlink 1.1s steps(2, end) infinite;
   border: none;
   box-shadow: none;
   background: transparent;
+  width: auto;
+  height: auto;
+  min-width: 0;
+  min-height: 0;
+  pointer-events: none;
+  cursor: default;
+  text-shadow: 2px 2px 0 #0a0a0a;
+  user-select: none;
+  outline: none;
+  border-image: none;
+  box-shadow: none !important;
+}
+
+.start-prompt.page-nav-arrow {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  gap: 0 !important;
+}
+
+.start-prompt-mobile {
+  pointer-events: auto;
+  cursor: pointer;
+  background: linear-gradient(180deg, #3a3530 0%, #2a2520 100%) !important;
+  border: 3px solid #d4a574 !important;
+  box-shadow: 4px 4px 0 #0a0a0a !important;
+  padding: 12px 18px !important;
+  border-radius: 10px !important;
+}
+
+.start-prompt-mobile:hover {
+  transform: translate(-50%, -50%) scale(1.02);
 }
 
 .start-prompt .arrow-label {
@@ -81,7 +114,7 @@
 }
 
 .start-prompt:hover {
-  transform: translate(-50%, -50%) scale(1.02);
+  transform: translate(-50%, -50%);
 }
 
 @keyframes startBlink {
@@ -144,6 +177,20 @@
   
   .arrow-icon {
     font-size: 10px;
+  }
+}
+
+@media (max-width: 600px) {
+  .start-prompt {
+    top: auto;
+    bottom: 40px;
+    transform: translateX(-50%);
+    font-size: 12px;
+    letter-spacing: 1px;
+  }
+
+  .start-prompt .arrow-label {
+    display: block;
   }
 }
 
@@ -398,19 +445,3 @@
 }
 
 /* ==================== Body Padding ==================== */
-body {
-  padding-bottom: 100px;
-}
-
-@media (max-width: 600px) {
-  body {
-    padding-bottom: 0;
-    padding-top: 60px;
-  }
-}
-
-@media (max-width: 400px) {
-  body {
-    padding-top: 52px;
-  }
-}
