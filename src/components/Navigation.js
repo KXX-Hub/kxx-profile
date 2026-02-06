@@ -15,16 +15,12 @@ const navItems = [
 const Navigation = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const isDashboard = location.pathname.includes('/dashboard');
   const isHome = location.pathname === '/';
   const isPhotos = location.pathname === '/photos';
   const isMobileView = typeof window !== 'undefined' && window.matchMedia('(max-width: 600px)').matches;
   const startPromptText = isMobileView ? 'Touch me to start' : 'Touch anywhere to start';
   const [showStartPrompt, setShowStartPrompt] = useState(false);
-  
-  // Don't show on dashboard
-  if (location.pathname.includes('/dashboard')) {
-    return null;
-  }
 
   // Find current page index for progress indicator
   const currentIndex = navItems.findIndex(item => item.path === location.pathname);
@@ -51,6 +47,10 @@ const Navigation = () => {
   const nextPage = currentIndex < navItems.length - 1 ? navItems[currentIndex + 1] : null;
 
   useEffect(() => {
+    if (isDashboard) {
+      setShowStartPrompt(false);
+      return;
+    }
     if (!isHome || !nextPage) {
       setShowStartPrompt(false);
       return;
@@ -65,10 +65,17 @@ const Navigation = () => {
     const handleStart = () => navigate(nextPage.path);
     document.addEventListener('pointerdown', handleStart);
     return () => document.removeEventListener('pointerdown', handleStart);
-  }, [isHome, nextPage, navigate]);
+  }, [isDashboard, isHome, nextPage, navigate]);
+
+  // Don't show on dashboard
+  if (isDashboard) {
+    return null;
+  }
 
   return (
     <>
+      <div className="global-nav-mirror" aria-hidden="true" />
+
       {/* Left Arrow - Previous Page */}
       {prevPage && !(isMobileView && isPhotos) && (
         <button className="page-nav-arrow page-nav-left" onClick={goToPrev}>

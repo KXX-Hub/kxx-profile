@@ -196,7 +196,7 @@ const MePage = () => {
   return (
     <div className="me-page">
       <div className="profile-header">
-        <h1>About Me</h1>
+        <h1 className="pixel-page-title">About Me</h1>
         <div className="profile-links">
           <a href="https://github.com/KXX-Hub" target="_blank" rel="noopener noreferrer" className="social-link">
             <FaGithub />

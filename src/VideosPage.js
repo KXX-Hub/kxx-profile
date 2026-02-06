@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaVideo, FaYoutube } from 'react-icons/fa';
+import { FaYoutube } from 'react-icons/fa';
 import './css/VideosPage.css';
 
 const YOUTUBE_CHANNEL_ID = process.env.REACT_APP_YOUTUBE_CHANNEL_ID || 'UCVTmN2IJY1Zc3bArF-RsUWg';
@@ -48,7 +48,7 @@ const VideosPage = () => {
   return (
     <div className="videos-page">
       <div className="page-header">
-        <h1><FaVideo /> Videos</h1>
+        <h1 className="pixel-page-title">Videos</h1>
         <p className="subtitle">YouTube Video Collection</p>
       </div>
 

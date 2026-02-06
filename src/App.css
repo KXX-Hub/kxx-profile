@@ -27,4 +27,123 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
-} 
+}
+
+.app {
+  min-height: 100vh;
+}
+
+/* Shared page title style for all sections */
+.profile-header .pixel-page-title,
+.page-header .pixel-page-title {
+  font-family: 'Press Start 2P', cursive !important;
+  font-size: clamp(1.05rem, 2.6vw, 1.95rem) !important;
+  line-height: 1.2 !important;
+  letter-spacing: 1px !important;
+  color: #d4a574 !important;
+  text-transform: uppercase;
+  text-align: center;
+  display: inline-block !important;
+  margin: 0 0 0.9rem !important;
+  text-shadow: 3px 3px 0 rgba(26, 26, 26, 0.9);
+  position: relative;
+}
+
+.profile-header .pixel-page-title::after,
+.page-header .pixel-page-title::after {
+  content: none !important;
+}
+
+.pixel-page-title-photo {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 0.5rem;
+  text-transform: none !important;
+  color: #d4a574 !important;
+  text-shadow:
+    4px 4px 0 rgba(0, 0, 0, 0.9),
+    0 0 2px rgba(212, 165, 116, 0.25);
+}
+
+.pixel-title-badge {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #d4a574;
+  color: #161616;
+  border-radius: 6px;
+  border: 2px solid #b8864a;
+  box-shadow:
+    inset 1px 1px 0 rgba(255, 255, 255, 0.35),
+    2px 2px 0 rgba(0, 0, 0, 0.8);
+}
+
+.pixel-title-badge svg {
+  font-size: 1rem;
+}
+
+@media (min-width: 601px) {
+  .profile-header,
+  .page-header {
+    margin-top: 1.6rem !important;
+    padding-top: 1.2rem !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .profile-header .pixel-page-title,
+  .page-header .pixel-page-title {
+    font-size: clamp(0.88rem, 4.8vw, 1.12rem) !important;
+    letter-spacing: 0.5px !important;
+    margin-bottom: 0.7rem !important;
+  }
+
+  .pixel-page-title-photo {
+    gap: 0.35rem;
+  }
+
+  .pixel-title-badge {
+    width: 28px;
+    height: 28px;
+    border-radius: 5px;
+  }
+
+  .pixel-title-badge svg {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .app {
+    padding-top: calc(118px + env(safe-area-inset-top));
+  }
+
+  .profile-header,
+  .page-header {
+    margin-bottom: 0.9rem !important;
+    padding-top: 0 !important;
+    padding-bottom: 0.35rem !important;
+  }
+
+  .me-page,
+  .coding-page,
+  .photos-page,
+  .videos-page,
+  .nft-page {
+    padding-top: 0.75rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .app {
+    padding-top: calc(126px + env(safe-area-inset-top));
+  }
+
+  .profile-header,
+  .page-header {
+    margin-bottom: 0.7rem !important;
+    padding-bottom: 0.2rem !important;
+  }
+}

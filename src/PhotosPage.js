@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import { Link } from 'react-router-dom';
-import { FaCamera, FaMapMarkerAlt, FaCalendar, FaCameraRetro, FaCog, FaTimes, FaSortAmountDown, FaGlobeAsia, FaTh, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { FaCamera, FaMapMarkerAlt, FaCalendar, FaCameraRetro, FaCog, FaEdit, FaTimes, FaSortAmountDown, FaGlobeAsia, FaTh, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { db } from './firebase';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
@@ -312,11 +312,11 @@ const PhotosPage = () => {
 
   return (
     <div className="photos-page">
-      <Link to="/photos/dashboard" className="subtle-dashboard-link" title="Dashboard">
-        <FaCog />
+      <Link to="/photos/dashboard" className="subtle-dashboard-link subtle-edit-link" title="Edit Dashboard">
+        <FaEdit />
       </Link>
       <div className="page-header">
-        <h1><FaCamera /> Photos</h1>
+        <h1 className="pixel-page-title">Photos</h1>
         <p className="subtitle">Photography Collection</p>
       </div>
 

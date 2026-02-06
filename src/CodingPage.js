@@ -45,7 +45,7 @@ const CodingPage = () => {
   return (
     <div className="coding-page">
       <div className="profile-header">
-        <h1>Code Portfolio</h1>
+        <h1 className="pixel-page-title">Code Portfolio</h1>
         <div className="profile-links">
           <a href="https://github.com/KXX-HUB" target="_blank" rel="noopener noreferrer" className="social-link">
             <FaGithub />

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import CodingPage from './CodingPage';
 import MePage from './MePage';
 import NFTPage from './NFTPage';
@@ -10,6 +10,34 @@ import MainPage from './pages/MainPage';
 import ClickExplosion from './components/ClickExplosion';
 import Navigation from './components/Navigation';
 import './App.css';
+
+function AppRoutes() {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (window.matchMedia('(min-width: 601px)').matches) {
+      window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    }
+  }, [location.pathname]);
+
+  return (
+    <div className="app">
+      <Routes>
+        <Route path="/" element={<MainPage />} />
+        <Route path="/me" element={<MePage />} />
+        <Route path="/coding" element={<CodingPage />} />
+        <Route path="/photos" element={<PhotosPage />} />
+        <Route path="/videos" element={<VideosPage />} />
+        <Route path="/nft" element={<NFTPage />} />
+        <Route path="/photos/dashboard" element={<PhotoDashboardPage />} />
+        {/* Legacy redirects */}
+        <Route path="/portfolio" element={<Navigate to="/photos" replace />} />
+        <Route path="/vlog" element={<Navigate to="/videos" replace />} />
+      </Routes>
+    </div>
+  );
+}
 
 function App() {
   // Get basename for GitHub Pages deployment
@@ -42,18 +70,7 @@ function App() {
     <Router basename={basename}>
       <ClickExplosion />
       <Navigation />
-      <Routes>
-        <Route path="/" element={<MainPage />} />
-        <Route path="/me" element={<MePage />} />
-        <Route path="/coding" element={<CodingPage />} />
-        <Route path="/photos" element={<PhotosPage />} />
-        <Route path="/videos" element={<VideosPage />} />
-        <Route path="/nft" element={<NFTPage />} />
-        <Route path="/photos/dashboard" element={<PhotoDashboardPage />} />
-        {/* Legacy redirects */}
-        <Route path="/portfolio" element={<Navigate to="/photos" replace />} />
-        <Route path="/vlog" element={<Navigate to="/videos" replace />} />
-      </Routes>
+      <AppRoutes />
     </Router>
   );
 }

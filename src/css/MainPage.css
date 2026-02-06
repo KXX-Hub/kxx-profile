@@ -879,7 +879,7 @@ body {
 
 @media (max-width: 768px) {
   .banner-section {
-    height: 120px;
+    height: 90px;
   }
 
   .billboard-frame {
@@ -932,11 +932,15 @@ body {
 
 @media (max-width: 480px) {
   .banner-section {
-    height: 100px;
+    height: 72px;
   }
 
   .billboard-frame {
     padding: 1rem;
+  }
+
+  .billboard {
+    margin-top: -12px;
   }
 
   .billboard-post {
@@ -981,7 +985,7 @@ body {
 
 @media (max-width: 360px) {
   .banner-section {
-    height: 80px;
+    height: 62px;
   }
 
   .billboard-frame {

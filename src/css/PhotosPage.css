@@ -31,7 +31,7 @@
   min-height: 100vh;
   background: var(--mac-bg-dark);
   color: var(--mac-white);
-  padding: var(--spacing-lg) var(--spacing-md);
+  padding: var(--spacing-lg) var(--spacing-md) 180px;
   font-family: var(--font-mono);
   position: relative;
   overflow-x: hidden;
@@ -40,26 +40,32 @@
 /* Subtle Dashboard Link - Top Right */
 .subtle-dashboard-link {
   position: fixed;
-  top: 16px;
-  right: 16px;
-  z-index: 100;
+  top: 44px;
+  right: 14px;
+  z-index: 1201;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.05);
-  color: rgba(255, 255, 255, 0.25);
+  background: rgba(20, 20, 20, 0.45);
+  border: 1px solid rgba(212, 165, 116, 0.2);
+  color: rgba(212, 165, 116, 0.42);
   text-decoration: none;
   transition: all 0.2s ease;
-  opacity: 0.5;
+  opacity: 0.65;
 }
 
 .subtle-dashboard-link:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.6);
+  background: rgba(20, 20, 20, 0.68);
+  border-color: rgba(212, 165, 116, 0.65);
+  color: rgba(212, 165, 116, 0.95);
   opacity: 1;
+}
+
+.subtle-edit-link {
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
 }
 
 /* CRT Scanline Effect */
@@ -1526,6 +1532,8 @@
   border: var(--pixel-border-width) solid var(--mac-black);
   border-radius: 10px;
   box-shadow: 4px 4px 0px var(--mac-black);
+  position: relative;
+  z-index: 2;
 }
 
 .page-btn {
@@ -1645,9 +1653,18 @@
     padding: var(--spacing-md) var(--spacing-sm) 0;
   }
 
-  .photos-page .filter-section,
-  .subtle-dashboard-link {
+  .photos-page .filter-section {
     display: none;
+  }
+
+  .subtle-dashboard-link {
+    top: auto;
+    bottom: 88px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    opacity: 0.85;
   }
 
   .page-arrow {

@@ -394,7 +394,7 @@ const NFTPage = () => {
       </div>
 
       <div className="profile-header">
-        <h1>Music NFT Gallery</h1>
+        <h1 className="pixel-page-title">NFT Gallery</h1>
         <p className="subtitle">Listen to music and collect NFTs on the blockchain</p>
         <div className="profile-links">
           <a href="https://github.com/KXX-HUB" target="_blank" rel="noopener noreferrer" className="social-link">
