@@ -363,7 +363,7 @@
   color: var(--mac-accent);
   font-size: 1.5rem;
   cursor: pointer;
-  z-index: 100;
+  z-index: 1000; /* Higher than page-nav-arrow (999) to show pagination when needed */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -379,11 +379,11 @@
 }
 
 .page-arrow-left {
-  left: 20px;
+  left: 120px; /* Move right to avoid Navigation buttons */
 }
 
 .page-arrow-right {
-  right: 20px;
+  right: 120px; /* Move left to avoid Navigation buttons */
 }
 
 @media (max-width: 900px) {
@@ -392,8 +392,13 @@
     height: 60px;
     font-size: 1.2rem;
   }
-  .page-arrow-left { left: 10px; }
-  .page-arrow-right { right: 10px; }
+  .page-arrow-left { left: 100px; }
+  .page-arrow-right { right: 100px; }
+}
+
+@media (max-width: 768px) {
+  .page-arrow-left { left: 80px; }
+  .page-arrow-right { right: 80px; }
 }
 
 @media (max-width: 640px) {
@@ -403,8 +408,8 @@
     font-size: 1rem;
     opacity: 0.7;
   }
-  .page-arrow-left { left: 5px; }
-  .page-arrow-right { right: 5px; }
+  .page-arrow-left { left: 60px; }
+  .page-arrow-right { right: 60px; }
 }
 
 /* ==================== Photo Card ==================== */
