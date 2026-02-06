@@ -12,5 +12,4 @@ firebase-admin-key.json
 .env.production.local
 
 # Bot secrets and dependencies
-bot/.env
-bot/node_modules
+bot/

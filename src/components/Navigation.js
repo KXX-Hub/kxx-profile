@@ -5,7 +5,6 @@ import './Navigation.css';
 
 const navItems = [
   { path: '/', icon: FaUser, label: 'Me' },
-  { path: '/me', icon: FaGraduationCap, label: 'Experience' },
   { path: '/coding', icon: FaCode, label: 'Coding' },
   { path: '/photos', icon: FaCamera, label: 'Photos' },
   { path: '/videos', icon: FaVideo, label: 'Videos' },

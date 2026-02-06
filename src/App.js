@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import MainPage from './MainPage';
 import CodingPage from './CodingPage';
 import MePage from './MePage';
 import NFTPage from './NFTPage';
@@ -43,9 +42,9 @@ function App() {
       <ClickExplosion />
       <Navigation />
       <Routes>
-        <Route path="/" element={<MainPage />} />
+        <Route path="/" element={<MePage />} />
         <Route path="/coding" element={<CodingPage />} />
-        <Route path="/me" element={<MePage />} />
+        <Route path="/me" element={<Navigate to="/" replace />} />
         <Route path="/nft" element={<NFTPage />} />
         <Route path="/videos" element={<VideosPage />} />
         <Route path="/photos" element={<PhotosPage />} />
