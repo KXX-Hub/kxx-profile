@@ -41,13 +41,10 @@ const Navigation = () => {
   const prevPage = currentIndex > 0 ? navItems[currentIndex - 1] : null;
   const nextPage = currentIndex < navItems.length - 1 ? navItems[currentIndex + 1] : null;
 
-  // Hide navigation arrows on Photos page to avoid overlap with pagination arrows
-  const hideNavArrows = location.pathname === '/photos';
-
   return (
     <>
       {/* Left Arrow - Previous Page */}
-      {prevPage && !hideNavArrows && (
+      {prevPage && (
         <button className="page-nav-arrow page-nav-left" onClick={goToPrev}>
           <span className="arrow-icon">◀</span>
           <span className="arrow-label">{prevPage.label}</span>
@@ -55,7 +52,7 @@ const Navigation = () => {
       )}
 
       {/* Right Arrow - Next Page */}
-      {nextPage && !hideNavArrows && (
+      {nextPage && (
         <button className="page-nav-arrow page-nav-right" onClick={goToNext}>
           <span className="arrow-label">{nextPage.label}</span>
           <span className="arrow-icon">▶</span>
