@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import MainPage from './MainPage';
 import CodingPage from './CodingPage';
@@ -26,6 +26,17 @@ function App() {
   };
   
   const basename = getBasename();
+  
+  // Handle GitHub Pages 404 redirect
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const redirectPath = urlParams.get('p');
+    if (redirectPath) {
+      const [path, search, hash] = redirectPath.split(/([?#])/);
+      const newPath = path + (search || '') + (hash || '');
+      window.history.replaceState({}, '', newPath);
+    }
+  }, []);
   
   return (
     <Router basename={basename}>
