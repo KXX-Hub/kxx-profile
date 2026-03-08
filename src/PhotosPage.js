@@ -75,13 +75,32 @@ const PhotosPage = () => {
     try {
       setLoading(true);
       const photosRef = collection(db, 'photos');
-      const q = query(photosRef, orderBy('uploadedAt', 'desc'));
-      const snapshot = await getDocs(q);
+      let snapshot;
+
+      try {
+        const q = query(photosRef, orderBy('uploadedAt', 'desc'));
+        snapshot = await getDocs(q);
+      } catch (queryError) {
+        console.warn('Primary photos query failed, fallback to plain fetch:', queryError);
+        snapshot = await getDocs(photosRef);
+      }
       
       const photoList = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }));
+
+      // Fallback fetch has no guaranteed order; sort locally by uploadedAt desc.
+      photoList.sort((a, b) => {
+        const getMs = (v) => {
+          if (!v) return 0;
+          if (typeof v.toMillis === 'function') return v.toMillis();
+          if (typeof v.seconds === 'number') return v.seconds * 1000;
+          const parsed = Date.parse(String(v));
+          return Number.isNaN(parsed) ? 0 : parsed;
+        };
+        return getMs(b.uploadedAt) - getMs(a.uploadedAt);
+      });
 
       // Debug: Log photo URLs to help diagnose image loading issues
       console.log('Loaded photos:', photoList.length);
@@ -105,7 +124,8 @@ const PhotosPage = () => {
       setAvailableFilters({ locations, dates, devices });
     } catch (err) {
       console.error('Error loading photos:', err);
-      setError('Failed to load');
+      const detail = err?.code || err?.message || 'unknown-error';
+      setError(`Failed to load photos (${detail})`);
     } finally {
       setLoading(false);
     }
