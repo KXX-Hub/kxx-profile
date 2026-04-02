@@ -2,11 +2,63 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { db, auth } from './firebase';
 import { collection, deleteDoc, doc, getDocs, getDoc, orderBy, query, updateDoc } from 'firebase/firestore';
-import { signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from 'firebase/auth';
+import {
+    browserLocalPersistence,
+    getRedirectResult,
+    GoogleAuthProvider,
+    onAuthStateChanged,
+    setPersistence,
+    signInWithPopup,
+    signInWithRedirect,
+    signOut
+} from 'firebase/auth';
 import { deleteObject, getStorage, ref } from 'firebase/storage';
 import './css/PhotoDashboardPage.css';
 
 const storage = getStorage();
+
+const normalizeEmail = (email = '') => email.trim().toLowerCase();
+
+const normalizeAllowedEmails = (value) => {
+    if (Array.isArray(value)) {
+        return value.map(normalizeEmail).filter(Boolean);
+    }
+    if (typeof value === 'string') {
+        return [normalizeEmail(value)].filter(Boolean);
+    }
+    return [];
+};
+
+const shouldPreferRedirectLogin = () => {
+    if (typeof window === 'undefined') {
+        return false;
+    }
+
+    const userAgent = window.navigator.userAgent || '';
+    const isIOS = /iPad|iPhone|iPod/.test(userAgent);
+    const isSafari = /^((?!chrome|android).)*safari/i.test(userAgent);
+
+    return isIOS || isSafari;
+};
+
+const getAuthErrorMessage = (err) => {
+    switch (err?.code) {
+        case 'auth/popup-closed-by-user':
+            return 'Login cancelled.';
+        case 'auth/popup-blocked':
+            return 'Google login popup was blocked by the browser. Redirecting login usually fixes this.';
+        case 'auth/unauthorized-domain':
+            return 'This domain is not authorized in Firebase Auth. Add www.0xkxx.com to Firebase Authentication > Settings > Authorized domains.';
+        case 'auth/operation-not-allowed':
+            return 'Google sign-in is not enabled in Firebase Authentication.';
+        case 'auth/invalid-api-key':
+            return 'Firebase API key is invalid or missing.';
+        case 'auth/network-request-failed':
+            return 'Network request failed during Google login. Check browser privacy settings, third-party cookie blocking, or the current connection.';
+        default:
+            return err?.message || 'Login failed.';
+    }
+};
 
 // R2 deletion via proxy (if set up) - for now, we'll track which photos need R2 cleanup
 const deleteFromR2 = async (storagePath, thumbnailPath) => {
@@ -66,9 +118,9 @@ const PhotoDashboardPage = () => {
                     const data = settingsDoc.data();
                     // Support both single email and array of emails
                     if (data.allowedEmails) {
-                        setAllowedEmails(data.allowedEmails);
+                        setAllowedEmails(normalizeAllowedEmails(data.allowedEmails));
                     } else if (data.allowedEmail) {
-                        setAllowedEmails([data.allowedEmail]);
+                        setAllowedEmails(normalizeAllowedEmails(data.allowedEmail));
                     }
                 }
             } catch (err) {
@@ -86,14 +138,14 @@ const PhotoDashboardPage = () => {
                     const settingsDoc = await getDoc(doc(db, 'settings', 'dashboard_auth'));
                     if (settingsDoc.exists()) {
                         const data = settingsDoc.data();
-                        emails = data.allowedEmails || (data.allowedEmail ? [data.allowedEmail] : []);
+                        emails = normalizeAllowedEmails(data.allowedEmails || data.allowedEmail);
                     }
                 } catch (err) {
                     console.error('Error checking auth:', err);
                 }
 
                 // Check if user email is allowed
-                if (emails.length > 0 && !emails.includes(user.email)) {
+                if (emails.length > 0 && !emails.includes(normalizeEmail(user.email))) {
                     await signOut(auth);
                     setIsLoggedIn(false);
                     setLoginError('⛔ Unauthorized: This email is not allowed');
@@ -108,20 +160,61 @@ const PhotoDashboardPage = () => {
         return () => unsubscribe();
     }, [allowedEmails]);
 
+    useEffect(() => {
+        let mounted = true;
+
+        const resolveRedirectLogin = async () => {
+            try {
+                await getRedirectResult(auth);
+            } catch (err) {
+                console.error('Redirect login error:', err);
+                if (mounted) {
+                    setLoginError(getAuthErrorMessage(err));
+                }
+            }
+        };
+
+        resolveRedirectLogin();
+
+        return () => {
+            mounted = false;
+        };
+    }, []);
+
     // Google Sign-In
     const handleGoogleLogin = async () => {
         setLoginError('');
         try {
             const provider = new GoogleAuthProvider();
+            provider.setCustomParameters({ prompt: 'select_account' });
+
+            await setPersistence(auth, browserLocalPersistence);
+
+            if (shouldPreferRedirectLogin()) {
+                await signInWithRedirect(auth, provider);
+                return;
+            }
+
             await signInWithPopup(auth, provider);
             // Auth state change listener will handle the rest
         } catch (err) {
             console.error('Login error:', err);
-            if (err.code === 'auth/popup-closed-by-user') {
-                setLoginError('Login cancelled');
-            } else {
-                setLoginError('Login failed');
+
+            if (err.code === 'auth/popup-blocked') {
+                setLoginError(getAuthErrorMessage(err));
+                try {
+                    const provider = new GoogleAuthProvider();
+                    provider.setCustomParameters({ prompt: 'select_account' });
+                    await signInWithRedirect(auth, provider);
+                    return;
+                } catch (redirectErr) {
+                    console.error('Redirect fallback error:', redirectErr);
+                    setLoginError(getAuthErrorMessage(redirectErr));
+                    return;
+                }
             }
+
+            setLoginError(getAuthErrorMessage(err));
         }
     };
 
